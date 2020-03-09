@@ -1,0 +1,98 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ejb.session.stateless;
+
+import entity.Customer;
+import java.util.List;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import util.exception.CustomerNotFoundException;
+import util.exception.InvalidLoginCredentialException;
+
+/**
+ *
+ * @author chai
+ */
+@Stateless
+public class CustomerSessionBean implements CustomerSessionBeanLocal {
+
+    @PersistenceContext(unitName = "KaRMS-ejbPU")
+    private EntityManager em;
+
+    // Add business logic below. (Right-click in editor and choose
+    // "Insert Code > Add Business Method")
+    
+    public Long createNewCustomer(Customer newCustomer) {
+        em.persist(newCustomer);
+        em.flush();
+        
+        return newCustomer.getCustomerId();
+    }
+    
+    public List<Customer> retrieveAllCustomer() {
+        Query query = em.createQuery("SELECT c FROM Customer c");
+        
+        return query.getResultList();
+    }
+    
+    public Customer retrieveCustomerById(Long customerId) {
+       Customer customer = em.find(Customer.class, customerId);
+       
+       return customer;
+    }
+    
+    public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException {
+        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername");
+        query.setParameter("inUsername", username);
+        
+        try {
+            return (Customer)query.getSingleResult();
+        } catch (NoResultException | NonUniqueResultException ex) {
+            throw new CustomerNotFoundException("Cusomter username " + username + "does not exist!");
+        }
+    }
+    
+    public void updateCustomer(Long cusotmerId) {
+        Customer customerToUpdate = retrieveCustomerById(cusotmerId);
+        
+        em.merge(customerToUpdate);
+        em.flush();
+    }
+    
+    public void deleteCustomer(Long customerId) {
+        Customer customerToDelete = retrieveCustomerById(customerId);
+        
+        em.remove(customerToDelete);
+    }
+    
+    public void updatePayment(Long customerId, String newCardNo) {
+        Customer customerToUpdate = retrieveCustomerById(customerId);
+        
+        customerToUpdate.setCreditCardNo(newCardNo);
+    }
+    
+    public Customer customerLogin(String username, String password) throws InvalidLoginCredentialException {
+        if (username.isEmpty() || password.isEmpty()) {
+            throw new InvalidLoginCredentialException("Missing Login Credential!");
+        } else {
+            try {
+                Customer customer = retrieveCustomerByUsername(username);
+                
+                if (customer.getPassword().equals(password)) {
+                    return customer;
+                } else {
+                    throw new InvalidLoginCredentialException("Password is incorrect!");
+                }
+            } catch (CustomerNotFoundException ex) {
+                throw new InvalidLoginCredentialException(ex.getMessage());
+            }
+        }
+    }
+}
