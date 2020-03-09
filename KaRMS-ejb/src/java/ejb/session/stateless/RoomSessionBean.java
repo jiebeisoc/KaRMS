@@ -48,7 +48,8 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
     }
     
     @Override
-    public void updateRoom(Room roomToUpdate) {
+    public void updateRoom(Long roomId) {
+        Room roomToUpdate = retrieveRoomById(roomId);
         em.merge(roomToUpdate);
         em.flush();
     }
