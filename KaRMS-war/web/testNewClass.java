@@ -9,5 +9,5 @@
  * @author user
  */
 public class testNewClass {
-    System.out.println("help");
+    
 }
