@@ -9,9 +9,5 @@
  * @author user
  */
 public class testNewClass {
-    public static void main(String[] args){
-        System.out.print("Luqian");
-    }
-        
     
 }
