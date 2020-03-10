@@ -9,12 +9,15 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import util.enumeration.ReservationStatus;
 
 /**
  *
@@ -38,20 +41,21 @@ public class Reservation implements Serializable {
     @Column(nullable = false)
     private int numOfPeople;
     private String note;
+    @Enumerated(EnumType.STRING)
     @NotNull
     @Column(nullable = false)
-    private Boolean hasPaid;
+    private ReservationStatus status;
 
     public Reservation() {
     }
     
-    public Reservation(Date date, int duration, int numOfPeople, String note, Boolean hasPaid) {
+    public Reservation(Date date, int duration, int numOfPeople, String note, ReservationStatus status) {
         this();
         this.date = date;
         this.duration = duration;
         this.numOfPeople = numOfPeople;
         this.note = note;
-        this.hasPaid = hasPaid;
+        this.status = status;
     }
     
     
@@ -121,12 +125,12 @@ public class Reservation implements Serializable {
         this.note = note;
     }
 
-    public Boolean getHasPaid() {
-        return hasPaid;
+    public ReservationStatus getStatus() {
+        return status;
     }
 
-    public void setHasPaid(Boolean hasPaid) {
-        this.hasPaid = hasPaid;
+    public void setStatus(ReservationStatus status) {
+        this.status = status;
     }
 
     
