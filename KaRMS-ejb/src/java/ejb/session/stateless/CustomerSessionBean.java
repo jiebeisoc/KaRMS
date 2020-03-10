@@ -29,6 +29,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     
+    @Override
     public Long createNewCustomer(Customer newCustomer) {
         em.persist(newCustomer);
         em.flush();
@@ -36,18 +37,21 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         return newCustomer.getCustomerId();
     }
     
+    @Override
     public List<Customer> retrieveAllCustomer() {
         Query query = em.createQuery("SELECT c FROM Customer c");
         
         return query.getResultList();
     }
     
+    @Override
     public Customer retrieveCustomerById(Long customerId) {
        Customer customer = em.find(Customer.class, customerId);
        
        return customer;
     }
     
+    @Override
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException {
         Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername");
         query.setParameter("inUsername", username);
@@ -59,25 +63,27 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         }
     }
     
-    public void updateCustomer(Long cusotmerId) {
-        Customer customerToUpdate = retrieveCustomerById(cusotmerId);
-        
+    @Override
+    public void updateCustomer(Customer customerToUpdate) {
         em.merge(customerToUpdate);
         em.flush();
     }
     
+    @Override
     public void deleteCustomer(Long customerId) {
         Customer customerToDelete = retrieveCustomerById(customerId);
         
         em.remove(customerToDelete);
     }
     
+    @Override
     public void updatePayment(Long customerId, String newCardNo) {
         Customer customerToUpdate = retrieveCustomerById(customerId);
         
         customerToUpdate.setCreditCardNo(newCardNo);
     }
     
+    @Override
     public Customer customerLogin(String username, String password) throws InvalidLoginCredentialException {
         if (username.isEmpty() || password.isEmpty()) {
             throw new InvalidLoginCredentialException("Missing Login Credential!");
