@@ -25,6 +25,7 @@ public class Room implements Serializable {
     private Long roomId;
     private RoomType roomType;
     private int roomNum;
+    private String roomDetails;
 
     public Long getRoomId() {
         return roomId;
@@ -85,6 +86,14 @@ public class Room implements Serializable {
      */
     public void setRoomNum(int roomNum) {
         this.roomNum = roomNum;
+    }
+
+    public String getRoomDetails() {
+        return roomDetails;
+    }
+
+    public void setRoomDetails(String roomDetails) {
+        this.roomDetails = roomDetails;
     }
     
 }
