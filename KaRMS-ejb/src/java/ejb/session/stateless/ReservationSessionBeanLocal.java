@@ -4,7 +4,6 @@ package ejb.session.stateless;
 import entity.Reservation;
 import java.util.Date;
 import java.util.List;
-import util.enumeration.ReservationStatus;
 
 public interface ReservationSessionBeanLocal {
 
@@ -16,13 +15,11 @@ public interface ReservationSessionBeanLocal {
 
     public List<Reservation> retrieveReservationByDate(Date date);
 
-    public List<Reservation> retrieveReservationByStatus(ReservationStatus status);
+    public List<Reservation> retrieveReservationByPaid(Boolean hasPaid);
     
     public void updateReservation(Reservation reservationToUpdate);
 
     public void deleteReservation(Long reservationId);
-
-    
 
 
    
