@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,6 +28,9 @@ public class Customer implements Serializable {
     private String creditCardNo;
     private String username;
     private String password;
+    private Date birthday;
+    private String email;
+    private int points;
     
 
     public Long getCustomerId() {
@@ -130,6 +134,30 @@ public class Customer implements Serializable {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
     }
     
 }
