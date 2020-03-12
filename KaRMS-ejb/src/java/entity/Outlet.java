@@ -27,18 +27,18 @@ public class Outlet implements Serializable {
     private String outletAddress;
     private List<Room> rooms;
     private int outletPhone;
-    private String outletDetails;
+    private String openingHours;
 
     public Outlet() {
     }
 
-    public Outlet(Long outletId, String outletName, String outletAddress, List<Room> rooms, int outletPhone, String outletDetails) {
+    public Outlet(Long outletId, String outletName, String outletAddress, List<Room> rooms, int outletPhone, String openingHours) {
         this.outletId = outletId;
         this.outletName = outletName;
         this.outletAddress = outletAddress;
         this.rooms = rooms;
         this.outletPhone = outletPhone;
-        this.outletDetails = outletDetails;
+        this.openingHours = openingHours;
     }
 
 
@@ -116,12 +116,12 @@ public class Outlet implements Serializable {
         this.outletPhone = outletPhone;
     }
 
-    public String getOutletDetails() {
-        return outletDetails;
+    public String getOpeningHours() {
+        return openingHours;
     }
 
-    public void setOutletDetails(String outletDetails) {
-        this.outletDetails = outletDetails;
+    public void setOpeningHours(String openingHours) {
+        this.openingHours = openingHours;
     }
     
 }
