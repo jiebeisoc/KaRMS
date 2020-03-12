@@ -25,5 +25,7 @@ public interface RoomSessionBeanLocal {
     public void updateRoom(Room roomToUpdate);
 
     public void deleteRoom(Long roomId);
+
+    public void viewRoomDetails(Room room);
     
 }

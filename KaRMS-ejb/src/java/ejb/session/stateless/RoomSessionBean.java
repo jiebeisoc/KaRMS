@@ -59,4 +59,14 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
         
         em.remove(roomToDelete);
     }
+    
+    
+    // is this method still necessary? or can just use get() in Room.class
+    @Override
+    public void viewRoomDetails(Room room)
+    {
+        room.getRoomDetails();
+    }
+    
+    
 }
