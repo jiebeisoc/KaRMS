@@ -50,9 +50,9 @@ public class OutletSessionBean implements OutletSessionBeanLocal {
     
     // is this method still necessary? or can just use get() in Outlet.class
     @Override
-    public void viewOutletDetails(Outlet outlet)
+    public void viewOutletOpeningHours(Outlet outlet)
     {
-        outlet.getOutletDetails();
+        outlet.getOpeningHours();
         
     }
     
