@@ -59,7 +59,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         try {
             return (Customer)query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException ex) {
-            throw new CustomerNotFoundException("Cusomter username " + username + "does not exist!");
+            throw new CustomerNotFoundException("Customer username " + username + " does not exist!");
         }
     }
     
