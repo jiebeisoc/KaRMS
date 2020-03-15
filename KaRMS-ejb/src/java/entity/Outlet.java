@@ -7,10 +7,12 @@ package entity;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -23,34 +25,32 @@ public class Outlet implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long outletId;
+    @NotNull
+    @Column(nullable = false)
     private String outletName;
+    @NotNull
+    @Column(nullable = false)
     private String outletAddress;
-    private List<Room> rooms;
+    @NotNull
+    @Column(nullable = false)
     private int outletPhone;
+    @NotNull
+    @Column(nullable = false)
     private String openingHours;
+    
+    private List<Room> rooms;
 
     public Outlet() {
     }
 
-    public Outlet(Long outletId, String outletName, String outletAddress, List<Room> rooms, int outletPhone, String openingHours) {
-        this.outletId = outletId;
+    public Outlet(String outletName, String outletAddress, int outletPhone, String openingHours) {
+        this();
         this.outletName = outletName;
         this.outletAddress = outletAddress;
-        this.rooms = rooms;
         this.outletPhone = outletPhone;
         this.openingHours = openingHours;
     }
 
-
-
-    
-    
-    
-    
-    
-    
-    
-    
     public Long getOutletId() {
         return outletId;
     }

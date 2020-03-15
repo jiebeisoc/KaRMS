@@ -47,15 +47,14 @@ public class Reservation implements Serializable {
     private ReservationStatus status;
 
     public Reservation() {
+        this.status = ReservationStatus.NOTPAID;
     }
     
-    public Reservation(Date date, int duration, int numOfPeople, String note, ReservationStatus status) {
+    public Reservation(Date date, int duration, int numOfPeople, ReservationStatus status) {
         this();
         this.date = date;
         this.duration = duration;
         this.numOfPeople = numOfPeople;
-        this.note = note;
-        this.status = status;
     }
     
     

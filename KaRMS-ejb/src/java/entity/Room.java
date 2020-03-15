@@ -6,11 +6,12 @@
 package entity;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import util.enumeration.RoomType;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -23,10 +24,18 @@ public class Room implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomId;
-    private RoomType roomType;
+    @NotNull
+    @Column(nullable = false)
     private int roomNum;
-    private String roomDetails;
+    
+    public Room() {
+    }
 
+    public Room(int roomNum) {
+        this();
+        this.roomNum = roomNum;
+    }
+    
     public Long getRoomId() {
         return roomId;
     }
@@ -61,20 +70,6 @@ public class Room implements Serializable {
     }
 
     /**
-     * @return the roomType
-     */
-    public RoomType getRoomType() {
-        return roomType;
-    }
-
-    /**
-     * @param roomType the roomType to set
-     */
-    public void setRoomType(RoomType roomType) {
-        this.roomType = roomType;
-    }
-
-    /**
      * @return the roomNum
      */
     public int getRoomNum() {
@@ -86,14 +81,6 @@ public class Room implements Serializable {
      */
     public void setRoomNum(int roomNum) {
         this.roomNum = roomNum;
-    }
-
-    public String getRoomDetails() {
-        return roomDetails;
-    }
-
-    public void setRoomDetails(String roomDetails) {
-        this.roomDetails = roomDetails;
     }
     
 }

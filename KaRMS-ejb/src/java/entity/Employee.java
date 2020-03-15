@@ -6,10 +6,12 @@
 package entity;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -22,8 +24,21 @@ public class Employee implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
+    @NotNull
+    @Column(nullable = false)
     private String username;
+    @NotNull
+    @Column(nullable = false)
     private String password;
+
+    public Employee() {
+    }
+
+    public Employee(String username, String password) {
+        this();
+        this.username = username;
+        this.password = password;
+    }
 
     public Long getEmployeeId() {
         return employeeId;
