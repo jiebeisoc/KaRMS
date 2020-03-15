@@ -101,4 +101,18 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
             }
         }
     }
+    
+    @Override
+    public void addPoints(Long customerId, int pointsToAdd) {
+        Customer customer = retrieveCustomerById(customerId);
+        
+        customer.setPoints(customer.getPoints() + pointsToAdd);
+    }
+    
+    @Override
+    public void redeemPoints(Long customerId, int pointsToDeduct) {
+        Customer customer = retrieveCustomerById(customerId);
+        
+        customer.setPoints(customer.getPoints() - pointsToDeduct);
+    }
 }

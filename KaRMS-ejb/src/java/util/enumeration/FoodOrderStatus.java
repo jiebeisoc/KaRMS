@@ -11,5 +11,6 @@ package util.enumeration;
  */
 public enum FoodOrderStatus {
     BOOKED,
+    CONFIRMED,
     SERVED
 }

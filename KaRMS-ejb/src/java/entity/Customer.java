@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -48,6 +49,9 @@ public class Customer implements Serializable {
     @Column(nullable = false)
     private String email;
     private int points;
+    
+    @OneToMany
+    private Reservation reservation;
 
     public Customer() {
         this.points = 0;

@@ -127,5 +127,13 @@ public class FoodOrder implements Serializable {
     public void setFoodItems(List<Food> foodItems) {
         this.foodItems = foodItems;
     }
+
+    public FoodOrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(FoodOrderStatus status) {
+        this.status = status;
+    }
     
 }

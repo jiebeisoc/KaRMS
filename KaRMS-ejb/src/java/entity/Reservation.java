@@ -7,6 +7,7 @@ package entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -45,6 +46,8 @@ public class Reservation implements Serializable {
     @NotNull
     @Column(nullable = false)
     private ReservationStatus status;
+    
+    private List<Song> songQueue;
 
     public Reservation() {
         this.status = ReservationStatus.NOTPAID;
@@ -57,8 +60,6 @@ public class Reservation implements Serializable {
         this.numOfPeople = numOfPeople;
     }
     
-    
-
     public Long getReservationId() {
         return reservationId;
     }
@@ -132,5 +133,12 @@ public class Reservation implements Serializable {
         this.status = status;
     }
 
-    
+    public List<Song> getSongQueue() {
+        return songQueue;
+    }
+
+    public void setSongQueue(List<Song> songQueue) {
+        this.songQueue = songQueue;
+    }
+
 }

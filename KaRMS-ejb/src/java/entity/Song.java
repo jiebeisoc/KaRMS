@@ -26,7 +26,7 @@ public class Song implements Serializable {
     private Long songId;
     @NotNull
     @Column(nullable = false)
-    private String name;
+    private String songTitle;
     @NotNull
     @Column(nullable = false)
     private String singer;
@@ -36,7 +36,7 @@ public class Song implements Serializable {
 
     public Song(String name, String singer) {
         this();
-        this.name = name;
+        this.songTitle = name;
         this.singer = singer;
     }
 
@@ -73,12 +73,12 @@ public class Song implements Serializable {
         return "entity.Song[ id=" + songId + " ]";
     }
 
-    public String getName() {
-        return name;
+    public String getSongTitle() {
+        return songTitle;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSongTitle(String songTitle) {
+        this.songTitle = songTitle;
     }
 
     public String getSinger() {
