@@ -72,7 +72,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     @Override
     public void deleteCustomer(Long customerId) {
         Customer customerToDelete = retrieveCustomerById(customerId);
-        
+
         em.remove(customerToDelete);
     }
     
@@ -100,5 +100,19 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
                 throw new InvalidLoginCredentialException(ex.getMessage());
             }
         }
+    }
+    
+    @Override
+    public void addPoints(Long customerId, int pointsToAdd) {
+        Customer customer = retrieveCustomerById(customerId);
+        
+        customer.setPoints(customer.getPoints() + pointsToAdd);
+    }
+    
+    @Override
+    public void redeemPoints(Long customerId, int pointsToDeduct) {
+        Customer customer = retrieveCustomerById(customerId);
+        
+        customer.setPoints(customer.getPoints() - pointsToDeduct);
     }
 }

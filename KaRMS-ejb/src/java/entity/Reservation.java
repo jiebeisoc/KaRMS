@@ -6,7 +6,9 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,6 +16,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -45,21 +50,40 @@ public class Reservation implements Serializable {
     @NotNull
     @Column(nullable = false)
     private ReservationStatus status;
+    
+    @ManyToOne
+    private Room room;
+    
+    @ManyToOne
+    private Outlet outlet;
+    
+    @OneToOne(mappedBy = "reservation")
+    private Review review;
+    
+    @ManyToMany
+    private List<Song> songQueue;
+    
+    @ManyToOne
+    private Promotion promotion;
+    
+    @ManyToOne
+    private Customer customer;
+    
+    @OneToOne(mappedBy = "reservation")
+    private FoodOrder foodOrder;
 
     public Reservation() {
+        this.status = ReservationStatus.NOTPAID;
+        this.songQueue = new ArrayList<>();
     }
     
-    public Reservation(Date date, int duration, int numOfPeople, String note, ReservationStatus status) {
+    public Reservation(Date date, int duration, int numOfPeople, ReservationStatus status) {
         this();
         this.date = date;
         this.duration = duration;
         this.numOfPeople = numOfPeople;
-        this.note = note;
-        this.status = status;
     }
     
-    
-
     public Long getReservationId() {
         return reservationId;
     }
@@ -133,5 +157,60 @@ public class Reservation implements Serializable {
         this.status = status;
     }
 
-    
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public Outlet getOutlet() {
+        return outlet;
+    }
+
+    public void setOutlet(Outlet outlet) {
+        this.outlet = outlet;
+    }
+
+    public Review getReview() {
+        return review;
+    }
+
+    public void setReview(Review review) {
+        this.review = review;
+    }
+
+    public List<Song> getSongQueue() {
+        return songQueue;
+    }
+
+    public void setSongQueue(List<Song> songQueue) {
+        this.songQueue = songQueue;
+    }
+
+    public Promotion getPromotion() {
+        return promotion;
+    }
+
+    public void setPromotion(Promotion promotion) {
+        this.promotion = promotion;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public FoodOrder getFoodOrder() {
+        return foodOrder;
+    }
+
+    public void setFoodOrder(FoodOrder foodOrder) {
+        this.foodOrder = foodOrder;
+    }
+
 }

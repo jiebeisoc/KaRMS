@@ -6,10 +6,12 @@
 package entity;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -24,14 +26,26 @@ public class Food implements Serializable {
         return serialVersionUID;
     }
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long foodId;
-    private String foodDescription;
+    @NotNull
+    @Column(nullable = false)
     private String foodName;
+    @NotNull
+    @Column(nullable = false)
     private double foodPrice;
     private boolean available;
+    private String foodDescription;
     
     public Food() {
+    }
+
+    public Food(String foodName, double foodPrice, boolean available, String foodDescription) {
+        this();
+        this.foodName = foodName;
+        this.foodPrice = foodPrice;
+        this.available = available;
+        this.foodDescription = foodDescription;
     }
 
     public Long getFoodId() {
@@ -67,24 +81,16 @@ public class Food implements Serializable {
         return "entity.Food[ id=" + foodId + " ]";
     }
 
-    public String getFoodDescription() {
-        return foodDescription;
-    }
-
     public String getFoodName() {
         return foodName;
     }
 
-    public double getFoodPrice() {
-        return foodPrice;
-    }
-
-    public void setFoodDescription(String foodDescription) {
-        this.foodDescription = foodDescription;
-    }
-
     public void setFoodName(String foodName) {
         this.foodName = foodName;
+    }
+
+    public double getFoodPrice() {
+        return foodPrice;
     }
 
     public void setFoodPrice(double foodPrice) {
@@ -99,4 +105,11 @@ public class Food implements Serializable {
         this.available = available;
     }
     
+    public String getFoodDescription() {
+        return foodDescription;
+    }
+
+    public void setFoodDescription(String foodDescription) {
+        this.foodDescription = foodDescription;
+    }
 }

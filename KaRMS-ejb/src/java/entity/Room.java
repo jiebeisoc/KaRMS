@@ -6,11 +6,16 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import util.enumeration.RoomType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -23,10 +28,28 @@ public class Room implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomId;
-    private RoomType roomType;
+    @NotNull
+    @Column(nullable = false)
     private int roomNum;
-    private String roomDetails;
+    
+    @OneToMany(mappedBy = "room")
+    private List<Reservation> reservations;
+    
+    @ManyToOne
+    private Outlet outlet;
+    
+    @ManyToOne
+    private RoomType roomType;
+    
+    public Room() {
+        this.reservations = new ArrayList<>();
+    }
 
+    public Room(int roomNum) {
+        this();
+        this.roomNum = roomNum;
+    }
+    
     public Long getRoomId() {
         return roomId;
     }
@@ -61,20 +84,6 @@ public class Room implements Serializable {
     }
 
     /**
-     * @return the roomType
-     */
-    public RoomType getRoomType() {
-        return roomType;
-    }
-
-    /**
-     * @param roomType the roomType to set
-     */
-    public void setRoomType(RoomType roomType) {
-        this.roomType = roomType;
-    }
-
-    /**
      * @return the roomNum
      */
     public int getRoomNum() {
@@ -88,12 +97,28 @@ public class Room implements Serializable {
         this.roomNum = roomNum;
     }
 
-    public String getRoomDetails() {
-        return roomDetails;
+    public List<Reservation> getReservations() {
+        return reservations;
     }
 
-    public void setRoomDetails(String roomDetails) {
-        this.roomDetails = roomDetails;
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
+    public Outlet getOutlet() {
+        return outlet;
+    }
+
+    public void setOutlet(Outlet outlet) {
+        this.outlet = outlet;
+    }
+
+    public RoomType getRoomType() {
+        return roomType;
+    }
+
+    public void setRoomType(RoomType roomType) {
+        this.roomType = roomType;
     }
     
 }

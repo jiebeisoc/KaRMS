@@ -6,11 +6,15 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -23,34 +27,42 @@ public class Outlet implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long outletId;
+    @NotNull
+    @Column(nullable = false)
     private String outletName;
+    @NotNull
+    @Column(nullable = false)
     private String outletAddress;
-    private List<Room> rooms;
+    @NotNull
+    @Column(nullable = false)
     private int outletPhone;
+    @NotNull
+    @Column(nullable = false)
     private String openingHours;
+    
+    @OneToMany(mappedBy = "outlet")
+    private List<Room> rooms;
+    
+    @OneToMany(mappedBy = "outlet")
+    private List<Reservation> reservations;
+    
+    @OneToMany(mappedBy = "outlet")
+    private List<Review> reviews;
 
     public Outlet() {
+        this.rooms = new ArrayList<>();
+        this.reservations = new ArrayList<>();
+        this.reviews = new ArrayList<>();
     }
 
-    public Outlet(Long outletId, String outletName, String outletAddress, List<Room> rooms, int outletPhone, String openingHours) {
-        this.outletId = outletId;
+    public Outlet(String outletName, String outletAddress, int outletPhone, String openingHours) {
+        this();
         this.outletName = outletName;
         this.outletAddress = outletAddress;
-        this.rooms = rooms;
         this.outletPhone = outletPhone;
         this.openingHours = openingHours;
     }
 
-
-
-    
-    
-    
-    
-    
-    
-    
-    
     public Long getOutletId() {
         return outletId;
     }
@@ -100,14 +112,6 @@ public class Outlet implements Serializable {
         this.outletAddress = outletAddress;
     }
 
-    public List<Room> getRooms() {
-        return rooms;
-    }
-
-    public void setRooms(List<Room> rooms) {
-        this.rooms = rooms;
-    }
-
     public int getOutletPhone() {
         return outletPhone;
     }
@@ -124,4 +128,28 @@ public class Outlet implements Serializable {
         this.openingHours = openingHours;
     }
     
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(List<Room> rooms) {
+        this.rooms = rooms;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
 }

@@ -48,6 +48,14 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
     }
     
     @Override
+    public List<Room> retrieveRoomByRoomType(String roomType) {
+        Query query = em.createQuery("SELECT r FROM Room r WHERE roomType = :inRoomType");
+        query.setParameter("inRoomType", roomType);
+        
+        return query.getResultList();
+    }    
+    
+    @Override
     public void updateRoom(Room roomToUpdate) {
         em.merge(roomToUpdate);
         em.flush();
@@ -59,14 +67,5 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
         
         em.remove(roomToDelete);
     }
-    
-    
-    // is this method still necessary? or can just use get() in Room.class
-    @Override
-    public void viewRoomDetails(Room room)
-    {
-        room.getRoomDetails();
-    }
-    
-    
+     
 }

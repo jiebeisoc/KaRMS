@@ -33,5 +33,9 @@ public interface CustomerSessionBeanLocal {
     public void updatePayment(Long customerId, String newCardNo);
 
     public Customer customerLogin(String username, String password) throws InvalidLoginCredentialException;
+
+    public void addPoints(Long customerId, int pointsToAdd);
+
+    public void redeemPoints(Long customerId, int pointsToDeduct);
     
 }

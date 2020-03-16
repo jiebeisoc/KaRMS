@@ -7,11 +7,10 @@ package util.enumeration;
 
 /**
  *
- * @author chai
+ * @author zihua
  */
-public enum RoomType {
-    SMALL,
-    MEDIUM,
-    LARGE,
-    XLARGE
+public enum FoodOrderStatus {
+    BOOKED,
+    CONFIRMED,
+    SERVED
 }

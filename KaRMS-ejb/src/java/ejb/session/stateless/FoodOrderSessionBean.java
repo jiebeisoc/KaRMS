@@ -11,6 +11,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.enumeration.FoodOrderStatus;
 import util.exception.FoodOrderNotFoundException;
 
 /**
@@ -72,12 +73,12 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal {
         return query.getResultList();
     }
     
-    public boolean confirmFoodOrder(Long foodOrderId){
+    public FoodOrderStatus confirmFoodOrder(Long foodOrderId){
         FoodOrder foodOrder = em.find(FoodOrder.class, foodOrderId);
-        foodOrder.setConfirmedByStaff(true);
+        foodOrder.setStatus(FoodOrderStatus.CONFIRMED);
         
         em.flush();
-        return foodOrder.isConfirmedByStaff();     
+        return foodOrder.getStatus();     
     }
 
     
