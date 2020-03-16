@@ -16,8 +16,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -51,15 +51,20 @@ public class FoodOrder implements Serializable {
     @Column(nullable = false)
     private FoodOrderStatus status;
     
-    @OneToMany
+    @OneToMany(mappedBy = "foodOrder")
     private List<Food> foodItems;
     
-    @ManyToOne
-    private Customer customer;
+    @OneToOne
+    private Reservation reservation;
 
     public FoodOrder() {
+        this.totalPrice = 0.0;
         this.status = FoodOrderStatus.BOOKED;
         this.foodItems = new LinkedList<Food>();
+    }
+
+    public FoodOrder(Date timeCreated) {
+        this.timeCreated = timeCreated;
     }
     
     public Long getFoodOrderId() {
@@ -104,10 +109,6 @@ public class FoodOrder implements Serializable {
         return timeCreated;
     }
 
-    public Customer getCustomer() {
-        return customer;
-    }
-
     public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
     }
@@ -116,8 +117,13 @@ public class FoodOrder implements Serializable {
         this.timeCreated = timeCreated;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+
+    public FoodOrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(FoodOrderStatus status) {
+        this.status = status;
     }
 
     public List<Food> getFoodItems() {
@@ -127,13 +133,13 @@ public class FoodOrder implements Serializable {
     public void setFoodItems(List<Food> foodItems) {
         this.foodItems = foodItems;
     }
-
-    public FoodOrderStatus getStatus() {
-        return status;
+    
+    public Reservation getReservation() {
+        return reservation;
     }
 
-    public void setStatus(FoodOrderStatus status) {
-        this.status = status;
+    public void setReservation(Reservation reservation) {
+        this.reservation = reservation;
     }
     
 }

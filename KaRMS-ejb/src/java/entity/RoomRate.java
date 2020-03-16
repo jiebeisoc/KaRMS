@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -42,6 +43,9 @@ public class RoomRate implements Serializable {
     @NotNull
     @Column(nullable = false)
     private BigDecimal rate;
+    
+    @ManyToOne
+    private RoomType roomType;
 
     public RoomRate() {
     }
@@ -117,6 +121,14 @@ public class RoomRate implements Serializable {
 
     public void setRate(BigDecimal rate) {
         this.rate = rate;
+    }
+
+    public RoomType getRoomType() {
+        return roomType;
+    }
+
+    public void setRoomType(RoomType roomType) {
+        this.roomType = roomType;
     }
     
 }

@@ -6,11 +6,13 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -27,6 +29,9 @@ public class SongCategory implements Serializable {
     @NotNull
     @Column(nullable = false)
     private String name;
+    
+    @ManyToMany(mappedBy = "songCategory")
+    private List<Song> songs;
 
     public SongCategory() {
     }
@@ -75,6 +80,14 @@ public class SongCategory implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Song> getSongs() {
+        return songs;
+    }
+
+    public void setSongs(List<Song> songs) {
+        this.songs = songs;
     }
     
 }

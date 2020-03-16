@@ -6,11 +6,14 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -31,8 +34,16 @@ public class RoomType implements Serializable {
     @Column(nullable = false)
     private int capacity;
     private String roomDetails;
+    
+    @OneToMany(mappedBy = "roomType")
+    private List<Room> rooms;
+    
+    @OneToMany(mappedBy = "roomType")
+    private List<RoomRate> roomRates;
 
     public RoomType() {
+        this.rooms = new ArrayList<>();
+        this.roomRates = new ArrayList<>();
     }
 
     public RoomType(String name, int capacity, String roomDetails) {
@@ -97,6 +108,22 @@ public class RoomType implements Serializable {
 
     public void setRoomDetails(String roomDetails) {
         this.roomDetails = roomDetails;
+    }
+
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(List<Room> rooms) {
+        this.rooms = rooms;
+    }
+
+    public List<RoomRate> getRoomRates() {
+        return roomRates;
+    }
+
+    public void setRoomRates(List<RoomRate> roomRates) {
+        this.roomRates = roomRates;
     }
     
 }

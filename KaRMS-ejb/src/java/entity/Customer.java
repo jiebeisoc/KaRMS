@@ -7,6 +7,7 @@ package entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -51,7 +52,7 @@ public class Customer implements Serializable {
     private int points;
     
     @OneToMany
-    private Reservation reservation;
+    private List<Reservation> reservations;
 
     public Customer() {
         this.points = 0;
@@ -193,6 +194,14 @@ public class Customer implements Serializable {
 
     public void setPoints(int points) {
         this.points = points;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
     
 }

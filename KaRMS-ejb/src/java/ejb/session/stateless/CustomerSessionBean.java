@@ -72,7 +72,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     @Override
     public void deleteCustomer(Long customerId) {
         Customer customerToDelete = retrieveCustomerById(customerId);
-        
+
         em.remove(customerToDelete);
     }
     
