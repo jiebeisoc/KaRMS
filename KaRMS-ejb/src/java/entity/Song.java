@@ -35,10 +35,10 @@ public class Song implements Serializable {
     private String singer;
     
     @ManyToMany
-    private List<SongCategory> category;
+    private List<SongCategory> songCategories;
 
     public Song() {
-        this.category = new ArrayList<>();
+        this.songCategories = new ArrayList<>();
     }
 
     public Song(String name, String singer) {
@@ -96,12 +96,12 @@ public class Song implements Serializable {
         this.singer = singer;
     }
 
-    public List<SongCategory> getCategory() {
-        return category;
+    public List<SongCategory> getSongCategories() {
+        return songCategories;
     }
 
-    public void setCategory(List<SongCategory> category) {
-        this.category = category;
+    public void setSongCategories(List<SongCategory> songCategories) {
+        this.songCategories = songCategories;
     }
     
 }
