@@ -35,11 +35,10 @@ public class Employee implements Serializable {
     }
 
     public Employee(String username, String password) {
-        this();
         this.username = username;
         this.password = password;
     }
-
+    
     public Long getEmployeeId() {
         return employeeId;
     }

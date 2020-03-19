@@ -20,5 +20,7 @@ public interface EmployeeSessionBeanLocal {
     public Employee retrieveEmployeeByUsername(String username) throws EmployeeNotFoundException;
 
     public Employee employeeLogin(String username, String password) throws InvalidLoginCredentialException;
+
+    public Long createNewEmployee(Employee newEmployee);
     
 }
