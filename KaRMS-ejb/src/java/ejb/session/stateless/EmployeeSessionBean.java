@@ -30,7 +30,7 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
     
     @Override
     public Employee retrieveEmployeeByUsername(String username) throws EmployeeNotFoundException {
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE username = :inUsername");
+        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.username = :inUsername");
         query.setParameter("inUsername", username);
         
         try {
@@ -49,7 +49,7 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
             try {
                 Employee employee = retrieveEmployeeByUsername(username);
                 
-                if (employee.getPassword().equals(username)) {
+                if (employee.getPassword().equals(password)) {
                     return employee;
                 } else {
                     throw new InvalidLoginCredentialException("Password is incorrect!");
@@ -60,7 +60,13 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
             }
         }
     }
-
     
+    @Override
+    public Long createNewEmployee(Employee newEmployee) {
+        em.persist(newEmployee);
+        em.flush();
+        
+        return newEmployee.getEmployeeId();
+    }    
     
 }
