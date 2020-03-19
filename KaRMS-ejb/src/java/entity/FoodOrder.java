@@ -51,7 +51,7 @@ public class FoodOrder implements Serializable {
     @Column(nullable = false)
     private FoodOrderStatus status;
     
-    @OneToMany(mappedBy = "foodOrder")
+    @OneToMany
     private List<Food> foodItems;
     
     @OneToOne
