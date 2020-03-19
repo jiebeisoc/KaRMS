@@ -22,10 +22,10 @@ public interface RoomSessionBeanLocal {
 
     public Room retrieveRoomById(Long roomId);
 
+    public List<Room> retrieveRoomByRoomType(String roomType);
+   
     public void updateRoom(Room roomToUpdate);
 
     public void deleteRoom(Long roomId);
-
-    public void viewRoomDetails(Room room);
     
 }
