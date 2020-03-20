@@ -18,6 +18,14 @@
                         
                         <p:menuitem value="Home" outcome="/index" icon="fa fa-home" />
                         <p:menuitem value="Logout" actionListener="#{employeeLoginManagedBean.logout}" icon="fa fa-sign-out" rendered="#{sessionScope.isLogin == true}" />
+                   
+                    </p:submenu>
+                    
+                    <p:submenu label="Operaion Management" rendered="#{sessionScope.isLogin == true}">
+                        
+                        <p:menuitem value="Room Rate" outcome="/operationManagement/roomRateManagement.xhtml" />
+                        <p:menuitem value="Room Type" outcome="/operationManagement/roomTypeManagement.xhtml" />
+                        
                     </p:submenu>
                     
                 </p:menu>

@@ -35,7 +35,7 @@ public class Review implements Serializable {
     private Reservation reservation;
     
     @ManyToOne
-    private Outlet outlets;
+    private Outlet outlet;
 
     public Review() {
     }
@@ -102,12 +102,12 @@ public class Review implements Serializable {
         this.reservation = reservation;
     }
 
-    public Outlet getOutlets() {
-        return outlets;
+    public Outlet getOutlet() {
+        return outlet;
     }
 
-    public void setOutlets(Outlet outlets) {
-        this.outlets = outlets;
+    public void setOutlet(Outlet outlet) {
+        this.outlet = outlet;
     }
     
 }
