@@ -22,10 +22,10 @@ public interface OutletSessionBeanLocal {
 
     public Outlet retrieveOutletById(Long outletId);
 
-    public void viewOutletDetails(Outlet outlet);
-
     public void updateOutlet(Outlet outletToUpdate);
 
     public void deleteOutlet(Long outletId);
+
+    public void viewOutletOpeningHours(Outlet outlet);
     
 }

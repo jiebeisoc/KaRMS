@@ -9,12 +9,19 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import util.enumeration.FoodOrderStatus;
 
 
 /**
@@ -30,51 +37,59 @@ public class FoodOrder implements Serializable {
         return serialVersionUID;
     }
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long FoodOrderId;
-  
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long foodOrderId;
+    @NotNull
+    @Column(nullable = false)
     private double totalPrice;
+    @NotNull
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date timeCreated;
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Column(nullable = false)
+    private FoodOrderStatus status;
     
     @OneToMany
     private List<Food> foodItems;
     
-    private Date timeCreated;
-    
-    @ManyToOne
-    private Customer customer;
-    
-    private boolean confirmedByStaff;
-    
-    private boolean finished;
+    @OneToOne
+    private Reservation reservation;
 
     public FoodOrder() {
+        this.totalPrice = 0.0;
+        this.status = FoodOrderStatus.BOOKED;
         this.foodItems = new LinkedList<Food>();
     }
 
+    public FoodOrder(Date timeCreated) {
+        this.timeCreated = timeCreated;
+    }
     
     public Long getFoodOrderId() {
-        return FoodOrderId;
+        return foodOrderId;
     }
 
-    public void setFoodOrderId(Long FoodOrderId) {
-        this.FoodOrderId = FoodOrderId;
+    public void setFoodOrderId(Long foodOrderId) {
+        this.foodOrderId = foodOrderId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (FoodOrderId != null ? FoodOrderId.hashCode() : 0);
+        hash += (foodOrderId != null ? foodOrderId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the FoodOrderId fields are not set
+        // TODO: Warning - this method won't work in the case the foodOrderId fields are not set
         if (!(object instanceof FoodOrder)) {
             return false;
         }
         FoodOrder other = (FoodOrder) object;
-        if ((this.FoodOrderId == null && other.FoodOrderId != null) || (this.FoodOrderId != null && !this.FoodOrderId.equals(other.FoodOrderId))) {
+        if ((this.foodOrderId == null && other.foodOrderId != null) || (this.foodOrderId != null && !this.foodOrderId.equals(other.foodOrderId))) {
             return false;
         }
         return true;
@@ -82,7 +97,7 @@ public class FoodOrder implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.FoodOrder[ id=" + FoodOrderId + " ]";
+        return "entity.FoodOrder[ id=" + foodOrderId + " ]";
     }
 
     public double getTotalPrice() {
@@ -94,14 +109,6 @@ public class FoodOrder implements Serializable {
         return timeCreated;
     }
 
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public boolean isConfirmedByStaff() {
-        return confirmedByStaff;
-    }
-
     public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
     }
@@ -110,12 +117,13 @@ public class FoodOrder implements Serializable {
         this.timeCreated = timeCreated;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+
+    public FoodOrderStatus getStatus() {
+        return status;
     }
 
-    public void setConfirmedByStaff(boolean confirmedByStaff) {
-        this.confirmedByStaff = confirmedByStaff;
+    public void setStatus(FoodOrderStatus status) {
+        this.status = status;
     }
 
     public List<Food> getFoodItems() {
@@ -125,13 +133,13 @@ public class FoodOrder implements Serializable {
     public void setFoodItems(List<Food> foodItems) {
         this.foodItems = foodItems;
     }
-
-    public boolean isFinished() {
-        return finished;
+    
+    public Reservation getReservation() {
+        return reservation;
     }
 
-    public void setFinished(boolean finished) {
-        this.finished = finished;
+    public void setReservation(Reservation reservation) {
+        this.reservation = reservation;
     }
     
 }

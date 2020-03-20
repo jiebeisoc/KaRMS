@@ -1,0 +1,55 @@
+a:link, a:visited {
+  color: #045491;
+  font-weight : bold;
+  text-decoration: none;
+}
+
+a:link:hover, a:visited:hover  {
+  color: #045491;
+  font-weight : bold;
+  text-decoration : underline;
+}
+
+.ui-widget {
+    font-size: small;
+}
+
+.ui-column-header {
+    font-size: small;
+}
+
+.ui-column-title {
+    font-size: small;
+}
+
+.ui-datatable {
+    font-size: small;
+}
+
+.ui-datatable-header {
+    font-size: small;
+}
+
+.ui-datatable-footer {
+    font-size: small;
+}
+
+.ui-datatable-column {
+    font-size: small;
+}
+
+.ui-sortable-column {
+    font-size: small;
+}
+
+.ui-sortable-column-icon {
+    font-size: small;
+}
+
+.ui-datatable-data {
+    font-size: small;
+}
+
+div.ui-growl {
+   left: 10;
+}

@@ -5,9 +5,14 @@
  */
 package ejb.session.stateless;
 
+import entity.Customer;
+import entity.Outlet;
+import entity.Promotion;
 import entity.Reservation;
+import entity.Room;
 import java.util.Date;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,6 +26,18 @@ import util.enumeration.ReservationStatus;
 @Stateless
 public class ReservationSessionBean implements ReservationSessionBeanLocal {
 
+    @EJB(name = "PromotionSessionBeanLocal")
+    private PromotionSessionBeanLocal promotionSessionBeanLocal;
+
+    @EJB(name = "OutletSessionBeanLocal")
+    private OutletSessionBeanLocal outletSessionBeanLocal;
+
+    @EJB(name = "RoomSessionBeanLocal")
+    private RoomSessionBeanLocal roomSessionBeanLocal;
+
+    @EJB(name = "CustomerSessionBeanLocal")
+    private CustomerSessionBeanLocal customerSessionBeanLocal;
+
     @PersistenceContext(unitName = "KaRMS-ejbPU")
     private EntityManager em;
 
@@ -29,8 +46,31 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
 
     //Create new reservation
     @Override
-    public Long createNewReservation(Reservation newReservation) {
+    public Long createNewReservation(Reservation newReservation, Long customerId, Long roomId, Long outletId, Long promotionId) {
         em.persist(newReservation);
+        
+        if (customerId != null) {
+            Customer customer = customerSessionBeanLocal.retrieveCustomerById(customerId);
+            customer.getReservations().add(newReservation);
+            newReservation.setCustomer(customer);
+        }
+        
+        if (roomId != null) {
+            Room room = roomSessionBeanLocal.retrieveRoomById(roomId);
+            newReservation.setRoom(room);
+        }
+        
+        if (outletId != null) {
+            Outlet outlet = outletSessionBeanLocal.retrieveOutletById(outletId);
+            outlet.getReservations().add(newReservation);
+            newReservation.setOutlet(outlet);
+        }
+        
+        if (promotionId != null) {
+            Promotion promotion = promotionSessionBeanLocal.retrievePromotionById(promotionId);
+            newReservation.setPromotion(promotion);
+        }
+        
         em.flush();
         
         return newReservation.getReservationId();

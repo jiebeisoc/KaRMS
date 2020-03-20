@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -26,17 +27,35 @@ public class Promotion implements Serializable {
         return serialVersionUID;
     }
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long promotionId;
+    @NotNull
+    @Column(nullable = false)
     private String promotionName;
+    @NotNull
+    @Column(nullable = false)
     private double discountRate;
     @Column(nullable = true)
     private Date validFrom;
     @Column(nullable = true)
     private Date validUntil;
+    @NotNull
     @Column(nullable = false)
     private boolean enabled;
     private String description;
+
+    public Promotion() {
+        this.enabled = Boolean.FALSE;
+    }
+
+    public Promotion(String promotionName, double discountRate, Date validFrom, Date validUntil, String description) {
+        this();
+        this.promotionName = promotionName;
+        this.discountRate = discountRate;
+        this.validFrom = validFrom;
+        this.validUntil = validUntil;
+        this.description = description;
+    }
 
     public Long getPromotionId() {
         return promotionId;

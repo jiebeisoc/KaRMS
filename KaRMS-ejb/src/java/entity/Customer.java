@@ -6,10 +6,17 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -22,12 +29,45 @@ public class Customer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
+    @NotNull
+    @Column(nullable = false)
     private String name;
+    @NotNull
+    @Column(nullable = false)
     private String phoneNo;
     private String creditCardNo;
+    @NotNull
+    @Column(nullable = false)
     private String username;
+    @NotNull
+    @Column(nullable = false)
     private String password;
+    @NotNull
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date birthday;
+    @NotNull
+    @Column(nullable = false)
+    private String email;
+    private int points;
     
+    @OneToMany
+    private List<Reservation> reservations;
+
+    public Customer() {
+        this.points = 0;
+    }
+
+    public Customer(String name, String phoneNo, String creditCardNo, String username, String password, Date birthday, String email) {
+        this();
+        this.name = name;
+        this.phoneNo = phoneNo;
+        this.creditCardNo = creditCardNo;
+        this.username = username;
+        this.password = password;
+        this.birthday = birthday;
+        this.email = email;
+    }
 
     public Long getCustomerId() {
         return customerId;
@@ -130,6 +170,38 @@ public class Customer implements Serializable {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
     
 }

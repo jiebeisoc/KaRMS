@@ -8,7 +8,7 @@ import util.enumeration.ReservationStatus;
 
 public interface ReservationSessionBeanLocal {
 
-    public Long createNewReservation(Reservation newReservation);
+    public Long createNewReservation(Reservation newReservation, Long customerId, Long roomId, Long outletId, Long promotionId);
 
     public List<Reservation> retrieveAllReservations();
 
