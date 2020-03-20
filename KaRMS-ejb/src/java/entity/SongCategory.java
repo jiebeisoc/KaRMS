@@ -30,7 +30,7 @@ public class SongCategory implements Serializable {
     @Column(nullable = false)
     private String name;
     
-    @ManyToMany(mappedBy = "songCategory")
+    @ManyToMany(mappedBy = "songCategories")
     private List<Song> songs;
 
     public SongCategory() {
