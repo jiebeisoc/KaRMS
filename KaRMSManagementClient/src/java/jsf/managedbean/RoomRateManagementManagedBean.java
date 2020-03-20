@@ -8,8 +8,6 @@ package jsf.managedbean;
 import ejb.session.stateless.RoomRateSessionBeanLocal;
 import entity.RoomRate;
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -18,7 +16,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
+import util.exception.DeleteRoomRateException;
 
 /**
  *
@@ -29,17 +27,13 @@ import javax.inject.Inject;
 public class RoomRateManagementManagedBean implements Serializable {
 
     @EJB(name = "RoomRateSessionBeanLocal")
-    private RoomRateSessionBeanLocal roomRateSessionBeanLocal;    
-    
-    DateFormat timeFormat = new SimpleDateFormat("HH");
+    private RoomRateSessionBeanLocal roomRateSessionBeanLocal;       
     
     private List<RoomRate> roomRates;
     
     private RoomRate newRoomRate;
     private RoomRate selectedRoomRateToView;
     private RoomRate selectedRoomRateToUpdate;
-    private int start;
-    private int end;
 
     /**
      * Creates a new instance of RoomRateManagementManagedBean
@@ -55,7 +49,7 @@ public class RoomRateManagementManagedBean implements Serializable {
     
     public void createNewRoomRate(ActionEvent event) {
         
-        Long roomId = roomRateSessionBeanLocal.createNewRoomRate(newRoomRate);
+        Long roomRateId = roomRateSessionBeanLocal.createNewRoomRate(newRoomRate);
         roomRates.add(newRoomRate);
         
         newRoomRate = new RoomRate();
@@ -79,10 +73,14 @@ public class RoomRateManagementManagedBean implements Serializable {
     
     public void deleteRoomRate(ActionEvent event) {
         RoomRate roomRateToDelete = (RoomRate)event.getComponent().getAttributes().get("roomRateToDelete");
-        roomRateSessionBeanLocal.deleteRoomRate(roomRateToDelete.getRoomRateId());
-        roomRates.remove(roomRateToDelete);
+        try {
+            roomRateSessionBeanLocal.deleteRoomRate(roomRateToDelete.getRoomRateId());
+            roomRates.remove(roomRateToDelete);
         
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Room Rate deleted successfully", null));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Room Rate deleted successfully", null));
+        } catch (DeleteRoomRateException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while deleting " + roomRateToDelete.getName(), null));
+        }
     }
     
     public RoomRate getNewRoomRate() {
@@ -107,22 +105,6 @@ public class RoomRateManagementManagedBean implements Serializable {
 
     public void setSelectedRoomRateToUpdate(RoomRate selectedRoomRateToUpdate) {
         this.selectedRoomRateToUpdate = selectedRoomRateToUpdate;
-    }
-
-    public int getStart() {
-        return start;
-    }
-
-    public void setStart(int start) {
-        this.start = start;
-    }
-
-    public int getEnd() {
-        return end;
-    }
-
-    public void setEnd(int end) {
-        this.end = end;
     }
 
     public List<RoomRate> getRoomRates() {
