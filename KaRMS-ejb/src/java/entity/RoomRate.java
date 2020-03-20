@@ -7,9 +7,14 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -44,6 +49,7 @@ public class RoomRate implements Serializable {
     @NotNull
     @Column(nullable = false)
     private BigDecimal rate;
+    @Enumerated(EnumType.STRING)
     @NotNull
     @Column(nullable = false)
     private RoomRateType roomRateType;
@@ -131,8 +137,16 @@ public class RoomRate implements Serializable {
         return roomRateType;
     }
 
-    public void setRoomRateType(RoomRateType roomRateType) {
-        this.roomRateType = roomRateType;
+    public void setRoomRateType(String type) {
+        if (type.equals("WKDAYPEAK")) {
+            this.roomRateType = RoomRateType.WKDAYPEAK;
+        } else if (type.equals("WKENDPEAK")) {
+            this.roomRateType = RoomRateType.WKENDPEAK;
+        } else if (type.equals("WKDAYNONPEAK")) {
+            this.roomRateType = RoomRateType.WKDAYNONPEAK;
+        }  else { // Weekend Non Peak
+            this.roomRateType = RoomRateType.WKENDNONPEAK;
+        }
     }
 
     public RoomType getRoomType() {

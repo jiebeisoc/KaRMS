@@ -107,22 +107,13 @@ public class RoomRateManagementManagedBean implements Serializable {
     }
     
     private void changeRateType(String type) {
-        if (type.equals("Weekday Peak") || type.equals("Weekend Peak")) {
+        newRoomRate.setRoomRateType(type);
+        if (type.equals("WKDAYPEAK") || type.equals("WKENDPEAK")) {
             newRoomRate.setStartTime(peakStart);
             newRoomRate.setEndTime(peakEnd);
-            if (type.equals("Weekday Peak")) {
-                newRoomRate.setRoomRateType(RoomRateType.WKDAYPEAK);
-            } else { // Weekend Peak
-                newRoomRate.setRoomRateType(RoomRateType.WKENDPEAK);
-            } 
         } else { // Non Peak
             newRoomRate.setStartTime(nonPeakStart);
             newRoomRate.setEndTime(nonPeakEnd);
-            if (type.equals("Weekday Non Peak")) {
-                newRoomRate.setRoomRateType(RoomRateType.WKDAYNONPEAK);
-            }  else { // Weekend Non Peak
-                newRoomRate.setRoomRateType(RoomRateType.WKENDNONPEAK);
-            } 
         }
     }
 
