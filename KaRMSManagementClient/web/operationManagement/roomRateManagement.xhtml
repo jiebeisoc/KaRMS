@@ -1,0 +1,247 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                template="./../template/defaultTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        
+        <h3>Room Rate Management</h3>
+        
+        <h:form>
+            
+            <p:commandButton value="Create New Room Rate" actionListener="#{roomRateManagementManagedBean.createNewRoomRate}" icon="fa fa-plus" onclick="PF('dialogCreateNewRoomRate').show()"/>
+            
+        </h:form>
+        
+        <h:form id="formAllRoomRate">           
+            
+            <p:dataTable id="dataTableAllRoomRate" widgetVar="dataTableAllRoomRate" value="#{roomRateManagementManagedBean.roomRates}" var="roomRate" >
+            
+                <p:column headerText="Name" >
+                    <h:outputText value="#{roomRate.name}" />
+                </p:column>               
+                
+                <p:column headerText="Start time" >
+                    <h:outputText value="#{roomRate.startTime}">
+                        <f:convertDateTime pattern="HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="End time" >
+                    <h:outputText value="#{roomRate.endTime}">
+                        <f:convertDateTime pattern="HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Rate($)" >
+                    <h:outputText value="#{roomRate.rate}" >
+                        <f:convertNumber pattern="0.00" />
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Action" >
+                    <p:commandButton actionListener="#{roomRateManagementManagedBean.viewRoomRate}" update="viewRoomRateDetails" oncomplete="PF('dialogViewRoomRateDetails').show()" icon='ui-icon-document' title='View Details'>
+                        <f:attribute name='roomRateToView' value='#{roomRate}' />
+                    </p:commandButton>
+                    <p:commandButton actionListener="#{roomRateManagementManagedBean.doUpdateRoomRate}" update='formUpdateRoomRate' oncomplete="PF('dialogUpdateRoomRate').show()" icon='ui-icon-pencil' title='Update'>
+                        <f:attribute name='roomRateToUpdate' value='#{roomRate}' />
+                    </p:commandButton>
+                    <p:commandButton icon='ui-icon-trash' actionListener='#{roomRateManagementManagedBean.deleteRoomRate}' update="@form formAllRoomRate:dataTableAllRoomRate" immediate="true">
+                        <f:attribute name='roomRateToDelete' value='#{roomRate}'/>
+                        <p:confirm header='Confirmation' message="Are you sure you want to delete #{roomRate.name}?" icon='ui-icon-alert' />
+                    </p:commandButton>
+                </p:column>
+                
+                <p:growl>
+                    <p:autoUpdate />
+                </p:growl> 
+                
+            </p:dataTable>
+            
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+            
+        </h:form>
+        
+        <h:form id="viewRoomRateDetails">
+            
+            <p:dialog id="dialogViewRoomRateDetails" widgetVar="dialogViewRoomRateDetails" header="View Room Rate Details" closable="true">
+                
+                <p:panelGrid>                    
+                    
+                    <p:row>                        
+                        <p:column>
+                            <p:outputLabel value="Name: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{roomRateManagementManagedBean.selectedRoomRateToView.name}" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>                        
+                        <p:column>
+                            <p:outputLabel value="Start Time: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{roomRateManagementManagedBean.selectedRoomRateToView.startTime}" >
+                                <f:convertDateTime pattern="HH:mm" />
+                            </h:outputText>
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>                        
+                        <p:column>
+                            <p:outputLabel value="End Time: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{roomRateManagementManagedBean.selectedRoomRateToView.endTime}" >
+                                <f:convertDateTime pattern="HH:mm" />
+                            </h:outputText>
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Rate: $" style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="$#{roomRateManagementManagedBean.selectedRoomRateToView.rate}" />
+                        </p:column>
+                    </p:row>
+                    
+                </p:panelGrid>
+                
+            </p:dialog>
+            
+        </h:form>
+        
+        <h:form id="createNewRoomRate">
+            
+            <p:dialog id="dialogCreateNewRoomRate" widgetVar="dialogCreateNewRoomRate" header="Create New Room Type" closable="true" >
+                
+                <p:panelGrid>
+
+                    <p:row>                        
+                        <p:column>
+                            <p:outputLabel for="name" value="Name: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="name" value="#{roomRateManagementManagedBean.newRoomRate.name}" required="true" requiredMessage="Name is required" 
+                                         placeholder="12pm - 7pm $18"/>
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>                        
+                        <p:column>
+                            <p:outputLabel for="startTime" value="Start Time: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:calendar id="startTime" value="#{roomRateManagementManagedBean.newRoomRate.startTime}" pattern="HH:mm" timeOnly="true" placeholder="00:00" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>                        
+                        <p:column>
+                            <p:outputLabel for="endTime" value="End Time: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:calendar id="endTime" value="#{roomRateManagementManagedBean.newRoomRate.endTime}" pattern="HH:mm" timeOnly="true" placeholder="00:00" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="rate" value="Rate: $" style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:spinner id="rate" value="#{roomRateManagementManagedBean.newRoomRate.rate}" stepFactor="0.50" min="0" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:commandButton type="reset" value="Clear" />&nbsp;
+                            <p:commandButton value="Create New Room Rate" update="@form formAllRoomRate:dataTableAllRoomRate" 
+                                             actionListener="#{roomRateManagementManagedBean.createNewRoomRate}" oncomplete="PF('dialogCreateNewRoomRate').hide();" />
+                        </p:column>
+                    </p:row>
+                    
+                </p:panelGrid>
+                
+            </p:dialog>
+            
+            <p:growl>
+                <p:autoUpdate />
+            </p:growl> 
+            
+        </h:form>
+        
+        <h:form id='formUpdateRoomRate'>
+            
+            <p:dialog id='dialogUpdateRoomRate' widgetVar="dialogUpdateRoomRate" header="Update Room Rate" closable="true">
+
+                <p:panelGrid>
+                    
+                    <p:row>                        
+                        <p:column>
+                            <p:outputLabel for="name" value="Name: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="name" value="#{roomRateManagementManagedBean.selectedRoomRateToUpdate.name}" required="true" requiredMessage="Name is required" 
+                                         placeholder="12pm - 7pm $18"/>
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>                        
+                        <p:column>
+                            <p:outputLabel for="startTime" value="Start Time: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:calendar id="startTime" value="#{roomRateManagementManagedBean.selectedRoomRateToUpdate.startTime}" pattern="HH:mm" timeOnly="true" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>                        
+                        <p:column>
+                            <p:outputLabel for="endTime" value="End Time: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:calendar id="endTime" value="#{roomRateManagementManagedBean.selectedRoomRateToUpdate.endTime}" pattern="HH:mm" timeOnly="true" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="rate" value="Rate: $" style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:spinner id="rate" value="#{roomRateManagementManagedBean.selectedRoomRateToUpdate.rate}" stepFactor="0.50" min="0" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:commandButton type="reset" value="Clear" />&nbsp;
+                            <p:commandButton value="Update Room Rate" update="@form formAllRoomRate:dataTableAllRoomRate" 
+                                             actionListener="#{roomRateManagementManagedBean.updateRoomRate()}" oncomplete="PF('dialogUpdateRoomRate').hide();" />
+                        </p:column>
+                    </p:row>
+                    
+                </p:panelGrid>
+                
+            </p:dialog>
+            
+            <p:growl>
+                <p:autoUpdate />
+            </p:growl> 
+            
+        </h:form>
+        
+    </ui:define>
+
+</ui:composition>
