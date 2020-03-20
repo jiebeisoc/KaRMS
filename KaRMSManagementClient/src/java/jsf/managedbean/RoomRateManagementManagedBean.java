@@ -8,6 +8,10 @@ package jsf.managedbean;
 import ejb.session.stateless.RoomRateSessionBeanLocal;
 import entity.RoomRate;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -16,6 +20,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+import util.enumeration.RoomRateType;
 import util.exception.DeleteRoomRateException;
 
 /**
@@ -29,17 +34,33 @@ public class RoomRateManagementManagedBean implements Serializable {
     @EJB(name = "RoomRateSessionBeanLocal")
     private RoomRateSessionBeanLocal roomRateSessionBeanLocal;       
     
+    DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+    
     private List<RoomRate> roomRates;
     
     private RoomRate newRoomRate;
     private RoomRate selectedRoomRateToView;
     private RoomRate selectedRoomRateToUpdate;
-
+    
+    private String rateType;
+    private Date peakStart;
+    private Date peakEnd; 
+    private Date nonPeakStart;
+    private Date nonPeakEnd;
+    
     /**
      * Creates a new instance of RoomRateManagementManagedBean
      */
     public RoomRateManagementManagedBean() {
         newRoomRate = new RoomRate();
+        try {
+            nonPeakStart = timeFormat.parse("12:00");
+            nonPeakEnd = timeFormat.parse("18:59");
+            peakStart = timeFormat.parse("19:00");
+            peakEnd = timeFormat.parse("00:00");
+        } catch (ParseException ex) {
+            System.out.println("Wrong Format");
+        }
     }
     
     @PostConstruct
@@ -48,7 +69,8 @@ public class RoomRateManagementManagedBean implements Serializable {
     }
     
     public void createNewRoomRate(ActionEvent event) {
-        
+        changeRateType(rateType);
+                 
         Long roomRateId = roomRateSessionBeanLocal.createNewRoomRate(newRoomRate);
         roomRates.add(newRoomRate);
         
@@ -66,8 +88,9 @@ public class RoomRateManagementManagedBean implements Serializable {
     }
 
     public void updateRoomRate() {
+        changeRateType(rateType);
         roomRateSessionBeanLocal.updateRoomRate(selectedRoomRateToUpdate);
-        
+        rateType = "";
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Room Rate updated successfully", null));
     }
     
@@ -81,6 +104,34 @@ public class RoomRateManagementManagedBean implements Serializable {
         } catch (DeleteRoomRateException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while deleting " + roomRateToDelete.getName(), null));
         }
+    }
+    
+    private void changeRateType(String type) {
+        if (type.equals("Weekday Peak") || type.equals("Weekend Peak")) {
+            newRoomRate.setStartTime(peakStart);
+            newRoomRate.setEndTime(peakEnd);
+            if (type.equals("Weekday Peak")) {
+                newRoomRate.setRoomRateType(RoomRateType.WKDAYPEAK);
+            } else { // Weekend Peak
+                newRoomRate.setRoomRateType(RoomRateType.WKENDPEAK);
+            } 
+        } else { // Non Peak
+            newRoomRate.setStartTime(nonPeakStart);
+            newRoomRate.setEndTime(nonPeakEnd);
+            if (type.equals("Weekday Non Peak")) {
+                newRoomRate.setRoomRateType(RoomRateType.WKDAYNONPEAK);
+            }  else { // Weekend Non Peak
+                newRoomRate.setRoomRateType(RoomRateType.WKENDNONPEAK);
+            } 
+        }
+    }
+
+    public String getRateType() {
+        return rateType;
+    }
+
+    public void setRateType(String rateType) {
+        this.rateType = rateType;
     }
     
     public RoomRate getNewRoomRate() {

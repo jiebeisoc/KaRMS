@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import util.enumeration.RoomRateType;
 
 /**
  *
@@ -43,6 +44,9 @@ public class RoomRate implements Serializable {
     @NotNull
     @Column(nullable = false)
     private BigDecimal rate;
+    @NotNull
+    @Column(nullable = false)
+    private RoomRateType roomRateType;
     
     @ManyToOne
     private RoomType roomType;
@@ -121,6 +125,14 @@ public class RoomRate implements Serializable {
 
     public void setRate(BigDecimal rate) {
         this.rate = rate;
+    }
+    
+    public RoomRateType getRoomRateType() {
+        return roomRateType;
+    }
+
+    public void setRoomRateType(RoomRateType roomRateType) {
+        this.roomRateType = roomRateType;
     }
 
     public RoomType getRoomType() {
