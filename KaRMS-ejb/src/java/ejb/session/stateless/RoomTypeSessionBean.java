@@ -5,12 +5,14 @@
  */
 package ejb.session.stateless;
 
+import entity.RoomRate;
 import entity.RoomType;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.DeleteRoomTypeException;
 
 /**
  *
@@ -54,10 +56,19 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
     }
 
     @Override
-    public void deleteRoomType(Long roomTypeId) {
+    public void deleteRoomType(Long roomTypeId) throws DeleteRoomTypeException {
         RoomType roomTypeToDelete = retrieveRoomTypeById(roomTypeId);
         
-        em.remove(roomTypeToDelete);
+        if (roomTypeToDelete.getRooms().isEmpty()) {
+            for (RoomRate rr: roomTypeToDelete.getRoomRates()) {
+            rr.setRoomType(null);
+            }
+
+            em.remove(roomTypeToDelete);
+        } else {
+            throw new DeleteRoomTypeException();
+        }
+                   
     }
    
 }

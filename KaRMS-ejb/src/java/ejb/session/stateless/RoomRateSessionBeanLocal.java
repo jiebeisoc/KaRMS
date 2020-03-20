@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.RoomRate;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.DeleteRoomRateException;
 
 /**
  *
@@ -24,6 +25,6 @@ public interface RoomRateSessionBeanLocal {
 
     public void updateRoomRate(RoomRate roomRateToUpdate);
 
-    public void deleteRoomRate(Long roomRateId);
+    public void deleteRoomRate(Long roomRateId) throws DeleteRoomRateException ;
 
 }
