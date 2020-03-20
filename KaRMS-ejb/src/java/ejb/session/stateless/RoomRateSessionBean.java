@@ -11,6 +11,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.DeleteRoomRateException;
 
 /**
  *
@@ -54,8 +55,12 @@ public class RoomRateSessionBean implements RoomRateSessionBeanLocal {
     }
 
     @Override
-    public void deleteRoomRate(Long roomRateId) {
+    public void deleteRoomRate(Long roomRateId) throws DeleteRoomRateException {
         RoomRate roomRateToDelete = retrieveRoomRateById(roomRateId);
+        
+        if (roomRateToDelete.getRoomType() != null) {
+            throw new DeleteRoomRateException();
+        }
         
         em.remove(roomRateToDelete);
     }

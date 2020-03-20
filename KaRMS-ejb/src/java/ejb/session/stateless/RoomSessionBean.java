@@ -65,6 +65,10 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
     public void deleteRoom(Long roomId) {
         Room roomToDelete = retrieveRoomById(roomId);
         
+        roomToDelete.setIsDisabled(Boolean.TRUE);
+        roomToDelete.setOutlet(null);
+        roomToDelete.setRoomType(null);
+        
         em.remove(roomToDelete);
     }
      
