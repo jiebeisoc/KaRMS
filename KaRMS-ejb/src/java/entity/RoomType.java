@@ -34,11 +34,11 @@ public class RoomType implements Serializable {
     @Column(nullable = false)
     private int capacity;
     private String roomDetails;
-    
+      
     @OneToMany(mappedBy = "roomType")
     private List<Room> rooms;
     
-    @OneToMany(mappedBy = "roomType")
+    @OneToMany
     private List<RoomRate> roomRates;
 
     public RoomType() {

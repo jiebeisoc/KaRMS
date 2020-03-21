@@ -31,6 +31,9 @@ public class Room implements Serializable {
     @NotNull
     @Column(nullable = false)
     private int roomNum;
+    @NotNull
+    @Column(nullable = false)
+    private Boolean isDisabled;
     
     @OneToMany(mappedBy = "room")
     private List<Reservation> reservations;
@@ -43,6 +46,7 @@ public class Room implements Serializable {
     
     public Room() {
         this.reservations = new ArrayList<>();
+        this.isDisabled = Boolean.FALSE;
     }
 
     public Room(int roomNum) {
@@ -56,6 +60,14 @@ public class Room implements Serializable {
 
     public void setRoomId(Long roomId) {
         this.roomId = roomId;
+    }
+
+    public Boolean getIsDisabled() {
+        return isDisabled;
+    }
+
+    public void setIsDisabled(Boolean isDisabled) {
+        this.isDisabled = isDisabled;
     }
 
     @Override

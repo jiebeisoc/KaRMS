@@ -5,12 +5,15 @@
  */
 package ejb.session.stateless;
 
+import entity.RoomRate;
 import entity.RoomType;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.DeleteRoomTypeException;
 
 /**
  *
@@ -19,6 +22,9 @@ import javax.persistence.Query;
 @Stateless
 public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
 
+    @EJB(name = "RoomRateSessionBeanLocal")
+    private RoomRateSessionBeanLocal roomRateSessionBeanLocal;
+
     @PersistenceContext(unitName = "KaRMS-ejbPU")
     private EntityManager em;
 
@@ -26,8 +32,16 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
     // "Insert Code > Add Business Method")
 
     @Override
-    public Long createNewRoomType(RoomType newRoomType) {
+    public Long createNewRoomType(RoomType newRoomType, List<Long> roomRateIds) {
         em.persist(newRoomType);
+        
+        if (roomRateIds != null && (!roomRateIds.isEmpty())) {
+            for (Long id : roomRateIds) {
+                RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
+                newRoomType.getRoomRates().add(roomRate);
+            }
+        }
+        
         em.flush();
         
         return newRoomType.getRoomTypeId();
@@ -54,10 +68,19 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
     }
 
     @Override
-    public void deleteRoomType(Long roomTypeId) {
+    public void deleteRoomType(Long roomTypeId) throws DeleteRoomTypeException {
         RoomType roomTypeToDelete = retrieveRoomTypeById(roomTypeId);
         
-        em.remove(roomTypeToDelete);
+        if (roomTypeToDelete.getRooms().isEmpty()) {
+            for (RoomRate rr: roomTypeToDelete.getRoomRates()) {
+            rr.setRoomType(null);
+            }
+
+            em.remove(roomTypeToDelete);
+        } else {
+            throw new DeleteRoomTypeException();
+        }
+                   
     }
    
 }

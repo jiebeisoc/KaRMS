@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import util.enumeration.RoomRateType;
 
 /**
  *
@@ -43,6 +46,10 @@ public class RoomRate implements Serializable {
     @NotNull
     @Column(nullable = false)
     private BigDecimal rate;
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Column(nullable = false)
+    private RoomRateType roomRateType;
     
     @ManyToOne
     private RoomType roomType;
@@ -121,6 +128,22 @@ public class RoomRate implements Serializable {
 
     public void setRate(BigDecimal rate) {
         this.rate = rate;
+    }
+    
+    public String getRoomRateType() {
+        return roomRateType.name();
+    }
+
+    public void setRoomRateType(String type) {
+        if (type.equals("WKDAYPEAK")) {
+            this.roomRateType = RoomRateType.WKDAYPEAK;
+        } else if (type.equals("WKENDPEAK")) {
+            this.roomRateType = RoomRateType.WKENDPEAK;
+        } else if (type.equals("WKDAYNONPEAK")) {
+            this.roomRateType = RoomRateType.WKDAYNONPEAK;
+        }  else { // Weekend Non Peak
+            this.roomRateType = RoomRateType.WKENDNONPEAK;
+        }
     }
 
     public RoomType getRoomType() {
