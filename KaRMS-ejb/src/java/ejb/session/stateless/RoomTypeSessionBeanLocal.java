@@ -23,7 +23,7 @@ public interface RoomTypeSessionBeanLocal {
 
     public RoomType retrieveRoomTypeById(Long roomTypeId);
 
-    public void updateRoomType(RoomType roomTypeToUpdate);
+    public void updateRoomType(RoomType roomTypeToUpdate, List<Long> roomRateIds);
 
     public void deleteRoomType(Long roomTypeId) throws DeleteRoomTypeException;
 
