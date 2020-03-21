@@ -82,7 +82,6 @@ public class RoomRateManagementManagedBean implements Serializable {
         changeRateType(selectedRoomRate.getRoomRateType());
         roomRateSessionBeanLocal.updateRoomRate(selectedRoomRate);
         rateType = "";
-        selectedRoomRate = null;
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Room Rate updated successfully", null));
     }
     
@@ -103,7 +102,7 @@ public class RoomRateManagementManagedBean implements Serializable {
     }
     
     public void onRowUnselect(SelectEvent event) {
-        selectedRoomRate = new RoomRate();
+        selectedRoomRate = null;
     }
     
     private void changeRateType(String type) {
