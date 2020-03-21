@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.RoomRate;
 import entity.RoomType;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,6 +22,9 @@ import util.exception.DeleteRoomTypeException;
 @Stateless
 public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
 
+    @EJB(name = "RoomRateSessionBeanLocal")
+    private RoomRateSessionBeanLocal roomRateSessionBeanLocal;
+
     @PersistenceContext(unitName = "KaRMS-ejbPU")
     private EntityManager em;
 
@@ -28,8 +32,16 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
     // "Insert Code > Add Business Method")
 
     @Override
-    public Long createNewRoomType(RoomType newRoomType) {
+    public Long createNewRoomType(RoomType newRoomType, List<Long> roomRateIds) {
         em.persist(newRoomType);
+        
+        if (roomRateIds != null && (!roomRateIds.isEmpty())) {
+            for (Long id : roomRateIds) {
+                RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
+                newRoomType.getRoomRates().add(roomRate);
+            }
+        }
+        
         em.flush();
         
         return newRoomType.getRoomTypeId();

@@ -7,9 +7,6 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -133,8 +130,8 @@ public class RoomRate implements Serializable {
         this.rate = rate;
     }
     
-    public RoomRateType getRoomRateType() {
-        return roomRateType;
+    public String getRoomRateType() {
+        return roomRateType.name();
     }
 
     public void setRoomRateType(String type) {

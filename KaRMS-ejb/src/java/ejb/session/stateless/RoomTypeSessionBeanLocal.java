@@ -17,7 +17,7 @@ import util.exception.DeleteRoomTypeException;
 @Local
 public interface RoomTypeSessionBeanLocal {
 
-    public Long createNewRoomType(RoomType newRoomType);
+    public Long createNewRoomType(RoomType newRoomType, List<Long> roomRateIds);
 
     public List<RoomType> retrieveAllRoomTypes();
 
