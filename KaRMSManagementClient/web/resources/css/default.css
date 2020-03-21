@@ -10,6 +10,10 @@ a:link:hover, a:visited:hover  {
   text-decoration : underline;
 }
 
+.value {
+    font-weight: bold;
+}
+
 .ui-widget {
     font-size: small;
 }

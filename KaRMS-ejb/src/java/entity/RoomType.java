@@ -15,7 +15,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
-import util.enumeration.RoomRateType;
 
 /**
  *
@@ -39,7 +38,7 @@ public class RoomType implements Serializable {
     @OneToMany(mappedBy = "roomType")
     private List<Room> rooms;
     
-    @OneToMany(mappedBy = "roomType")
+    @OneToMany
     private List<RoomRate> roomRates;
 
     public RoomType() {

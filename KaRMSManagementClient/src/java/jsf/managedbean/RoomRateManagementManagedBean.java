@@ -20,7 +20,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
-import util.enumeration.RoomRateType;
+import org.primefaces.event.SelectEvent;
 import util.exception.DeleteRoomRateException;
 
 /**
@@ -39,8 +39,7 @@ public class RoomRateManagementManagedBean implements Serializable {
     private List<RoomRate> roomRates;
     
     private RoomRate newRoomRate;
-    private RoomRate selectedRoomRateToView;
-    private RoomRate selectedRoomRateToUpdate;
+    private RoomRate selectedRoomRate;
     
     private String rateType;
     private Date peakStart;
@@ -77,20 +76,13 @@ public class RoomRateManagementManagedBean implements Serializable {
         newRoomRate = new RoomRate();
         
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New room rate created successfully", null));
-    }
-    
-    public void viewRoomRate(ActionEvent event) {
-        selectedRoomRateToView = (RoomRate)event.getComponent().getAttributes().get("roomRateToView");
-    }
-    
-    public void doUpdateRoomRate(ActionEvent event) {
-        selectedRoomRateToUpdate = (RoomRate)event.getComponent().getAttributes().get("roomRateToUpdate");
-    }
+    }    
 
     public void updateRoomRate() {
-        changeRateType(rateType);
-        roomRateSessionBeanLocal.updateRoomRate(selectedRoomRateToUpdate);
+        changeRateType(selectedRoomRate.getRoomRateType());
+        roomRateSessionBeanLocal.updateRoomRate(selectedRoomRate);
         rateType = "";
+        selectedRoomRate = null;
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Room Rate updated successfully", null));
     }
     
@@ -104,6 +96,14 @@ public class RoomRateManagementManagedBean implements Serializable {
         } catch (DeleteRoomRateException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while deleting " + roomRateToDelete.getName(), null));
         }
+    }
+    
+    public void onRowSelect(SelectEvent event) {
+        selectedRoomRate = (RoomRate)event.getObject();
+    }
+    
+    public void onRowUnselect(SelectEvent event) {
+        selectedRoomRate = new RoomRate();
     }
     
     private void changeRateType(String type) {
@@ -133,20 +133,12 @@ public class RoomRateManagementManagedBean implements Serializable {
         this.newRoomRate = newRoomRate;
     }
 
-    public RoomRate getSelectedRoomRateToView() {
-        return selectedRoomRateToView;
+    public RoomRate getSelectedRoomRate() {
+        return selectedRoomRate;
     }
 
-    public void setSelectedRoomRateToView(RoomRate selectedRoomRateToView) {
-        this.selectedRoomRateToView = selectedRoomRateToView;
-    }
-
-    public RoomRate getSelectedRoomRateToUpdate() {
-        return selectedRoomRateToUpdate;
-    }
-
-    public void setSelectedRoomRateToUpdate(RoomRate selectedRoomRateToUpdate) {
-        this.selectedRoomRateToUpdate = selectedRoomRateToUpdate;
+    public void setSelectedRoomRate(RoomRate selectedRoomRate) {
+        this.selectedRoomRate = selectedRoomRate;
     }
 
     public List<RoomRate> getRoomRates() {
