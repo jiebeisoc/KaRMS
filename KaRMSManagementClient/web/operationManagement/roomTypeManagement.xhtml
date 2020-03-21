@@ -1,0 +1,194 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                template="./../template/defaultTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        
+        <div>
+            <p:growl>
+                <p:autoUpdate />
+            </p:growl>
+            
+            <h:form>
+                
+                <p:commandButton value="Create New Room Type" actionListener="#{roomTypeManagementManagedBean.createNewRoomType}" icon="fa fa-plus" onclick="PF('dialogCreateNewRoomType').show()"/>
+                
+            </h:form>
+            
+            <h:form id="formAllRoomType">
+                
+                <p:outputLabel style="font-weight: bold; font-size: 20" value="Room Type Management" />&nbsp;
+                
+                <p:dataTable id="dataTableAllRoomType" widgetVar="dataTableAllRoomType" value="#{roomTypeManagementManagedBean.roomTypes}" var="roomType"
+                             selectionMode="single" selection="#{roomTypeManagementManagedBean.selectedRoomType}" rowKey="#{roomType.roomTypeId}" tableStyle="width:80%">
+                
+                    <p:ajax event='rowSelect' listener="#{roomTypeManagementManagedBean.onRowSelect}" oncomplete="PF('dialogUpdateRoomType').show()" update="@form formUpdateRoomType" />
+                    <p:ajax event="rowUnselect" listener="#{roomTypeManagementManagedBean.onRowUnselect}" update="@form formUpdateRoomType" />
+                    
+                    <p:column headerText="Name">
+                        <h:outputText value="#{roomType.name}" />
+                    </p:column>
+                    
+                    <p:column headerText="Capacity">
+                        <h:outputText value="#{roomType.capacity}" />
+                    </p:column>
+                    
+                    <p:column headerText="Details">
+                        <h:outputText value="#{roomType.roomDetails}" />
+                    </p:column>
+                    
+                    <p:column headerText="Rates">
+                        <p:panelGrid>
+                            <ul style="margin-left: 20px;">
+                                <ui:repeat value="#{roomType.roomRates}" var="roomRate">
+                                    <li>#{roomRate.name}</li>
+                                </ui:repeat>
+                            </ul>
+                        </p:panelGrid>
+                    </p:column>
+                    
+                </p:dataTable>
+                
+            </h:form>
+            
+            <h:form id="createNewRoomType">
+                
+                <p:dialog id="dialogCreateNewRoomType" widgetVar="dialogCreateNewRoomType" header="Create New Room Type" closable="true" >
+                    
+                    <p:panelGrid>
+                        
+                        <p:row>
+                            
+                            <p:column>
+                                <p:outputLabel for="name" value="Name: " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="name" value="#{roomTypeManagementManagedBean.newRoomType.name}" required="true" requiredMessage="Name is required" />
+                            </p:column>
+                            
+                        </p:row>
+                        
+                        <p:row>
+                            
+                            <p:column>
+                                <p:outputLabel for="capacity" value="Capacity: " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="capacity" value="#{roomTypeManagementManagedBean.newRoomType.capacity}" required="true" requiredMessage="Capacity is required" />
+                            </p:column>
+                            
+                        </p:row>
+                        
+                        <p:row>
+                            
+                            <p:column>
+                                <p:outputLabel for="roomDetails" value="Room Details: " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="roomDetails" value="#{roomTypeManagementManagedBean.newRoomType.roomDetails}" />
+                            </p:column>
+                            
+                        </p:row>
+                        
+                        <p:row>
+                            
+                            <p:column>
+                                <p:outputLabel for="roomRates" value="Room Rates: " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:selectCheckboxMenu id="roomRates" value="#{roomTypeManagementManagedBean.roomRateIdsNew}" multiple="true"
+                                                      filter="true" filterMatchMode="startsWith" >
+                                    <f:selectItems value="#{roomTypeManagementManagedBean.roomRates}" var="roomRate" itemValue="#{roomRate.roomRateId}" itemLabel="#{roomRate.name}"/>
+                                </p:selectCheckboxMenu>
+                            </p:column>
+                            
+                        </p:row>
+                        
+                        <p:row>
+                            
+                            <p:column colspan="2">
+                                <p:commandButton type="reset" value="Clear" />&nbsp;
+                                <p:commandButton value="Create New Room Type" update="@form formAllRoomType:dataTableAllRoomType"
+                                                 actionListener="#{roomTypeManagementManagedBean.createNewRoomType}" oncomplete="PF('dialogCreateNewRoomType').hide();" />    
+                            </p:column>
+                            
+                        </p:row>
+                        
+                    </p:panelGrid>
+                    
+                </p:dialog>
+                
+            </h:form>
+            
+            <h:form id="formUpdateRoomType">
+                
+                <p:dialog id="dialogUpdateRoomType" widgetVar="dialogUpdateRoomType" header="Details" closable="true">
+                    
+                    <p:panelGrid>
+                     
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Name: " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="name" value="#{roomTypeManagementManagedBean.selectedRoomType.name}" required="true" requiredMessage="Name is required" />
+                            </p:column>
+                        </p:row>
+                        
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Capacity: " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="capacity" value="#{roomTypeManagementManagedBean.selectedRoomType.capacity}" required="true" requiredMessage="Capacity is required" />
+                            </p:column>
+                        </p:row>
+                        
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Details: " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="roomDetails" value="#{roomTypeManagementManagedBean.selectedRoomType.roomDetails}" />
+                            </p:column>
+                        </p:row>
+                        
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="RoomRates: " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:selectCheckboxMenu id="roomRates" value="#{roomTypeManagementManagedBean.roomRateIdsUpdate}" multiple="true"
+                                                      filter="true" filterMatchMode="startsWith" >
+                                    <f:selectItems value="#{roomTypeManagementManagedBean.roomRates}" var="roomRate" itemValue="#{roomRate.roomRateId}" itemLabel="#{roomRate.name}"/>
+                                </p:selectCheckboxMenu>
+                            </p:column>
+                        </p:row>
+                        
+                        <p:row>
+                        <p:column colspan="2">
+                            
+                            <p:commandButton actionListener="#{roomTypeManagementManagedBean.updateRoomType}" update='@form formAllRoomType:dataTableAllRoomType formUpdateRoomType' oncomplete="PF('dialogUpdateRoomType').show()" icon='ui-icon-pencil' title='Update' value='Update'/> &nbsp;
+                            <p:commandButton icon='ui-icon-trash' actionListener='#{roomTypeManagementManagedBean.deleteRoomType}' update="@form formAllRoomType:dataTableAllRoomType" immediate="true" value="Delete">
+                                <f:attribute name='roomTypeToDelete' value='#{roomTypeManagementManagedBean.selectedRoomType}'/>
+                                <p:confirm header='Confirmation' message="Are you sure you want to delete #{roomTypeManagementManagedBean.selectedRoomType}?" icon='ui-icon-alert' />
+                            </p:commandButton>
+                    
+                        </p:column>
+                    </p:row>
+                        
+                    </p:panelGrid>
+                    
+                </p:dialog>
+                
+            </h:form>
+            
+        </div>
+        
+    </ui:define>
+
+</ui:composition>
