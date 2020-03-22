@@ -41,7 +41,7 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
                 newRoomType.getRoomRates().add(roomRate);
             }
         }
-        
+        newRoomType.setRoomRateIds(roomRateIds);
         em.flush();
         
         return newRoomType.getRoomTypeId();
@@ -62,8 +62,16 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
     }
     
     @Override
-    public void updateRoomType(RoomType roomTypeToUpdate) {
+    public void updateRoomType(RoomType roomTypeToUpdate, List<Long> roomRateIds) {
         em.merge(roomTypeToUpdate);
+        
+        roomTypeToUpdate.getRoomRates().clear();
+        
+        for (Long id : roomRateIds) {
+            RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
+            roomTypeToUpdate.getRoomRates().add(roomRate);
+        }
+        roomTypeToUpdate.setRoomRateIds(roomRateIds);
         em.flush();
     }
 

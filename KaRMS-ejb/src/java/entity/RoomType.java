@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -40,10 +41,14 @@ public class RoomType implements Serializable {
     
     @OneToMany
     private List<RoomRate> roomRates;
+    
+    @Transient
+    private List<Long> roomRateIds;
 
     public RoomType() {
         this.rooms = new ArrayList<>();
         this.roomRates = new ArrayList<>();
+        this.roomRateIds = new ArrayList<>();
     }
 
     public RoomType(String name, int capacity, String roomDetails) {
@@ -124,6 +129,17 @@ public class RoomType implements Serializable {
 
     public void setRoomRates(List<RoomRate> roomRates) {
         this.roomRates = roomRates;
+    }
+
+    public List<Long> getRoomRateIds() {
+        for (RoomRate rr : roomRates) {
+            roomRateIds.add(rr.getRoomRateId());
+        }
+        return roomRateIds;
+    }
+
+    public void setRoomRateIds(List<Long> roomRateIds) {
+        this.roomRateIds = roomRateIds;
     }
     
 }

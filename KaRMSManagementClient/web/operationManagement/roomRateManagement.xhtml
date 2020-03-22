@@ -14,25 +14,20 @@
         
         <h:form>
             
+            <p:outputLabel style="font-weight: bold; font-size: 20" value="Room Rate Management" />&nbsp;
+            <br/>
             <p:commandButton value="Create New Room Rate" actionListener="#{roomRateManagementManagedBean.createNewRoomRate}" icon="fa fa-plus" onclick="PF('dialogCreateNewRoomRate').show()"/>
             
         </h:form>
         
         <h:form id="formAllRoomRate">
             
-            <p:outputLabel style="font-weight: bold; font-size: 20" value="Room Rate Management" />&nbsp;
-            <p:commandButton actionListener="#{roomRateManagementManagedBean.selectedRoomRate}" update="formUpdateRoomRate" oncomplete="PF('dialogUpdateRoomRate').show()" icon='ui-icon-document' value='View Details'>
-                <f:attribute name='roomRateToView' value='#{roomRate}' />
-            </p:commandButton>
-            
             <p:dataTable id="dataTableAllRoomRate" widgetVar="dataTableAllRoomRate" value="#{roomRateManagementManagedBean.roomRates}" var="roomRate" 
                          selectionMode="single" selection="#{roomRateManagementManagedBean.selectedRoomRate}" rowKey="#{roomRate.roomRateId}" tableStyle="width:50%">
             
-                <p:ajax event='rowSelect' listener='#{roomRateManagementManagedBean.onRowSelect}' update='@form formUpdateRoomRate' />
+                <p:ajax event='rowSelect' listener='#{roomRateManagementManagedBean.onRowSelect}' oncomplete="PF('dialogUpdateRoomRate').show()" update='@form formUpdateRoomRate' />
                 <p:ajax event='rowUnselect' listener='#{roomRateManagementManagedBean.onRowUnselect}' update='@form formUpdateRoomRate' />
-                
-                
-                
+                                        
                 <p:column headerText="Name" >
                     <h:outputText value="#{roomRate.name}" />
                 </p:column>         
@@ -53,7 +48,7 @@
         
         <h:form id="createNewRoomRate">
             
-            <p:dialog id="dialogCreateNewRoomRate" widgetVar="dialogCreateNewRoomRate" header="Create New Room Type" closable="true" >
+            <p:dialog id="dialogCreateNewRoomRate" widgetVar="dialogCreateNewRoomRate" header="Create New Room Rate" closable="true" >
                 
                 <p:panelGrid>
 
