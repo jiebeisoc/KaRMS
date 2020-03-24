@@ -64,6 +64,7 @@ public class RoomTypeManagementManagedBean implements Serializable {
         
         newRoomType = new RoomType();
         roomRateIdsNew = null;
+        roomRates = roomRateSessionBeanLocal.retrieveAllRoomRates();
         
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New room type created successfully", null));
     }    
@@ -71,6 +72,14 @@ public class RoomTypeManagementManagedBean implements Serializable {
     public void updateRoomType() {
         roomTypeSessionBeanLocal.updateRoomType(selectedRoomType, roomRateIdsUpdate);
         roomRateIdsUpdate.clear();
+        roomRates = roomRateSessionBeanLocal.retrieveAllRoomRates();
+        for (RoomRate roomRate: roomRates) {
+            roomRateIdsUpdate.add(roomRate.getRoomRateId());
+        }
+        roomRateIdsUpdate = selectedRoomType.getRoomRateIds();
+        for (RoomRate rr: selectedRoomType.getRoomRates()) {
+            roomRates.add(rr);
+        }
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Room Type updated successfully", null));
     }
     
@@ -94,6 +103,7 @@ public class RoomTypeManagementManagedBean implements Serializable {
     
     public void onRowUnselect(SelectEvent event) {
         selectedRoomType = null;
+        roomRateIdsUpdate.clear();
     }
     
     public List<RoomRate> getRoomRates() {
