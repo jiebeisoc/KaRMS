@@ -18,7 +18,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import util.exception.CustomerUsernameExistException;
 import util.exception.InvalidLoginCredentialException;
+import ws.restful.model.CreateCustomerReq;
+import ws.restful.model.CreateCustomerRsp;
 import ws.restful.model.CustomerLoginRsp;
 import ws.restful.model.ErrorRsp;
 
@@ -57,11 +60,9 @@ public class CustomerResource {
     public Response customerLogin(@QueryParam("username") String username, 
                                 @QueryParam("password") String password) {
         try {
+            System.out.println("******** Customer login");
             Customer customer = customerSessionBeanLocal.customerLogin(username, password);
-            
-            customer.setPassword(null);
-            customer.setSalt(null);
-            
+
             return Response.status(Status.OK).entity(new CustomerLoginRsp(customer)).build();
             
         } catch (InvalidLoginCredentialException ex) {
@@ -79,8 +80,27 @@ public class CustomerResource {
      * PUT method for updating or creating an instance of CustomerResource
      * @param content representation for the resource
      */
+    @Path("createNewCustomer")
     @PUT
-    @Consumes(javax.ws.rs.core.MediaType.APPLICATION_XML)
-    public void putXml(String content) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createNewCustomer(CreateCustomerReq createCustomerReq) {
+        
+        if (createCustomerReq != null) {
+            try {
+                Long customerId = customerSessionBeanLocal.createNewCustomer(createCustomerReq.getNewCustomer());
+                System.out.println("******** Customer created");
+                CreateCustomerRsp createCustomerRsp = new CreateCustomerRsp(customerId);
+                return Response.status(Status.OK).entity(createCustomerRsp).build();
+            } catch (CustomerUsernameExistException ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+            }
+        } else {
+            ErrorRsp errorRsp = new ErrorRsp("Invalid request");
+            
+            return Response.status(Status.BAD_REQUEST).entity(errorRsp).build();
+        }
     }
 }

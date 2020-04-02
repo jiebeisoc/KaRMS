@@ -38,7 +38,7 @@ public class Customer implements Serializable {
     private String phoneNo;
     private String creditCardNo;
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
     @NotNull
     @Column(nullable = false)
@@ -67,9 +67,10 @@ public class Customer implements Serializable {
         this.phoneNo = phoneNo;
         this.creditCardNo = creditCardNo;
         this.username = username;
-        this.password = password;
         this.birthday = birthday;
         this.email = email;
+        
+        setPassword(password);
     }
 
     public Long getCustomerId() {
