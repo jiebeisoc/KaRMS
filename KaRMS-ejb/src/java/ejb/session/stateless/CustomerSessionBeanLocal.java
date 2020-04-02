@@ -9,6 +9,7 @@ import entity.Customer;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.CustomerNotFoundException;
+import util.exception.CustomerUsernameExistException;
 import util.exception.InvalidLoginCredentialException;
 
 /**
@@ -18,7 +19,7 @@ import util.exception.InvalidLoginCredentialException;
 @Local
 public interface CustomerSessionBeanLocal {
 
-    public Long createNewCustomer(Customer newCustomer);
+    public Long createNewCustomer(Customer newCustomer) throws CustomerUsernameExistException;
 
     public List<Customer> retrieveAllCustomer();
 

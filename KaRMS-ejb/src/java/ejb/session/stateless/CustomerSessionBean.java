@@ -7,14 +7,18 @@ package ejb.session.stateless;
 
 import entity.Customer;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import util.exception.CustomerNotFoundException;
+import util.exception.CustomerUsernameExistException;
 import util.exception.InvalidLoginCredentialException;
+import util.security.CryptographicHelper;
 
 /**
  *
@@ -30,11 +34,15 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     // "Insert Code > Add Business Method")
     
     @Override
-    public Long createNewCustomer(Customer newCustomer) {
-        em.persist(newCustomer);
-        em.flush();
+    public Long createNewCustomer(Customer newCustomer) throws CustomerUsernameExistException {
+        try {
+            em.persist(newCustomer);
+            em.flush();
         
-        return newCustomer.getCustomerId();
+            return newCustomer.getCustomerId();
+        } catch (PersistenceException ex) {
+            throw new CustomerUsernameExistException();
+        }
     }
     
     @Override
@@ -90,8 +98,10 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         } else {
             try {
                 Customer customer = retrieveCustomerByUsername(username);
+                String passwordHash = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + customer.getSalt()));
                 
-                if (customer.getPassword().equals(password)) {
+                if (customer.getPassword().equals(passwordHash)) {
+                    customer.getReservations().size();
                     return customer;
                 } else {
                     throw new InvalidLoginCredentialException("Password is incorrect!");
