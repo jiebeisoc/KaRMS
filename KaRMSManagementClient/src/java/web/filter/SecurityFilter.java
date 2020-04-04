@@ -45,35 +45,12 @@ public class SecurityFilter implements Filter {
         {
             httpSession.setAttribute("isLogin", false);
         }
-        
+
         Boolean isLogin = (Boolean)httpSession.getAttribute("isLogin");
         
-        if (!excludeLoginCheck(requestServletPath)) {
-        
-            if (isLogin == true) {
-                chain.doFilter(request, response);
-            } else {
-                httpServletResponse.sendRedirect(CONTEXT_ROOT + "/accessRightError.xhtml");
-            }  
-        } else {
-            chain.doFilter(request, response);
-        }
+        chain.doFilter(request, response);
     }
     
     public void destroy() {
-    }
-    
-    private Boolean excludeLoginCheck(String path)
-    {
-        if(path.equals("/index.xhtml") ||
-            path.equals("/accessRightError.xhtml") ||
-            path.startsWith("/javax.faces.resource"))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
     }
 }

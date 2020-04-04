@@ -39,7 +39,6 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
             for (Long id : roomRateIds) {
                 RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
                 newRoomType.getRoomRates().add(roomRate);
-                roomRate.setRoomType(newRoomType);
             }
         }
         newRoomType.setRoomRateIds(roomRateIds);
