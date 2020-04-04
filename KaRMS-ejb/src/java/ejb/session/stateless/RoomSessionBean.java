@@ -5,11 +5,8 @@
  */
 package ejb.session.stateless;
 
-import entity.Outlet;
 import entity.Room;
-import entity.RoomType;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -22,13 +19,6 @@ import javax.persistence.Query;
 @Stateless
 public class RoomSessionBean implements RoomSessionBeanLocal {
 
-    @EJB(name = "OutletSessionBeanLocal")
-    private OutletSessionBeanLocal outletSessionBeanLocal;
-
-    @EJB(name = "RoomTypeSessionBeanLocal")
-    private RoomTypeSessionBeanLocal roomTypeSessionBeanLocal;
-    
-
     @PersistenceContext(unitName = "KaRMS-ejbPU")
     private EntityManager em;
 
@@ -36,21 +26,8 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
     // "Insert Code > Add Business Method")
     
     @Override
-    public Long createNewRoom(Room newRoom, Long roomTypeId, Long outletId) {
+    public Long createNewRoom(Room newRoom) {
         em.persist(newRoom);
-        
-        if (roomTypeId != null) {
-            RoomType roomType = roomTypeSessionBeanLocal.retrieveRoomTypeById(roomTypeId);
-            newRoom.setRoomType(roomType);
-            roomType.getRooms().add(newRoom);
-        }
-        
-        if (outletId != null) {
-            Outlet outlet = outletSessionBeanLocal.retrieveOutletById(outletId);
-            newRoom.setOutlet(outlet);
-            outlet.getRooms().add(newRoom);
-        }
-        
         em.flush();
         
         return newRoom.getRoomId();
