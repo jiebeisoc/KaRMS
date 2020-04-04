@@ -47,6 +47,7 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
     //Create new reservation
     @Override
     public Long createNewReservation(Reservation newReservation, Long customerId, Long roomId, Long outletId, Long promotionId) {
+        
         em.persist(newReservation);
         
         if (customerId != null) {
@@ -91,21 +92,22 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         
         return reservation;
     }
-
-    //View reservation details
-    @Override
-    public List<Reservation> retrieveReservationByDate(Date date) {
-        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.date = :inDate");
-        query.setParameter("inDate", date);
-        
-        return query.getResultList();
-    }
     
     //View reservation details
     @Override
     public List<Reservation> retrieveReservationByStatus(ReservationStatus status) {
         Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.status = :inStatus");
         query.setParameter("inStatus", status);
+        
+        return query.getResultList();
+    }
+    
+    //Filter reservation by date range
+    @Override
+    public List<Long> retrieveReservationByDate(Date dateFrom, Date dateTo) {
+        Query query = em.createQuery("SELECT r.reservationId FROM Reservation r WHERE r.date BETWEEN :inDateFrom AND :inDateTo");
+        query.setParameter("inDateFrom", dateFrom);
+        query.setParameter("inDateTo", dateTo);
         
         return query.getResultList();
     }

@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,10 +47,17 @@ public class Reservation implements Serializable {
     @Column(nullable = false)
     private int numOfPeople;
     private String note;
+    @NotNull
+    @Column(nullable = false)
+    private BigDecimal totalPrice;
     @Enumerated(EnumType.STRING)
     @NotNull
     @Column(nullable = false)
     private ReservationStatus status;
+    @NotNull
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateReserved;
     
     @ManyToOne
     private Room room;
@@ -211,6 +219,22 @@ public class Reservation implements Serializable {
 
     public void setFoodOrder(FoodOrder foodOrder) {
         this.foodOrder = foodOrder;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public Date getDateReserved() {
+        return dateReserved;
+    }
+
+    public void setDateReserved(Date dateReserved) {
+        this.dateReserved = dateReserved;
     }
 
 }

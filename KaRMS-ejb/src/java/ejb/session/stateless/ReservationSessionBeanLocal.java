@@ -14,16 +14,12 @@ public interface ReservationSessionBeanLocal {
 
     public Reservation retrieveReservationById(Long reservationId);
 
-    public List<Reservation> retrieveReservationByDate(Date date);
-
     public List<Reservation> retrieveReservationByStatus(ReservationStatus status);
+
+    public List<Long> retrieveReservationByDate(Date dateFrom, Date dateTo);
     
     public void updateReservation(Reservation reservationToUpdate);
 
     public void deleteReservation(Long reservationId);
 
-    
-
-
-   
 }

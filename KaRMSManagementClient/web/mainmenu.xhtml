@@ -21,8 +21,9 @@
                    
                     </p:submenu>
                     
-                    <p:submenu label="Operaion Management" rendered="#{sessionScope.isLogin == true}">
+                    <p:submenu label="Operation Management" rendered="#{sessionScope.isLogin == true}">
                         
+                        <p:menuitem value="Reservation" outcome="/operationManagement/reservationManagement.xhtml" />
                         <p:menuitem value="Room Rate" outcome="/operationManagement/roomRateManagement.xhtml" />
                         <p:menuitem value="Room Type" outcome="/operationManagement/roomTypeManagement.xhtml" />
                         <p:menuitem value="Room" outcome="/operationManagement/roomManagement.xhtml" />
