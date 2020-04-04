@@ -52,7 +52,7 @@ public class FoodOrder implements Serializable {
     private FoodOrderStatus status;
     
     @OneToMany
-    private List<Food> foodItems;
+    private List<FoodItem> foodItems;
     
     @OneToOne
     private Reservation reservation;
@@ -60,7 +60,7 @@ public class FoodOrder implements Serializable {
     public FoodOrder() {
         this.totalPrice = 0.0;
         this.status = FoodOrderStatus.BOOKED;
-        this.foodItems = new LinkedList<Food>();
+        this.foodItems = new LinkedList<FoodItem>();
     }
 
     public FoodOrder(Date timeCreated) {
@@ -126,11 +126,11 @@ public class FoodOrder implements Serializable {
         this.status = status;
     }
 
-    public List<Food> getFoodItems() {
+    public List<FoodItem> getFoodItems() {
         return foodItems;
     }
 
-    public void setFoodItems(List<Food> foodItems) {
+    public void setFoodItems(List<FoodItem> foodItems) {
         this.foodItems = foodItems;
     }
     

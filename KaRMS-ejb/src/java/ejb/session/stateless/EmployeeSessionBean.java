@@ -28,8 +28,8 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     
-    @Override
-    public Employee retrieveEmployeeByUsername(String username) throws EmployeeNotFoundException {
+   @Override
+    public Employee retrieveEmployeeByUsername(String username) throws EmployeeNotFoundException {      
         Query query = em.createQuery("SELECT e FROM Employee e WHERE e.username = :inUsername");
         query.setParameter("inUsername", username);
         

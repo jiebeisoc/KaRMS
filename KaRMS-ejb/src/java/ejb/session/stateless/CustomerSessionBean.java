@@ -13,13 +13,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import util.exception.CreateCustomerException;
 import util.exception.CustomerNotFoundException;
-import util.exception.CustomerUsernameExistException;
 import util.exception.InvalidLoginCredentialException;
-import util.security.CryptographicHelper;
 
 /**
  *
@@ -35,6 +32,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     // "Insert Code > Add Business Method")
     
     @Override
+<<<<<<< HEAD
     public Long createNewCustomer(Customer newCustomer) throws CustomerUsernameExistException, CreateCustomerException {
         if (newCustomer.getBirthday().after(new Date())) {
             throw new CreateCustomerException("Invalid birtday!");
@@ -42,11 +40,13 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         try {
             em.persist(newCustomer);
             em.flush();
+=======
+    public Long createNewCustomer(Customer newCustomer) {
+        em.persist(newCustomer);
+        em.flush();
+>>>>>>> master
         
-            return newCustomer.getCustomerId();
-        } catch (PersistenceException ex) {
-            throw new CustomerUsernameExistException();
-        }
+        return newCustomer.getCustomerId();
     }
     
     @Override
@@ -102,10 +102,8 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         } else {
             try {
                 Customer customer = retrieveCustomerByUsername(username);
-                String passwordHash = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + customer.getSalt()));
                 
-                if (customer.getPassword().equals(passwordHash)) {
-                    customer.getReservations().size();
+                if (customer.getPassword().equals(password)) {
                     return customer;
                 } else {
                     throw new InvalidLoginCredentialException("Password is incorrect!");

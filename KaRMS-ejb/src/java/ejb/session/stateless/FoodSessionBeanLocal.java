@@ -5,10 +5,16 @@
  */
 package ejb.session.stateless;
 
-import entity.Food;
+import entity.FoodItem;
 import java.util.List;
 import javax.ejb.Local;
-import util.exception.FoodNotFoundException;
+import util.exception.CategoryNotFoundException;
+import util.exception.CreateNewFoodItemException;
+import util.exception.DeleteFoodItemException;
+import util.exception.FoodItemInsufficientQuantityOnHandException;
+import util.exception.FoodItemNotFoundException;
+import util.exception.InputDataValidationException;
+import util.exception.UpdateFoodItemException;
 
 /**
  *
@@ -17,16 +23,26 @@ import util.exception.FoodNotFoundException;
 @Local
 public interface FoodSessionBeanLocal {
 
-    public long createNewFood(Food newFood);
 
-    public List<Food> retrieveAllFood();
 
-    public Food retrieveFoodById(Long foodId);
+    public void creditQuantityOnHand(Long foodItemId, Integer quantityToCredit) throws FoodItemNotFoundException;
 
-    public Food retrieveFoodByFoodname(String foodName) throws FoodNotFoundException;
+    public FoodItem createNewFoodItem(FoodItem newFoodItem, Long categoryId) throws InputDataValidationException, CreateNewFoodItemException, CategoryNotFoundException;
 
-    public void updateFood(Food foodToUpdate);
+    public List<FoodItem> retrieveAllFoodItems();
 
-    public void deleteFood(Long foodId);
+    public List<FoodItem> searchFoodItemsByName(String searchString);
+
+    public List<FoodItem> filterFoodItemsByCategory(Long categoryId) throws CategoryNotFoundException;
+
+    public FoodItem retrieveFoodItemById(Long foodItemId) throws FoodItemNotFoundException;
+
+    public FoodItem retrieveFoodItemBySkuCode(String skuCode) throws FoodItemNotFoundException;
+
+    public void updateFoodItem(FoodItem foodItem, Long categoryId) throws FoodItemNotFoundException, CategoryNotFoundException, UpdateFoodItemException, InputDataValidationException;
+
+    public void deleteFoodItem(Long foodItemId) throws FoodItemNotFoundException, DeleteFoodItemException;
+
+    public void debitQuantityOnHand(Long foodItemId, Integer quantityToDebit) throws FoodItemNotFoundException, FoodItemInsufficientQuantityOnHandException;
     
 }

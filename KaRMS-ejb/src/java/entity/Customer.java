@@ -17,7 +17,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
-import util.security.CryptographicHelper;
 
 /**
  *
@@ -38,7 +37,7 @@ public class Customer implements Serializable {
     private String phoneNo;
     private String creditCardNo;
     @NotNull
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String username;
     @NotNull
     @Column(nullable = false)
@@ -55,10 +54,12 @@ public class Customer implements Serializable {
     
     @OneToMany
     private List<Reservation> reservations;
+    //Added by Luqian
+    @OneToMany(mappedBy = "customerEntity")
+    private List<SaleTransactionEntity> saleTransactionEntities;
 
     public Customer() {
         this.points = 0;
-        this.salt = CryptographicHelper.getInstance().generateRandomString(32);
     }
 
     public Customer(String name, String phoneNo, String creditCardNo, String username, String password, Date birthday, String email) {
@@ -67,10 +68,9 @@ public class Customer implements Serializable {
         this.phoneNo = phoneNo;
         this.creditCardNo = creditCardNo;
         this.username = username;
+        this.password = password;
         this.birthday = birthday;
         this.email = email;
-        
-        setPassword(password);
     }
 
     public Long getCustomerId() {
@@ -173,12 +173,7 @@ public class Customer implements Serializable {
      * @param password the password to set
      */
     public void setPassword(String password) {
-        if(password != null) {
-            this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
-        }
-        else {
-            this.password = null;
-        }
+        this.password = password;
     }
 
     public Date getBirthday() {
@@ -213,7 +208,15 @@ public class Customer implements Serializable {
         this.reservations = reservations;
     }
 
-    public String getSalt() {
+    public List<SaleTransactionEntity> getSaleTransactionEntities() {
+        return saleTransactionEntities;
+    }
+
+    public void setSaleTransactionEntities(List<SaleTransactionEntity> saleTransactionEntities) {
+        this.saleTransactionEntities = saleTransactionEntities;
+    }
+    
+        public String getSalt() {
         return salt;
     }
 
