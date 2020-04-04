@@ -129,7 +129,7 @@ public class RoomRate implements Serializable {
     public void setRate(BigDecimal rate) {
         this.rate = rate;
     }
-    
+
     public String getRoomRateType() {
         return roomRateType.name();
     }
