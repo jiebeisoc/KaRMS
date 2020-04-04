@@ -102,7 +102,10 @@ public class Promotion implements Serializable {
         return validUntil;
     }
 
-    public boolean isEnabled() {
+    public boolean getEnabled() {
+         System.out.println("************************ 到getEnabled");  
+      
+                
         return enabled;
     }
 
@@ -122,9 +125,7 @@ public class Promotion implements Serializable {
         this.validUntil = validUntil;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+   
 
     public void setDescription(String description) {
         this.description = description;
@@ -136,6 +137,11 @@ public class Promotion implements Serializable {
 
     public void setPromotionName(String promotionName) {
         this.promotionName = promotionName;
+    }
+
+    public void setEnabled(boolean enabled) {
+          System.out.println("************************ 到setEnabled");  
+        this.enabled = enabled;
     }
     
 }

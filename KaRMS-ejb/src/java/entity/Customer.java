@@ -53,6 +53,9 @@ public class Customer implements Serializable {
     
     @OneToMany
     private List<Reservation> reservations;
+    //Added by Luqian
+    @OneToMany(mappedBy = "customerEntity")
+    private List<SaleTransactionEntity> saleTransactionEntities;
 
     public Customer() {
         this.points = 0;
@@ -202,6 +205,14 @@ public class Customer implements Serializable {
 
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
+    }
+
+    public List<SaleTransactionEntity> getSaleTransactionEntities() {
+        return saleTransactionEntities;
+    }
+
+    public void setSaleTransactionEntities(List<SaleTransactionEntity> saleTransactionEntities) {
+        this.saleTransactionEntities = saleTransactionEntities;
     }
     
 }
