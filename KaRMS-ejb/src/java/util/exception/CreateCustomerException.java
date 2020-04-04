@@ -9,12 +9,12 @@ package util.exception;
  *
  * @author chai
  */
-public class CustomerUsernameExistException extends Exception {
+public class CreateCustomerException extends Exception {
 
-    public CustomerUsernameExistException() {
+    public CreateCustomerException() {
     }
 
-    public CustomerUsernameExistException(String message) {
+    public CreateCustomerException(String message) {
         super(message);
     }
     

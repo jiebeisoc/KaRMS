@@ -40,13 +40,6 @@ public class RoomRateSessionBean implements RoomRateSessionBeanLocal {
         
         return query.getResultList();
     }
-    
-    @Override
-    public List<RoomRate> retrieveAvailableRoomRates() {
-        Query query = em.createQuery("SELECT rr FROM RoomRate rr WHERE rr.roomType IS NULL");
-        
-        return query.getResultList();
-    }
 
     @Override
     public RoomRate retrieveRoomRateById(Long roomRateId) {

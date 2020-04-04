@@ -17,7 +17,7 @@ import util.exception.PromotionNotFoundException;
 @Local
 public interface PromotionSessionBeanLocal {
 
-    public long createNewPromotion(Promotion newPromotion);
+    public Promotion createNewPromotion(Promotion newPromotion);
 
     public List<Promotion> retrieveAllPromotion();
 
