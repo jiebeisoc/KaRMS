@@ -16,7 +16,7 @@
             
             <p:outputLabel style="font-weight: bold; font-size: 20" value="Room Rate Management" />&nbsp;
             <br/>
-            <p:commandButton value="Create New Room Rate" actionListener="#{roomRateManagementManagedBean.createNewRoomRate}" icon="fa fa-plus" onclick="PF('dialogCreateNewRoomRate').show()"/>
+            <p:commandButton value="Create New Room Rate" icon="fa fa-plus" onclick="PF('dialogCreateNewRoomRate').show()"/>
             
         </h:form>
         
@@ -28,15 +28,15 @@
                 <p:ajax event='rowSelect' listener='#{roomRateManagementManagedBean.onRowSelect}' oncomplete="PF('dialogUpdateRoomRate').show()" update='@form formUpdateRoomRate' />
                 <p:ajax event='rowUnselect' listener='#{roomRateManagementManagedBean.onRowUnselect}' update='@form formUpdateRoomRate' />
                                         
-                <p:column headerText="Name" >
+                <p:column headerText="Name" sortBy="#{roomRate.name}">
                     <h:outputText value="#{roomRate.name}" />
                 </p:column>         
                 
-                <p:column headerText="Rate type" >
+                <p:column headerText="Rate type" sortBy="#{roomRate.roomRateType}">
                     <h:outputText value="#{roomRate.roomRateType}" />
                 </p:column>               
                 
-                <p:column headerText="Rate($)" >
+                <p:column headerText="Rate($)" sortBy="#{roomRate.rate}">
                     <h:outputText value="#{roomRate.rate}" >
                         <f:convertNumber pattern="0.00" />
                     </h:outputText>
@@ -94,7 +94,7 @@
                     </p:row>
                     
                 </p:panelGrid>
-                
+                  
             </p:dialog>
                       
         </h:form>

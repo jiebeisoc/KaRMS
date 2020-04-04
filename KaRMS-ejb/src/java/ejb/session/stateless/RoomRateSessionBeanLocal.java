@@ -27,4 +27,6 @@ public interface RoomRateSessionBeanLocal {
 
     public void deleteRoomRate(Long roomRateId) throws DeleteRoomRateException ;
 
+    public List<RoomRate> retrieveAvailableRoomRates();
+
 }

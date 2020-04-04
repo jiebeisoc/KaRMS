@@ -15,7 +15,7 @@
             
             <h:form>
                 
-                <p:commandButton value="Create New Room Type" actionListener="#{roomTypeManagementManagedBean.createNewRoomType}" icon="fa fa-plus" onclick="PF('dialogCreateNewRoomType').show()"/>
+                <p:commandButton value="Create New Room Type" icon="fa fa-plus" onclick="PF('dialogCreateNewRoomType').show()"/>
                 
             </h:form>
             
@@ -26,18 +26,18 @@
                 <p:dataTable id="dataTableAllRoomType" widgetVar="dataTableAllRoomType" value="#{roomTypeManagementManagedBean.roomTypes}" var="roomType"
                              selectionMode="single" selection="#{roomTypeManagementManagedBean.selectedRoomType}" rowKey="#{roomType.roomTypeId}" tableStyle="width:80%">
                 
-                    <p:ajax event='rowSelect' listener="#{roomTypeManagementManagedBean.onRowSelect}" oncomplete="PF('dialogUpdateRoomType').show()" update="@form formUpdateRoomType" />
+                    <p:ajax event='rowSelect' listener="#{roomTypeManagementManagedBean.onRowSelect}" oncomplete="PF('dialogUpdateRoomType').show()" update="@form formUpdateRoomType"/>
                     <p:ajax event="rowUnselect" listener="#{roomTypeManagementManagedBean.onRowUnselect}" update="@form formUpdateRoomType" />
                     
-                    <p:column headerText="Name">
+                    <p:column headerText="Name" sortBy="#{roomType.name}">
                         <h:outputText value="#{roomType.name}" />
                     </p:column>
                     
-                    <p:column headerText="Capacity">
+                    <p:column headerText="Capacity" sortBy="#{roomType.capacity}">
                         <h:outputText value="#{roomType.capacity}" />
                     </p:column>
                     
-                    <p:column headerText="Details">
+                    <p:column headerText="Details" sortBy="#{roomType.roomDetails}">
                         <h:outputText value="#{roomType.roomDetails}" />
                     </p:column>
                     
@@ -126,7 +126,7 @@
             
             <h:form id="formUpdateRoomType">
                 
-                <p:dialog id="dialogUpdateRoomType" widgetVar="dialogUpdateRoomType" header="Details" closable="true">
+                <p:dialog id="dialogUpdateRoomType" widgetVar="dialogUpdateRoomType" header="Details" closable="true" >
                     
                     <p:panelGrid>
                      
@@ -170,18 +170,23 @@
                         </p:row>
                         
                         <p:row>
-                        <p:column colspan="2">
-                            
-                            <p:commandButton actionListener="#{roomTypeManagementManagedBean.updateRoomType}" update='@form formAllRoomType:dataTableAllRoomType formUpdateRoomType' oncomplete="PF('dialogUpdateRoomType').show()" icon='ui-icon-pencil' title='Update' value='Update'/> &nbsp;
-                            <p:commandButton icon='ui-icon-trash' actionListener='#{roomTypeManagementManagedBean.deleteRoomType}' update="@form formAllRoomType:dataTableAllRoomType" immediate="true" value="Delete">
-                                <f:attribute name='roomTypeToDelete' value='#{roomTypeManagementManagedBean.selectedRoomType}'/>
-                                <p:confirm header='Confirmation' message="Are you sure you want to delete #{roomTypeManagementManagedBean.selectedRoomType}?" icon='ui-icon-alert' />
-                            </p:commandButton>
-                    
-                        </p:column>
-                    </p:row>
+                            <p:column colspan="2">
+
+                                <p:commandButton actionListener="#{roomTypeManagementManagedBean.updateRoomType}" update='@form formAllRoomType:dataTableAllRoomType formUpdateRoomType' oncomplete="PF('dialogUpdateRoomType').show()" icon='ui-icon-pencil' title='Update' value='Update'/> &nbsp;
+                                <p:commandButton icon='ui-icon-trash' actionListener='#{roomTypeManagementManagedBean.deleteRoomType}' update="@form formAllRoomType:dataTableAllRoomType" immediate="true" value="Delete">
+                                    <f:attribute name='roomTypeToDelete' value='#{roomTypeManagementManagedBean.selectedRoomType}'/>
+                                    <p:confirm header='Confirmation' message="Are you sure you want to delete #{roomTypeManagementManagedBean.selectedRoomType}?" icon='ui-icon-alert' />
+                                </p:commandButton>
+
+                            </p:column>
+                        </p:row>
                         
                     </p:panelGrid>
+                    
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
                     
                 </p:dialog>
                 
