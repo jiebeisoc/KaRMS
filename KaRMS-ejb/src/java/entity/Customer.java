@@ -50,6 +50,7 @@ public class Customer implements Serializable {
     @Column(nullable = false)
     private String email;
     private int points;
+    private String salt;
     
     @OneToMany
     private List<Reservation> reservations;
@@ -213,6 +214,14 @@ public class Customer implements Serializable {
 
     public void setSaleTransactionEntities(List<SaleTransactionEntity> saleTransactionEntities) {
         this.saleTransactionEntities = saleTransactionEntities;
+    }
+    
+        public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
     
 }
