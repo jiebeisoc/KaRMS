@@ -6,8 +6,8 @@
 package ejb.session.stateless;
 
 import entity.Customer;
+import java.util.Date;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -15,6 +15,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import util.exception.CreateCustomerException;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerUsernameExistException;
 import util.exception.InvalidLoginCredentialException;
@@ -34,7 +35,10 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     // "Insert Code > Add Business Method")
     
     @Override
-    public Long createNewCustomer(Customer newCustomer) throws CustomerUsernameExistException {
+    public Long createNewCustomer(Customer newCustomer) throws CustomerUsernameExistException, CreateCustomerException {
+        if (newCustomer.getBirthday().after(new Date())) {
+            throw new CreateCustomerException("Invalid birtday!");
+        }
         try {
             em.persist(newCustomer);
             em.flush();
