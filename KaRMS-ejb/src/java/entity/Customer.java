@@ -55,9 +55,13 @@ public class Customer implements Serializable {
     @Column(nullable = false)
     private String email;
     private int points;
+    private String salt;
     
     @OneToMany
     private List<Reservation> reservations;
+    //Added by Luqian
+    @OneToMany(mappedBy = "customerEntity")
+    private List<SaleTransactionEntity> saleTransactionEntities;
 
     public Customer() {
         this.points = 0;
@@ -210,12 +214,29 @@ public class Customer implements Serializable {
         this.reservations = reservations;
     }
 
+<<<<<<< HEAD
     public Long getMemberNum() {
         return memberNum;
     }
 
     public void setMemberNum(Long memberNum) {
         this.memberNum = memberNum;
+=======
+    public List<SaleTransactionEntity> getSaleTransactionEntities() {
+        return saleTransactionEntities;
+    }
+
+    public void setSaleTransactionEntities(List<SaleTransactionEntity> saleTransactionEntities) {
+        this.saleTransactionEntities = saleTransactionEntities;
+    }
+    
+        public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+>>>>>>> master
     }
     
 }

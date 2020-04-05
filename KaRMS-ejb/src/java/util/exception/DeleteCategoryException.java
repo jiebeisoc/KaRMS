@@ -9,22 +9,22 @@ package util.exception;
  *
  * @author longluqian
  */
-public class FoodNotFoundException extends Exception {
+public class DeleteCategoryException extends Exception {
 
     /**
-     * Creates a new instance of <code>FoodNotFoundException</code> without
+     * Creates a new instance of <code>DeleteCategoryException</code> without
      * detail message.
      */
-    public FoodNotFoundException() {
+    public DeleteCategoryException() {
     }
 
     /**
-     * Constructs an instance of <code>FoodNotFoundException</code> with the
+     * Constructs an instance of <code>DeleteCategoryException</code> with the
      * specified detail message.
      *
      * @param msg the detail message.
      */
-    public FoodNotFoundException(String msg) {
+    public DeleteCategoryException(String msg) {
         super(msg);
     }
 }

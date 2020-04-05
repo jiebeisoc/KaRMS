@@ -74,7 +74,7 @@ public class RoomRateManagementManagedBean implements Serializable {
         roomRates.add(newRoomRate);
         
         newRoomRate = new RoomRate();
-        rateType = "";
+        
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New room rate created successfully", null));
     }    
 

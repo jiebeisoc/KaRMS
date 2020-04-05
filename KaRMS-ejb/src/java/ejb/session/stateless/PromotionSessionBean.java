@@ -27,11 +27,11 @@ public class PromotionSessionBean implements PromotionSessionBeanLocal {
     private EntityManager em;
 
   @Override
-    public long createNewPromotion(Promotion newPromotion){
+    public Promotion createNewPromotion(Promotion newPromotion){
         em.persist(newPromotion);
         em.flush();
         
-        return newPromotion.getPromotionId();
+        return newPromotion;
     }
     
     @Override
