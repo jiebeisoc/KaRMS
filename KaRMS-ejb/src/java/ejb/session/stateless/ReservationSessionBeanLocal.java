@@ -5,10 +5,11 @@ import entity.Reservation;
 import java.util.Date;
 import java.util.List;
 import util.enumeration.ReservationStatus;
+import util.exception.CustomerNotFoundException;
 
 public interface ReservationSessionBeanLocal {
 
-    public Long createNewReservation(Reservation newReservation, Long customerId, Long roomId, Long outletId, Long promotionId);
+    public Long createNewReservation(Reservation newReservation, Long customerId, Long roomId, Long outletId, Long promotionId) throws CustomerNotFoundException;
 
     public List<Reservation> retrieveAllReservations();
 

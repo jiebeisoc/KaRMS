@@ -9,11 +9,15 @@ import ejb.session.stateless.OutletSessionBeanLocal;
 import ejb.session.stateless.PromotionSessionBeanLocal;
 import ejb.session.stateless.ReservationSessionBeanLocal;
 import ejb.session.stateless.RoomSessionBeanLocal;
+import ejb.session.stateless.RoomTypeSessionBeanLocal;
 import entity.Outlet;
 import entity.Promotion;
 import entity.Reservation;
 import entity.Room;
+import entity.RoomType;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -21,10 +25,13 @@ import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.primefaces.event.SelectEvent;
 import util.enumeration.ReservationStatus;
+import util.exception.CustomerNotFoundException;
 
 /**
  *
@@ -37,6 +44,9 @@ public class ReservationManagementManagedBean implements Serializable {
     @EJB
     private ReservationSessionBeanLocal reservationSessionBeanLocal;
     
+    @EJB(name = "RoomTypeSessionBeanLocal")
+    private RoomTypeSessionBeanLocal roomTypeSessionBeanLocal;
+    
     @EJB(name = "RoomSessionBeanLocal")
     private RoomSessionBeanLocal roomSessionBeanLocal;
 
@@ -47,12 +57,14 @@ public class ReservationManagementManagedBean implements Serializable {
     private PromotionSessionBeanLocal promotionSessionBeanLocal;
     
     private List<Reservation> reservations;
+    private List<RoomType> roomTypes;
     private List<Room> rooms;
     private List<Outlet> outlets;
     private List<Promotion> promotions;
     
     private Reservation newReservation;
-    private Long customerId;
+    private Long memberNum;
+    private Long roomTypeId;
     private Long roomId;
     private Long outletId;
     private Long promotionId;
@@ -63,6 +75,10 @@ public class ReservationManagementManagedBean implements Serializable {
     private Date filterDateFrom;
     private Date filterDateTo;
     
+    private LocalDate minDate;
+    private LocalDate maxDate;
+    private Date selectedDate;
+    
     public ReservationManagementManagedBean() {
         newReservation = new Reservation();
     }
@@ -70,23 +86,40 @@ public class ReservationManagementManagedBean implements Serializable {
     @PostConstruct
     public void postConstruct() {
         reservations = reservationSessionBeanLocal.retrieveAllReservations();
+        roomTypes = roomTypeSessionBeanLocal.retrieveAllRoomTypes();
         rooms = roomSessionBeanLocal.retrieveAllRoom();
         outlets = outletSessionBeanLocal.retrieveAllOutlets();
-        promotions = promotionSessionBeanLocal.retrieveAllPromotion();
+        promotions = new ArrayList<>();
         statusList = ReservationStatus.values();
+        
+        minDate = LocalDate.now();
+        maxDate = LocalDate.now().plusYears(1);
     }
     
     public void createNewReservation(ActionEvent event) {
-        Long reservationId = reservationSessionBeanLocal.createNewReservation(newReservation, customerId, roomId, outletId, promotionId);
-        reservations.add(newReservation);
+        try {
+            Long reservationId = reservationSessionBeanLocal.createNewReservation(newReservation, memberNum, roomId, outletId, promotionId);
+            reservations.add(newReservation);
+
+            memberNum = null;
+            roomId = null;
+            outletId = null;
+            promotionId = null;
+            newReservation = new Reservation();
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New reservation is created successfully", null));
         
-        customerId = null;
-        roomId = null;
-        outletId = null;
-        promotionId = null;
-        newReservation = new Reservation();
-        
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New reservation is created successfully", null));   
+        } catch (CustomerNotFoundException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null));
+        }
+    }
+    
+    public void onDateChange(ValueChangeEvent event) {
+        selectedDate = (Date)event.getNewValue();
+    }
+    
+    public void dateChange(AjaxBehaviorEvent event) {
+        promotions = promotionSessionBeanLocal.retrievePromotionByDate(selectedDate);   
     }
     
     public void deleteReservation(ActionEvent event) {
@@ -127,12 +160,12 @@ public class ReservationManagementManagedBean implements Serializable {
         this.newReservation = newReservation;
     }
 
-    public Long getCustomerId() {
-        return customerId;
+    public Long getMemberNum() {
+        return memberNum;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setMemberNum(Long memberNum) {
+        this.memberNum = memberNum;
     }
 
     public Long getRoomId() {
@@ -157,6 +190,14 @@ public class ReservationManagementManagedBean implements Serializable {
 
     public void setPromotionId(Long promotionId) {
         this.promotionId = promotionId;
+    }
+
+    public List<RoomType> getRoomTypes() {
+        return roomTypes;
+    }
+
+    public void setRoomTypes(List<RoomType> roomTypes) {
+        this.roomTypes = roomTypes;
     }
 
     public List<Room> getRooms() {
@@ -229,6 +270,30 @@ public class ReservationManagementManagedBean implements Serializable {
 
     public void setStatusList(ReservationStatus[] statusList) {
         this.statusList = statusList;
+    }
+
+    public LocalDate getMinDate() {
+        return minDate;
+    }
+
+    public void setMinDate(LocalDate minDate) {
+        this.minDate = minDate;
+    }
+
+    public LocalDate getMaxDate() {
+        return maxDate;
+    }
+
+    public void setMaxDate(LocalDate maxDate) {
+        this.maxDate = maxDate;
+    }
+
+    public Date getSelectedDate() {
+        return selectedDate;
+    }
+
+    public void setSelectedDate(Date selectedDate) {
+        this.selectedDate = selectedDate;
     }
     
 }

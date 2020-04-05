@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.Promotion;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -57,6 +58,14 @@ public class PromotionSessionBean implements PromotionSessionBeanLocal {
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new PromotionNotFoundException("Promotion " + promotionName + "does not exist!");
         }
+    }
+    
+    @Override
+    public List<Promotion> retrievePromotionByDate(Date date) {
+        Query query = em.createQuery("SELECT p FROM Promotion p WHERE p.validFrom <= :inDate AND p.validUntil >= :inDate");
+        query.setParameter("inDate", date);
+        
+        return query.getResultList();
     }
     
     @Override

@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.Promotion;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.PromotionNotFoundException;
@@ -28,5 +29,7 @@ public interface PromotionSessionBeanLocal {
     public void updatePromotion(Promotion promotionToUpdate);
 
     public void deletePromotion(Long promotionId);
+
+    public List<Promotion> retrievePromotionByDate(Date date);
     
 }

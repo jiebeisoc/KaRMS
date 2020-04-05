@@ -18,6 +18,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.enumeration.ReservationStatus;
+import util.exception.CustomerNotFoundException;
 
 /**
  *
@@ -46,11 +47,12 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
 
     //Create new reservation
     @Override
-    public Long createNewReservation(Reservation newReservation, Long customerId, Long roomId, Long outletId, Long promotionId) {
+    public Long createNewReservation(Reservation newReservation, Long memberNum, Long roomId, Long outletId, Long promotionId) throws CustomerNotFoundException {
         
         em.persist(newReservation);
         
-        if (customerId != null) {
+        if (memberNum != null) {
+            Long customerId = customerSessionBeanLocal.retrieveCustomerByMemberNum(memberNum).getCustomerId();
             Customer customer = customerSessionBeanLocal.retrieveCustomerById(customerId);
             customer.getReservations().add(newReservation);
             newReservation.setCustomer(customer);

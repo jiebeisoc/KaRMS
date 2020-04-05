@@ -25,7 +25,9 @@ public interface CustomerSessionBeanLocal {
     public Customer retrieveCustomerById(Long customerId);
 
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException;
-
+    
+    public Customer retrieveCustomerByMemberNum(Long memberNum) throws CustomerNotFoundException;
+ 
     public void updateCustomer(Customer customerToUpdate);
 
     public void deleteCustomer(Long customerId);
@@ -37,5 +39,5 @@ public interface CustomerSessionBeanLocal {
     public void addPoints(Long customerId, int pointsToAdd);
 
     public void redeemPoints(Long customerId, int pointsToDeduct);
-    
+ 
 }
