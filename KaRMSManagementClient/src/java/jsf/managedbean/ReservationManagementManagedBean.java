@@ -16,8 +16,8 @@ import entity.Reservation;
 import entity.Room;
 import entity.RoomType;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -75,8 +75,8 @@ public class ReservationManagementManagedBean implements Serializable {
     private Date filterDateFrom;
     private Date filterDateTo;
     
-    private LocalDate minDate;
-    private LocalDate maxDate;
+    private Date minDate;
+    private Date maxDate;
     private Date selectedDate;
     
     public ReservationManagementManagedBean() {
@@ -91,9 +91,20 @@ public class ReservationManagementManagedBean implements Serializable {
         outlets = outletSessionBeanLocal.retrieveAllOutlets();
         promotions = new ArrayList<>();
         statusList = ReservationStatus.values();
-        
-        minDate = LocalDate.now();
-        maxDate = LocalDate.now().plusYears(1);
+         
+    }
+    
+    public void onCreateNewReservation(ActionEvent event) {
+        Calendar cal = Calendar.getInstance();
+        if (cal.get(Calendar.MINUTE) >= 1) {
+            cal.add(Calendar.HOUR, 1);
+        }
+        cal.set(Calendar.MINUTE, 0);
+        System.out.println("time: " + cal.getTime());
+        minDate = cal.getTime();
+        System.out.println("minDate: " + minDate);
+        cal.add(Calendar.YEAR, 1);
+        maxDate = cal.getTime();
     }
     
     public void createNewReservation(ActionEvent event) {
@@ -119,7 +130,7 @@ public class ReservationManagementManagedBean implements Serializable {
     }
     
     public void dateChange(AjaxBehaviorEvent event) {
-        promotions = promotionSessionBeanLocal.retrievePromotionByDate(selectedDate);   
+        promotions = promotionSessionBeanLocal.retrievePromotionByDate(selectedDate);  
     }
     
     public void deleteReservation(ActionEvent event) {
@@ -192,6 +203,14 @@ public class ReservationManagementManagedBean implements Serializable {
         this.promotionId = promotionId;
     }
 
+    public Long getRoomTypeId() {
+        return roomTypeId;
+    }
+
+    public void setRoomTypeId(Long roomTypeId) {
+        this.roomTypeId = roomTypeId;
+    }
+    
     public List<RoomType> getRoomTypes() {
         return roomTypes;
     }
@@ -272,19 +291,19 @@ public class ReservationManagementManagedBean implements Serializable {
         this.statusList = statusList;
     }
 
-    public LocalDate getMinDate() {
+    public Date getMinDate() {
         return minDate;
     }
 
-    public void setMinDate(LocalDate minDate) {
+    public void setMinDate(Date minDate) {
         this.minDate = minDate;
     }
 
-    public LocalDate getMaxDate() {
+    public Date getMaxDate() {
         return maxDate;
     }
 
-    public void setMaxDate(LocalDate maxDate) {
+    public void setMaxDate(Date maxDate) {
         this.maxDate = maxDate;
     }
 
