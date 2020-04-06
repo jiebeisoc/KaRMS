@@ -3,7 +3,7 @@ package ejb.session.stateless;
 import entity.FoodItem;
 import entity.FoodItemCategory;
 
-import entity.SaleTransactionLineItemEntity;
+import entity.FoodOrderTransactionLineItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +49,7 @@ public class FoodSessionBean implements FoodSessionBeanLocal
 
    
     @EJB
-    private SaleTransactionEntitySessionBeanLocal saleTransactionEntitySessionBeanLocal;
+    private FoodOrderSessionBeanLocal saleTransactionEntitySessionBeanLocal;
     
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
@@ -294,7 +294,7 @@ public class FoodSessionBean implements FoodSessionBeanLocal
     {
         FoodItem foodItemToRemove = retrieveFoodItemById(foodItemId);
         
-        List<SaleTransactionLineItemEntity> saleTransactionLineItemEntities = saleTransactionEntitySessionBeanLocal.retrieveSaleTransactionLineItemsByProductId(foodItemId);
+        List<FoodOrderTransactionLineItem> saleTransactionLineItemEntities = saleTransactionEntitySessionBeanLocal.retrieveSaleTransactionLineItemsByProductId(foodItemId);
         
         if(saleTransactionLineItemEntities.isEmpty())
         {
