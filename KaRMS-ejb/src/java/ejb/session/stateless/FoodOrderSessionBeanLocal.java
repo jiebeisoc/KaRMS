@@ -1,32 +1,30 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ejb.session.stateless;
 
-import entity.FoodOrder;
+import entity.FoodOrderTransaction;
+import entity.FoodOrderTransactionLineItem;
 import java.util.List;
-import javax.ejb.Local;
-import util.exception.FoodOrderNotFoundException;
+import util.exception.CreateNewSaleTransactionException;
+import util.exception.SaleTransactionAlreadyVoidedRefundedException;
+import util.exception.SaleTransactionNotFoundException;
 
-/**
- *
- * @author longluqian
- */
-@Local
-public interface FoodOrderSessionBeanLocal {
 
-    public long createNewFoodOrder(FoodOrder newFoodOrder);
 
-    public List<FoodOrder> retrieveAllFood();
 
-    public FoodOrder retrieveFoodOrderById(Long foodOrderId);
+public interface FoodOrderSessionBeanLocal
+{
+    FoodOrderTransaction createNewSaleTransaction(Long staffId, FoodOrderTransaction newSaleTransactionEntity) throws CreateNewSaleTransactionException;
 
-    public FoodOrder retrieveFoodOrderByCustomerPhone(String customerPhoneNo) throws FoodOrderNotFoundException;
-
-    public void updateFoodOrder(FoodOrder foodOrderToUpdate);
-
-    public void deleteFoodOrder(Long foodOrderId);
+    List<FoodOrderTransaction> retrieveAllSaleTransactions();
     
+    List<FoodOrderTransactionLineItem> retrieveSaleTransactionLineItemsByProductId(Long productId);
+
+    FoodOrderTransaction retrieveSaleTransactionBySaleTransactionId(Long saleTransactionId) throws SaleTransactionNotFoundException;
+    
+    void updateSaleTransaction(FoodOrderTransaction saleTransactionEntity);
+
+    void voidRefundSaleTransaction(Long saleTransactionId) throws SaleTransactionNotFoundException, SaleTransactionAlreadyVoidedRefundedException;
+    
+    void deleteSaleTransaction(FoodOrderTransaction saleTransactionEntity); 
+
+    public List<FoodOrderTransaction> retrieveAllSaleTransactionsByCustomerID(String firstName );
 }
