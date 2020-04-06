@@ -19,6 +19,7 @@ import util.exception.CreateCustomerException;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerUsernameExistException;
 import util.exception.InvalidLoginCredentialException;
+import util.security.CryptographicHelper;
 
 /**
  *
@@ -102,8 +103,9 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         } else {
             try {
                 Customer customer = retrieveCustomerByUsername(username);
-                
-                if (customer.getPassword().equals(password)) {
+                String passwordHash = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + customer.getSalt()));
+
+                if (customer.getPassword().equals(passwordHash)) {
                     return customer;
                 } else {
                     throw new InvalidLoginCredentialException("Password is incorrect!");

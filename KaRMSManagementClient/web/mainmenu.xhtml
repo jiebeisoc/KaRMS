@@ -12,7 +12,7 @@
             
             <h:form>
                 
-                <p:menu style="width:200px;">
+                <p:panelMenu style="width:200px;">
                     
                     <p:submenu label="System">
                         
@@ -22,14 +22,23 @@
                     </p:submenu>
                     
                     <p:submenu label="Operaion Management" rendered="#{sessionScope.isLogin == true}">
+                        <p:submenu label="Room Management">
+                            <p:menuitem value="Room Rate" outcome="/operationManagement/roomRateManagement.xhtml" />
+                            <p:menuitem value="Room Type" outcome="/operationManagement/roomTypeManagement.xhtml" />
+                            <p:menuitem value="Room" outcome="/operationManagement/roomManagement.xhtml" />
+                        </p:submenu>
                         
-                        <p:menuitem value="Room Rate" outcome="/operationManagement/roomRateManagement.xhtml" />
-                        <p:menuitem value="Room Type" outcome="/operationManagement/roomTypeManagement.xhtml" />
-                        <p:menuitem value="Room" outcome="/operationManagement/roomManagement.xhtml" />
+                        <p:submenu label="Food Menu Management">
+                            <p:menuitem value="Food Item Management" outcome="/operationManagement/foodItemManagement.xhtml" />
+                        </p:submenu>
                         
+                        <p:submenu label="Promotion Management">
+                            <p:menuitem value ="Promotion Management" outcome="/operationManagement/promotionManagement.xhtml" />       
+                   
+                        </p:submenu>
                     </p:submenu>
                     
-                </p:menu>
+                </p:panelMenu>
                 
             </h:form>
             
