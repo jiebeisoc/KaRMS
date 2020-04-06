@@ -20,9 +20,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import util.exception.ChangePasswordException;
 import util.exception.CreateCustomerException;
 import util.exception.CustomerUsernameExistException;
 import util.exception.InvalidLoginCredentialException;
+import ws.restful.model.ChangePasswordReq;
 import ws.restful.model.CreateCustomerReq;
 import ws.restful.model.CreateCustomerRsp;
 import ws.restful.model.CustomerLoginRsp;
@@ -108,19 +110,50 @@ public class CustomerResource {
         }
     }
     
+    @Path("updateDetails")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateCustomer(UpdateCustomerReq updateCustomerReq) {
+    public Response updateCustomerDetails(UpdateCustomerReq updateCustomerReq) {
         if (updateCustomerReq != null) {
             try {
                 Customer customer = customerSessionBeanLocal.customerLogin(updateCustomerReq.getUsername(), updateCustomerReq.getPassword());
-                System.out.println("******** CustomerResource.updateCustomer()");
+                System.out.println("******** CustomerResource.updateCustomerDetails()");
                 
-                customerSessionBeanLocal.updateCustomer(updateCustomerReq.getCustomer());
+                customerSessionBeanLocal.updateDetails(updateCustomerReq.getUsername(), updateCustomerReq.getCustomer().getName(), 
+                        updateCustomerReq.getCustomer().getEmail(), updateCustomerReq.getCustomer().getPhoneNo(), updateCustomerReq.getCustomer().getCreditCardNo());
                 
                 return Response.status(Response.Status.OK).build();                
             } catch (InvalidLoginCredentialException ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+
+                return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
+            } catch (Exception ex) {
+                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+            }
+        } else {
+            ErrorRsp errorRsp = new ErrorRsp("Invalid request");
+            
+            return Response.status(Status.BAD_REQUEST).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("changePassword")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response changePassword(ChangePasswordReq changePasswordReq) {
+        if (changePasswordReq != null) {
+            try {
+                Customer customer = customerSessionBeanLocal.customerLogin(changePasswordReq.getUsername(), changePasswordReq.getPassword());
+                System.out.println("******** CustomerResource.changePassword()");
+                
+                customerSessionBeanLocal.changePassword(changePasswordReq.getUsername(), changePasswordReq.getOldPassword(), changePasswordReq.getNewPassword());
+                
+                return Response.status(Response.Status.OK).build();
+            } catch (InvalidLoginCredentialException | ChangePasswordException ex) {
                 ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
 
                 return Response.status(Response.Status.UNAUTHORIZED).entity(errorRsp).build();
