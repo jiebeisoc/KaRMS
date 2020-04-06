@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,6 +21,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import util.enumeration.FoodOrderStatus;
 import util.exception.EntityInstanceExistsInCollectionException;
 import util.exception.EntityInstanceMissingInCollectionException;
 
@@ -26,16 +29,15 @@ import util.exception.EntityInstanceMissingInCollectionException;
 
 @Entity
 
-public class SaleTransactionEntity implements Serializable
+public class FoodOrderTransaction implements Serializable
 {
     private static final long serialVersionUID = 1L;
     
-    // Updated in v4.1 - JPA annotations for persistent attributes
-    // Updated in v4.2 - Bean Validation annotations for input data validation
+    
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long saleTransactionId;
+    private Long foodOrderTransactionId;
     @Column(nullable = false)
     @NotNull
     @Min(1)
@@ -54,11 +56,14 @@ public class SaleTransactionEntity implements Serializable
     @NotNull
     private Date transactionDateTime;    
     @OneToMany
-    private List<SaleTransactionLineItemEntity> saleTransactionLineItemEntities;    
+    private List<FoodOrderTransactionLineItem> foodOrderTransactionLineItemEntities;    
     @Column(nullable = false)
     @NotNull
     private Boolean voidRefund;
-    
+     @Enumerated(EnumType.STRING)
+    @NotNull
+    @Column(nullable = false)
+    private FoodOrderStatus status;
     
   
     @ManyToOne(optional = true)
@@ -67,15 +72,15 @@ public class SaleTransactionEntity implements Serializable
 
     
     
-    public SaleTransactionEntity()
+    public FoodOrderTransaction()
     {
-        saleTransactionLineItemEntities = new ArrayList<>();
+        foodOrderTransactionLineItemEntities = new ArrayList<>();
         voidRefund = false;
     }
     
     
     
-    public SaleTransactionEntity(Integer totalLineItem, Integer totalQuantity, BigDecimal totalAmount, Date transactionDateTime, Boolean voidRefund)
+    public FoodOrderTransaction(Integer totalLineItem, Integer totalQuantity, BigDecimal totalAmount, Date transactionDateTime, Boolean voidRefund)
     {
         this.totalLineItem = totalLineItem;
         this.totalQuantity = totalQuantity;
@@ -86,13 +91,13 @@ public class SaleTransactionEntity implements Serializable
 
     
     
-    public SaleTransactionEntity(Integer totalLineItem, Integer totalQuantity, BigDecimal totalAmount, Date transactionDateTime, List<SaleTransactionLineItemEntity> saleTransactionLineItemEntities, Boolean voidRefund)
+    public FoodOrderTransaction(Integer totalLineItem, Integer totalQuantity, BigDecimal totalAmount, Date transactionDateTime, List<FoodOrderTransactionLineItem> saleTransactionLineItemEntities, Boolean voidRefund)
     {
         this.totalLineItem = totalLineItem;
         this.totalQuantity = totalQuantity;
         this.totalAmount = totalAmount;
         this.transactionDateTime = transactionDateTime;
-        this.saleTransactionLineItemEntities = saleTransactionLineItemEntities;        
+        this.foodOrderTransactionLineItemEntities = saleTransactionLineItemEntities;        
         this.voidRefund = voidRefund;        
     }
 
@@ -102,7 +107,7 @@ public class SaleTransactionEntity implements Serializable
     public int hashCode()
     {
         int hash = 0;
-        hash += (this.saleTransactionId != null ? this.saleTransactionId.hashCode() : 0);
+        hash += (this.foodOrderTransactionId != null ? this.foodOrderTransactionId.hashCode() : 0);
         
         return hash;
     }
@@ -112,14 +117,14 @@ public class SaleTransactionEntity implements Serializable
     @Override
     public boolean equals(Object object)
     {
-        if (!(object instanceof SaleTransactionEntity)) 
+        if (!(object instanceof FoodOrderTransaction)) 
         {
             return false;
         }
         
-        SaleTransactionEntity other = (SaleTransactionEntity) object;
+        FoodOrderTransaction other = (FoodOrderTransaction) object;
         
-        if ((this.saleTransactionId == null && other.saleTransactionId != null) || (this.saleTransactionId != null && !this.saleTransactionId.equals(other.saleTransactionId))) 
+        if ((this.foodOrderTransactionId == null && other.foodOrderTransactionId != null) || (this.foodOrderTransactionId != null && !this.foodOrderTransactionId.equals(other.foodOrderTransactionId))) 
         {
             return false;
         }
@@ -132,16 +137,16 @@ public class SaleTransactionEntity implements Serializable
     @Override
     public String toString() 
     {
-        return "entity.SaleTransactionEntity[ saleTransactionId=" + this.saleTransactionId + " ]";
+        return "entity.SaleTransactionEntity[ saleTransactionId=" + this.foodOrderTransactionId + " ]";
     }
     
     
     
-    public void addSaleTransactionLineItemEntity(SaleTransactionLineItemEntity saleTransactionLineItemEntity) throws EntityInstanceExistsInCollectionException
+    public void addSaleTransactionLineItemEntity(FoodOrderTransactionLineItem saleTransactionLineItemEntity) throws EntityInstanceExistsInCollectionException
     {
-        if(!this.saleTransactionLineItemEntities.contains(saleTransactionLineItemEntity))
+        if(!this.foodOrderTransactionLineItemEntities.contains(saleTransactionLineItemEntity))
         {
-            this.saleTransactionLineItemEntities.add(saleTransactionLineItemEntity);
+            this.foodOrderTransactionLineItemEntities.add(saleTransactionLineItemEntity);
         }
         else
         {
@@ -151,11 +156,11 @@ public class SaleTransactionEntity implements Serializable
     
     
     
-    public void removeSaleTransactionLineItemEntity(SaleTransactionLineItemEntity saleTransactionLineItemEntity) throws EntityInstanceMissingInCollectionException
+    public void removeSaleTransactionLineItemEntity(FoodOrderTransactionLineItem saleTransactionLineItemEntity) throws EntityInstanceMissingInCollectionException
     {
-        if(this.saleTransactionLineItemEntities.contains(saleTransactionLineItemEntity))
+        if(this.foodOrderTransactionLineItemEntities.contains(saleTransactionLineItemEntity))
         {
-            this.saleTransactionLineItemEntities.remove(saleTransactionLineItemEntity);
+            this.foodOrderTransactionLineItemEntities.remove(saleTransactionLineItemEntity);
         }
         else
         {
@@ -165,12 +170,12 @@ public class SaleTransactionEntity implements Serializable
     
     
     
-    public Long getSaleTransactionId() {
-        return saleTransactionId;
+    public Long getFoodOrderTransactionId() {
+        return foodOrderTransactionId;
     }
 
-    public void setSaleTransactionId(Long saleTransactionId) {
-        this.saleTransactionId = saleTransactionId;
+    public void setFoodOrderTransactionId(Long foodOrderTransactionId) {
+        this.foodOrderTransactionId = foodOrderTransactionId;
     }
 
     public Integer getTotalLineItem() {
@@ -205,13 +210,13 @@ public class SaleTransactionEntity implements Serializable
         this.transactionDateTime = transactionDateTime;
     }
 
-    public List<SaleTransactionLineItemEntity> getSaleTransactionLineItemEntities() {
-        saleTransactionLineItemEntities.size();
-        return saleTransactionLineItemEntities;
+    public List<FoodOrderTransactionLineItem> getFoodOrderTransactionLineItemEntities() {
+        foodOrderTransactionLineItemEntities.size();
+        return foodOrderTransactionLineItemEntities;
     }
 
-    public void setSaleTransactionLineItemEntities(List<SaleTransactionLineItemEntity> saleTransactionLineItemEntities) {
-        this.saleTransactionLineItemEntities = saleTransactionLineItemEntities;
+    public void setFoodOrderTransactionLineItemEntities(List<FoodOrderTransactionLineItem> foodOrderTransactionLineItemEntities) {
+        this.foodOrderTransactionLineItemEntities = foodOrderTransactionLineItemEntities;
     }    
 
     public Boolean getVoidRefund() {

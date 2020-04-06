@@ -1,0 +1,315 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../template/defaultTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ezcomp="http://xmlns.jcp.org/jsf/composite/ezcomp">
+
+    <ui:define name="content">
+        <div>
+            <h3>Promotion Management</h3>
+
+
+            <h:form id="formAllPromotions">
+                <p:commandButton onclick="PF('dialogCreateNewPromotion').show()" icon="fa fa-plus"/>
+
+                <p:messages id="messages" redisplay="false" closable="true" />
+
+                <p:dataTable id="dataTableAllPromotions" widgetVar="dataTableAllPromotions" value="#{promotionManagedBean.promotionList}" var="promotion" rowKey="#{promotion.promotionId}" rowIndexVar="row"
+                             filteredValue="#{promotionManagedBean.filteredPromotionList}"
+                             rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
+
+                    <f:facet name="header">
+                        <p:outputPanel style="text-align: right;">
+                            <h:outputText value="Search all fields:" />
+                            <p:inputText id="globalFilter" onkeyup="PF('dataTableAllPromotions').filter()" style="width:300px" placeholder="Enter keyword"/>
+                        </p:outputPanel>
+                    </f:facet>
+
+                    <p:column headerText="Promotion ID" sortBy="#{promotion.promotionId}" filterBy="#{promotion.promotionId}" filterMatchMode="contains">
+                        <h:outputText value="#{promotion.promotionId}" />
+                    </p:column>                            
+
+                    <p:column headerText="Name" sortBy="#{promotion.promotionName}" filterBy="#{promotion.promotionName}" filterMatchMode="contains">
+                        <h:outputText value="#{promotion.promotionName}" />
+                    </p:column>
+
+                    <p:column headerText="Description" sortBy="#{promotion.description}" filterBy="#{promotion.description}" filterMatchMode="contains">
+                        <h:outputText value="#{promotion.description}" />
+                    </p:column>
+
+                    <p:column headerText="Discount Rate" sortBy="#{promotion.discountRate}" filterBy="#{promotion.discountRate}" filterMatchMode="contains">
+                        <h:outputText value="#{promotion.discountRate}" />
+                    </p:column>
+
+                    <p:column headerText="Valid From" sortBy="#{promotion.validFrom}" filterBy="#{promotion.validFrom}" filterMatchMode="contains" style="text-align: right;">
+                        <h:outputText value="#{promotion.validFrom}">
+                            <f:convertDateTime pattern = "dd-MM-yyyy" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Valid Unitil" sortBy="#{promotion.validUntil}" filterBy="#{promotion.validUntil}" filterMatchMode="contains" style="text-align: right;">
+                        <h:outputText value="#{promotion.validUntil}">
+                            <f:convertDateTime pattern = "dd-MM-yyyy" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Enabled" sortBy="#{promotion.enabled}" filterBy="#{promotion.enabled}" filterMatchMode="contains" style="text-align: right;">
+                        <h:outputText value="#{promotion.enabled}">
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Action" >
+                        <p:commandButton actionListener="#{promotionManagedBean.doUpdatePromotion}" update="formUpdatePromotion" oncomplete="PF('dialogUpdatePromotion').show()" icon="ui-icon-pencil" title="Update">
+                            <f:attribute name="promotionToUpdate" value="#{promotion}" />
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-trash" actionListener="#{promotionManagedBean.deletePromotion}" update="formAllPromotions:dataTableAllPromotions formAllPromotions:messages">
+                            <f:attribute name="promotionToDelete" value="#{promotion}" />
+                            <p:confirm header="Confirmation" message="Are you sure you want to delete #{promotion.promotionName} (Description: #{promotion.description})?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+
+            </h:form>
+
+            <h:form id="formCreateNewPromotion">
+
+                <p:dialog id="dialogCreateNewPromotion" widgetVar="dialogCreateNewPromotion" header="Create New Promotion" closable="true">
+
+                    <p:messages id="messagesCreateNewPromotion" redisplay="false" />
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="name" value="Name: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="name" value="#{promotionManagedBean.newPromotion.promotionName}" placeholder="Promotion 1" required="true" requiredMessage="Name is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="name" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="description" value="Description " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="description" value="#{promotionManagedBean.newPromotion.description}" placeholder="Promotion 1" required="true" requiredMessage="Description is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="description" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="discountRate" value="discount rate" style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:spinner id="discountRate" value="#{promotionManagedBean.newPromotion.discountRate}" placeholder="0.1" min="0" max="1" stepFactor="0.01" required="true" requiredMessage="Discount Rate is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="discountRate" />
+                            </p:column>
+                        </p:row>
+
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="validFrom" value="Valid From " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>                            
+                                <p:inputText id ="validFrom" value="#{promotionManagedBean.newPromotion.validFrom}" placeholder="dd-MM-yyyy">  
+                                    <f:convertDateTime pattern="dd-MM-yyyy"/>  
+                                </p:inputText>
+                            </p:column>
+                            <p:column>
+                                <p:message for="validFrom" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="validUntil" value="Valid Until " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>                            
+                                <p:inputText id="validUntil" value="#{promotionManagedBean.newPromotion.validUntil}" placeholder="dd-MM-yyyy">  
+                                    <f:convertDateTime pattern="dd-MM-yyyy"/>  
+                                </p:inputText>
+                            </p:column>
+                            <p:column>
+                                <p:message for="validUntil" />
+                            </p:column>
+                        </p:row>
+
+
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="enabled" value="Expired " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="enabled" value="#{promotionManagedBean.newPromotion.enabled}">
+                                    <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
+                                    <f:selectItem itemValue="#{true}" itemLabel="True"  />
+                                    <f:selectItem itemValue="#{false}" itemLabel="False"  />
+
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <p:message for="enabled" />
+                            </p:column>
+                        </p:row>
+
+
+
+                        <p:row>
+                            <p:column colspan="3">
+                                <p:commandButton type="reset" value="Clear" />&nbsp;
+                                <p:commandButton value="Create New Promotion" update="@form formAllPromotions:dataTableAllPromotions" actionListener="#{promotionManagedBean.createNewPromotion}" oncomplete="PF('dialogCreateNewPromotion').hide();" />
+
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+
+                </p:dialog>
+
+            </h:form>
+
+
+            <h:form id="formUpdatePromotion">
+
+                <p:dialog id="dialogUpdatePromotion" widgetVar="dialogUpdatePromotion" header="Update Promotion" closable="true">
+
+                    <p:messages id="messagesUpdatePromotion" redisplay="false" />
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Promotion ID: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{promotionManagedBean.selectedPromotionToUpdate.promotionId}" />
+                            </p:column>
+                            <p:column>
+                                &nbsp;
+                            </p:column>
+                        </p:row>
+
+
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="name" value="Name: " />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="name" value="#{promotionManagedBean.selectedPromotionToUpdate.promotionName}" placeholder="Promotion 1" required="true" requiredMessage="Name is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="name" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="description" value="Description " />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="description" value="#{promotionManagedBean.selectedPromotionToUpdate.description}" placeholder="Promotion 1" required="true" requiredMessage="Description is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="description" />
+                            </p:column>
+                        </p:row>
+
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="discountRate" value="Discount Rate " />
+                            </p:column>
+                            <p:column>
+                                <p:spinner id="discountRate" value="#{promotionManagedBean.selectedPromotionToUpdate.discountRate}" placeholder="0.00" min="0" max="1" stepFactor="0.01" required="true" requiredMessage="Discount Rate is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="discountRate" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="validFrom" value="Valid From " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>                           
+                                <p:inputText id="validFrom" value="#{promotionManagedBean.selectedPromotionToUpdate.validFrom}">  
+                                    <f:convertDateTime pattern="dd-MM-yyyy"/>  
+                                </p:inputText>
+                            </p:column>
+                            <p:column>
+                                <p:message for="validFrom" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="validUntil" value="Valid Until " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>                            
+                                <p:inputText id="validUntil" value="#{promotionManagedBean.selectedPromotionToUpdate.validUntil}">  
+                                    <f:convertDateTime pattern="dd-MM-yyyy"/>  
+                                </p:inputText>
+                            </p:column>
+                            <p:column>
+                                <p:message for="validUntil" />
+                            </p:column>
+                        </p:row>
+<!--
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="enabled" value="Enabled " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="enabled" value="#{promotionManagedBean.selectedPromotionToUpdate.enabled}">
+                                    <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
+                                    <f:selectItem itemValue="#{true}" itemLabel="True"  />
+                                    <f:selectItem itemValue="#{false}" itemLabel="False"  />
+
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <p:message for="enabled" />
+                            </p:column>
+                        </p:row>
+
+
+-->
+                        <p:row>
+                            <p:column colspan="3">
+
+                                <p:commandButton value="Update Promotion" update="@form formAllPromotions:dataTableAllPromotions" actionListener="#{promotionManagedBean.updatePromotion}" oncomplete="PF('dialogUpdatePromotion').show();" />
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+
+                </p:dialog>
+
+            </h:form>
+
+        </div>
+    </ui:define>
+
+</ui:composition>

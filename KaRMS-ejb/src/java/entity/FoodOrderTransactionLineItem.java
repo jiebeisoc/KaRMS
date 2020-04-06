@@ -22,10 +22,10 @@ import javax.validation.constraints.NotNull;
 
 
 @NamedQueries({
-    @NamedQuery(name = "selectAllSaleTransactionLineItemsByProductId", query = "SELECT stli FROM SaleTransactionLineItemEntity stli WHERE stli.foodItem.foodItemId = :inProductId")
+    @NamedQuery(name = "selectAllFoodOrderTransactionLineItemsByFoodItemId", query = "SELECT ftli FROM FoodOrderTransactionLineItem ftli WHERE ftli.foodItem.foodItemId = :inFoodItemId")
 })
 
-public class SaleTransactionLineItemEntity implements Serializable
+public class FoodOrderTransactionLineItem implements Serializable
 {
     private static final long serialVersionUID = 1L;
     
@@ -33,7 +33,7 @@ public class SaleTransactionLineItemEntity implements Serializable
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long saleTransactionLineItemId;
+    private Long foodOrderTransactionLineItemId;
     @Column(nullable = false)
     @NotNull
     @Min(1)
@@ -58,13 +58,13 @@ public class SaleTransactionLineItemEntity implements Serializable
 
     
     
-    public SaleTransactionLineItemEntity()
+    public FoodOrderTransactionLineItem()
     {
     }
     
     
     
-    public SaleTransactionLineItemEntity(Integer serialNumber, FoodItem foodItem, Integer quantity, BigDecimal unitPrice, BigDecimal subTotal)
+    public FoodOrderTransactionLineItem(Integer serialNumber, FoodItem foodItem, Integer quantity, BigDecimal unitPrice, BigDecimal subTotal)
     {
         this.serialNumber = serialNumber;
         this.foodItem = foodItem;
@@ -81,7 +81,7 @@ public class SaleTransactionLineItemEntity implements Serializable
     public int hashCode()
     {
         int hash = 0;
-        hash += (this.saleTransactionLineItemId != null ? this.saleTransactionLineItemId.hashCode() : 0);
+        hash += (this.foodOrderTransactionLineItemId != null ? this.foodOrderTransactionLineItemId.hashCode() : 0);
         
         return hash;
     }
@@ -91,14 +91,14 @@ public class SaleTransactionLineItemEntity implements Serializable
     @Override
     public boolean equals(Object object)
     {
-        if (!(object instanceof SaleTransactionLineItemEntity)) 
+        if (!(object instanceof FoodOrderTransactionLineItem)) 
         {
             return false;
         }
         
-        SaleTransactionLineItemEntity other = (SaleTransactionLineItemEntity) object;
+        FoodOrderTransactionLineItem other = (FoodOrderTransactionLineItem) object;
         
-        if ((this.saleTransactionLineItemId == null && other.saleTransactionLineItemId != null) || (this.saleTransactionLineItemId != null && !this.saleTransactionLineItemId.equals(other.saleTransactionLineItemId))) 
+        if ((this.foodOrderTransactionLineItemId == null && other.foodOrderTransactionLineItemId != null) || (this.foodOrderTransactionLineItemId != null && !this.foodOrderTransactionLineItemId.equals(other.foodOrderTransactionLineItemId))) 
         {
             return false;
         }
@@ -111,17 +111,17 @@ public class SaleTransactionLineItemEntity implements Serializable
     @Override
     public String toString() 
     {
-        return "entity.SaleTransactionLineItemEntity[ saleTransactionLineItemId=" + this.saleTransactionLineItemId + " ]";
+        return "entity.SaleTransactionLineItemEntity[ saleTransactionLineItemId=" + this.foodOrderTransactionLineItemId + " ]";
     }
 
     
     
-    public Long getSaleTransactionLineItemId() {
-        return saleTransactionLineItemId;
+    public Long getFoodOrderTransactionLineItemId() {
+        return foodOrderTransactionLineItemId;
     }
 
-    public void setSaleTransactionLineItemId(Long saleTransactionLineItemId) {
-        this.saleTransactionLineItemId = saleTransactionLineItemId;
+    public void setFoodOrderTransactionLineItemId(Long foodOrderTransactionLineItemId) {
+        this.foodOrderTransactionLineItemId = foodOrderTransactionLineItemId;
     }
 
     public Integer getSerialNumber() {
