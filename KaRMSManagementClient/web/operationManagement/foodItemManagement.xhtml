@@ -1,0 +1,333 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../template/defaultTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ezcomp="http://xmlns.jcp.org/jsf/composite/ezcomp">
+
+    <ui:define name="content">
+       <div>
+            <h3>Food Item Management</h3>
+            
+            
+            <h:form id="formAllFoodItems">
+                <p:commandButton onclick="PF('dialogCreateNewFoodItem').show()" icon="fa fa-plus"/>
+            
+                <p:messages id="messages" redisplay="false" closable="true" />
+
+                <p:dataTable id="dataTableAllFoodItems" widgetVar="dataTableAllFoodItems" value="#{foodItemManagedBean.foodItems}" var="foodItem" rowKey="#{foodItem.foodItemId}" rowIndexVar="row"
+                             filteredValue="#{foodItemManagedBean.filteredFoodItems}"
+                             rows="10" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="10,20,50">
+
+                    <f:facet name="header">
+                        <p:outputPanel style="text-align: right;">
+                            <h:outputText value="Search all fields:" />
+                            <p:inputText id="globalFilter" onkeyup="PF('dataTableAllFoodItems').filter()" style="width:300px" placeholder="Enter keyword"/>
+                        </p:outputPanel>
+                    </f:facet>
+
+                    <p:column headerText="SKU Code" sortBy="#{foodItem.skuCode}" filterBy="#{foodItem.skuCode}" filterMatchMode="contains">
+                        <h:outputText value="#{foodItem.skuCode}" />
+                    </p:column>
+
+                    <p:column headerText="Food Item ID" sortBy="#{foodItem.foodItemId}" filterBy="#{foodItem.foodItemId}" filterMatchMode="contains">
+                        <h:outputText value="#{foodItem.foodItemId}" />
+                    </p:column>                            
+
+                    <p:column headerText="Name" sortBy="#{foodItem.name}" filterBy="#{foodItem.name}" filterMatchMode="contains">
+                        <h:outputText value="#{foodItem.name}" />
+                    </p:column>
+                    
+                    <p:column headerText="Description" sortBy="#{foodItem.description}" filterBy="#{foodItem.description}" filterMatchMode="contains">
+                        <h:outputText value="#{foodItem.description}" />
+                    </p:column>
+
+                    <p:column headerText="Quantity on Hand" sortBy="#{foodItem.quantityOnHand}" filterBy="#{foodItem.quantityOnHand}" filterMatchMode="contains">
+                        <h:outputText value="#{foodItem.quantityOnHand}" />
+                    </p:column>
+
+                    <p:column headerText="Unit Price" sortBy="#{foodItem.unitPrice}" filterBy="#{foodItem.unitPrice}" filterMatchMode="contains" style="text-align: right;">
+                        <h:outputText value="#{foodItem.unitPrice}">
+                            <f:convertNumber minFractionDigits="2" maxFractionDigits="2" type="currency" currencyCode="SGD" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Category" sortBy="#{foodItem.categoryEntity.name}" filterBy="#{foodItem.categoryEntity.name}" filterMatchMode="exact">
+                        <f:facet name="filter">
+                            <p:selectOneMenu id="selCategory" onchange="PF('dataTableAllFoodItems').filter()">
+                                <f:selectItem itemValue="#{null}" itemLabel="[Select One]" noSelectionOption="true" />
+                                <f:selectItems value="#{foodItemManagedBean.categoryEntities}" var="categoryEntity" itemValue="#{categoryEntity.name}" itemLabel="#{categoryEntity.name}" />
+                            </p:selectOneMenu>
+                        </f:facet>
+                        <h:outputText value="#{foodItem.categoryEntity.name}" />
+                    </p:column>
+
+                    <p:column headerText="Action" >
+                        <p:commandButton update="ccViewFoodItemDetails:formViewFoodItemDetails" oncomplete="PF('dialogViewFoodItem').show()" icon="ui-icon-document" title="View">
+                            <f:setPropertyActionListener value="#{foodItem}" target="#{foodItemManagedBean.viewFoodItemManagedBean.foodItemToView}" />
+                        </p:commandButton>
+                        <p:commandButton actionListener="#{foodItemManagedBean.doUpdateFoodItem}" update="formUpdateFoodItem" oncomplete="PF('dialogUpdateFoodItem').show()" icon="ui-icon-pencil" title="Update">
+                            <f:attribute name="foodItemToUpdate" value="#{foodItem}" />
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-trash" actionListener="#{foodItemManagedBean.deleteFoodItem(event)}" update="formAllFoodItems:dataTableAllFoodItems formAllFoodItems:messages">
+                            <f:attribute name="foodItemToDelete" value="#{foodItem}" />
+                            <p:confirm header="Confirmation" message="Are you sure you want to delete #{foodItem.name} (SKU Code: #{foodItem.skuCode})?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+
+            </h:form>
+            
+            <h:form id="formCreateNewFoodItem">
+
+                <p:dialog id="dialogCreateNewFoodItem" widgetVar="dialogCreateNewFoodItem" header="Create New Food Item" closable="true">
+
+                    <p:messages id="messagesCreateNewFoodItem" redisplay="false" />
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="skuCode" value="SKU Code: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="skuCode" value="#{foodItemManagedBean.newFoodItem.skuCode}" placeholder="FOOD999" required="true" requiredMessage="SKU Code is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="skuCode" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="name" value="Name: " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="name" value="#{foodItemManagedBean.newFoodItem.name}" placeholder="Food Item 1" required="true" requiredMessage="Name is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="name" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="description" value="Description " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="description" value="#{foodItemManagedBean.newFoodItem.description}" placeholder="Food Item 1" required="true" requiredMessage="Description is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="description" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="quantityOnHand" value="Quantity On Hand " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:spinner id="quantityOnHand" value="#{foodItemManagedBean.newFoodItem.quantityOnHand}" placeholder="100" min="0" max="1000000" required="true" requiredMessage="Quantity On Hand is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="quantityOnHand" />
+                            </p:column>
+                        </p:row>
+
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="unitPrice" value="Unit Price " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>                            
+                                <p:spinner id="unitPrice" value="#{foodItemManagedBean.newFoodItem.unitPrice}" placeholder="10.00" min="0" max="1000000" stepFactor="0.01" required="true" requiredMessage="Unit Price is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="unitPrice" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="Rating" value=" Rating " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:rating id="Rating" value="#{foodItemManagedBean.newFoodItem.productRating}" stars="5" required="true" requiredMessage="Food Item Rating is required" cancel="false">
+                                    <f:validateLongRange minimum="1" maximum="5" />
+                                </p:rating>
+                            </p:column>
+                            <p:column>
+                                <p:message for="Rating" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="selCategory" value="Category " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="selCategory" value="#{foodItemManagedBean.categoryIdNew}">
+                                    <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
+                                    <f:selectItems value="#{foodItemManagedBean.categoryEntities}" var="categoryEntity" itemValue="#{categoryEntity.categoryId}" itemLabel="#{categoryEntity.name}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <p:message for="selCategory" />
+                            </p:column>
+                        </p:row>
+
+                       
+
+                        <p:row>
+                            <p:column colspan="3">
+                                <p:commandButton type="reset" value="Clear" />&nbsp;
+                                <p:commandButton value="Create New Food Item" update="@form formAllFoodItems:dataTableAllFoodItems" actionListener="#{foodItemManagedBean.createNewFoodItem}" oncomplete="PF('dialogCreateNewFoodItem').show();" />
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+
+                </p:dialog>
+
+            </h:form>
+
+         <ezcomp:viewFoodItemDetails id="ccViewFoodItemDetails"/>
+
+            <h:form id="formUpdateFoodItem">
+
+                <p:dialog id="dialogUpdateFoodItem" widgetVar="dialogUpdateFoodItem" header="Update Food Item" closable="true">
+
+                    <p:messages id="messagesUpdateFoodItem" redisplay="false" />
+
+                    <p:panelGrid>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Food Item ID: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{foodItemManagedBean.selectedFoodItemToUpdate.foodItemId}" />
+                            </p:column>
+                            <p:column>
+                                &nbsp;
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="SKU Code: " />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{foodItemManagedBean.selectedFoodItemToUpdate.skuCode}" />
+                            </p:column>
+                            <p:column>
+                                &nbsp;
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="name" value="Name: " />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="name" value="#{foodItemManagedBean.selectedFoodItemToUpdate.name}" placeholder="Food Item 1" required="true" requiredMessage="Name is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="name" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="description" value="Description " />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="description" value="#{foodItemManagedBean.selectedFoodItemToUpdate.description}" placeholder="Food Item 1" required="true" requiredMessage="Description is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="description" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="quantityOnHand" value="Quantity On Hand " />
+                            </p:column>
+                            <p:column>
+                                <p:spinner id="quantityOnHand" value="#{foodItemManagedBean.selectedFoodItemToUpdate.quantityOnHand}" placeholder="100" min="0" max="1000000" required="true" requiredMessage="Quantity On Hand is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="quantityOnHand" />
+                            </p:column>
+                        </p:row>
+
+                 
+        
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="unitPrice" value="Unit Price " />
+                            </p:column>
+                            <p:column>
+                                <p:spinner id="unitPrice" value="#{foodItemManagedBean.selectedFoodItemToUpdate.unitPrice}" placeholder="10.00" min="0" max="1000000" stepFactor="0.01" required="true" requiredMessage="Unit Price is required" />
+                            </p:column>
+                            <p:column>
+                                <p:message for="unitPrice" />
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="Rating" value=" Rating " />
+                            </p:column>
+                            <p:column>
+                                <p:rating id="Rating" value="#{foodItemManagedBean.selectedFoodItemToUpdate.productRating}" stars="5" required="true" requiredMessage="Rating is required" cancel="false">
+                                    <f:validateLongRange minimum="1" maximum="5" />
+                                </p:rating>
+                            </p:column>
+                            <p:column>
+                                <p:message for="Rating" />
+                            </p:column>
+                        </p:row>                    
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="selCategory" value="Category " style="font-weight: bold;" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="selCategory" value="#{foodItemManagedBean.categoryIdUpdate}">
+                                    <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
+                                    <f:selectItems value="#{foodItemManagedBean.categoryEntities}" var="categoryEntity" itemValue="#{categoryEntity.categoryId}" itemLabel="#{categoryEntity.name}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <p:message for="selCategory" />
+                            </p:column>
+                        </p:row>
+
+ 
+
+                        <p:row>
+                            <p:column colspan="3">
+                                <p:commandButton value="Update Food Item" update="@form formAllFoodItems:dataTableAllFoodItems" actionListener="#{foodItemManagedBean.updateFoodItem}" oncomplete="PF('dialogUpdateFoodItem').show();" />
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+
+                </p:dialog>
+
+            </h:form>
+
+        </div>
+    </ui:define>
+
+</ui:composition>

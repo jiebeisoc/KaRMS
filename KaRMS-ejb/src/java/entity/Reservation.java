@@ -77,8 +77,7 @@ public class Reservation implements Serializable {
     @ManyToOne
     private Customer customer;
     
-    @OneToOne(mappedBy = "reservation")
-    private FoodOrder foodOrder;
+  
 
     public Reservation() {
         this.status = ReservationStatus.NOTPAID;
@@ -213,13 +212,7 @@ public class Reservation implements Serializable {
         this.customer = customer;
     }
 
-    public FoodOrder getFoodOrder() {
-        return foodOrder;
-    }
 
-    public void setFoodOrder(FoodOrder foodOrder) {
-        this.foodOrder = foodOrder;
-    }
 
     public BigDecimal getTotalPrice() {
         return totalPrice;

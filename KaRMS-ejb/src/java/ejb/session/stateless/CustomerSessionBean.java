@@ -15,10 +15,12 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import util.exception.ChangePasswordException;
 import util.exception.CreateCustomerException;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerUsernameExistException;
 import util.exception.InvalidLoginCredentialException;
+import util.security.CryptographicHelper;
 
 /**
  *
@@ -114,8 +116,9 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         } else {
             try {
                 Customer customer = retrieveCustomerByUsername(username);
-                
-                if (customer.getPassword().equals(password)) {
+                String passwordHash = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + customer.getSalt()));
+
+                if (customer.getPassword().equals(passwordHash)) {
                     return customer;
                 } else {
                     throw new InvalidLoginCredentialException("Password is incorrect!");
@@ -138,5 +141,27 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
         Customer customer = retrieveCustomerById(customerId);
         
         customer.setPoints(customer.getPoints() - pointsToDeduct);
+    }
+    
+    public void updateDetails(String username, String name, String email, String phoneNo, String creditCardNo) throws InvalidLoginCredentialException, CustomerNotFoundException {
+        Customer customer = retrieveCustomerByUsername(username);
+        
+        customer.setName(name);
+        customer.setEmail(email);
+        customer.setPhoneNo(phoneNo);
+        customer.setCreditCardNo(creditCardNo);
+        
+    }
+    
+    public void changePassword(String username, String oldPassword, String newPassword) throws InvalidLoginCredentialException, CustomerNotFoundException, ChangePasswordException {
+
+        Customer customer = retrieveCustomerByUsername(username);
+        String passwordHash = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(oldPassword + customer.getSalt()));
+        
+        if (customer.getPassword().equals(passwordHash)) {
+            customer.setPassword(newPassword);
+        } else {
+            throw new ChangePasswordException();
+        }
     }
 }

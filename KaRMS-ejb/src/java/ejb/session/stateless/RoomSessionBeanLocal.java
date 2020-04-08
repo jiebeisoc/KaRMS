@@ -16,7 +16,7 @@ import javax.ejb.Local;
 @Local
 public interface RoomSessionBeanLocal {
 
-    public Long createNewRoom(Room newRoom);
+    public Long createNewRoom(Room newRoom, Long roomTypeId, Long outletId);
 
     public List<Room> retrieveAllRoom();
 

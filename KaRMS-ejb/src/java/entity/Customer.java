@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
@@ -18,6 +19,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import util.security.CryptographicHelper;
 
 /**
  *
@@ -61,10 +63,13 @@ public class Customer implements Serializable {
     private List<Reservation> reservations;
     //Added by Luqian
     @OneToMany(mappedBy = "customerEntity")
-    private List<SaleTransactionEntity> saleTransactionEntities;
+    private List<FoodOrderTransaction> saleTransactionEntities;
 
     public Customer() {
+        this.salt = CryptographicHelper.getInstance().generateRandomString(32);
         this.points = 0;
+        this.reservations = new ArrayList<>();
+        this.saleTransactionEntities = new ArrayList<>();
     }
 
     public Customer(Long memberNum, String name, String phoneNo, String creditCardNo, String username, String password, Date birthday, String email) {
@@ -77,6 +82,8 @@ public class Customer implements Serializable {
         this.password = password;
         this.birthday = birthday;
         this.email = email;
+        
+        setPassword(password);
     }
 
     public Long getCustomerId() {
@@ -179,7 +186,12 @@ public class Customer implements Serializable {
      * @param password the password to set
      */
     public void setPassword(String password) {
-        this.password = password;
+        if(password != null) {
+            this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
+        }
+        else {
+            this.password = null;
+        }
     }
 
     public Date getBirthday() {
@@ -214,6 +226,7 @@ public class Customer implements Serializable {
         this.reservations = reservations;
     }
 
+<<<<<<< HEAD
     public Long getMemberNum() {
         return memberNum;
     }
@@ -223,10 +236,13 @@ public class Customer implements Serializable {
     }
     
     public List<SaleTransactionEntity> getSaleTransactionEntities() {
+=======
+    public List<FoodOrderTransaction> getSaleTransactionEntities() {
+>>>>>>> master
         return saleTransactionEntities;
     }
 
-    public void setSaleTransactionEntities(List<SaleTransactionEntity> saleTransactionEntities) {
+    public void setSaleTransactionEntities(List<FoodOrderTransaction> saleTransactionEntities) {
         this.saleTransactionEntities = saleTransactionEntities;
     }
     
