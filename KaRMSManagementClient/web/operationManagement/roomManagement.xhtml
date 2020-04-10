@@ -28,11 +28,9 @@
                 <p:ajax event='rowSelect' listener='#{roomManagementManagedBean.onRowSelect}' oncomplete="PF('dialogUpdateRoom').show()" update='@form formUpdateRoom' />
                 <p:ajax event='rowUnselect' listener='#{roomManagementManagedBean.onRowUnselect}' update='@form formUpdateRoom' />
                 
-                <!--
                 <p:column headerText="Outlet" sortBy="#{room.outlet.outletName}">
                     <h:outputText value="#{room.outlet.outletName}" />
                 </p:column>
-                -->
                 
                 <p:column headerText="Room number" sortBy="#{room.roomNum}">
                     <h:outputText value="#{room.roomNum}" />
@@ -52,15 +50,17 @@
                 
                 <p:panelGrid>
                     
-                    <!--
                     <p:row>
                         <p:column>
                             <p:outputLabel for="outlet" value="Outlet: " style="font-weight: bold" />
                         </p:column>
                         <p:column>
+                            <p:selectOneMenu id="outlet" value="#{roomManagementManagedBean.outletId}" dynamic="true" style="width:125px">
+                                <f:selectItem itemLabel="Select One" itemValue="" />
+                                <f:selectItems value="#{roomManagementManagedBean.outlets}" var="outlet" itemValue="#{outlet.outletId}" itemLabel="#{outlet.outletName}"/>
+                            </p:selectOneMenu>
                         </p:column>
                     </p:row>
-                    -->
                     
                     <p:row>
                         <p:column>
@@ -103,44 +103,47 @@
             
             <p:dialog id="dialogUpdateRoom" widgetVar="dialogUpdateRoom" header="Details" closable="true">
                 
-                <!--
-                <p:row>
-                    <p:column>
-                        <p:outputLabel value="Outlet: " style="font-weight: bold" />
-                    </p:column>
-                    <p:column>
-                        <h:outputText id="outlet" value="#{roomManagementManagedBean.selectedRoom.outlet.outletName}" />
-                    </p:column>
-                </p:row>
-                -->
-                <p:row>
-                    <p:column>
-                        <p:outputLabel value="Room number: " style="font-weight: bold" />
-                    </p:column>
-                    <p:column>
-                        <h:outputText id="roomNum" value="#{roomManagementManagedBean.selectedRoom.roomNum}" />
-                    </p:column>
-                </p:row>
+                <p:panelGrid>
                 
-                <p:row>
-                    <p:column>
-                        <p:outputLabel value="Room type: " style="font-weight: bold" />
-                    </p:column>
-                    <p:column>
-                        <h:outputText id="roomType" value="#{roomManagementManagedBean.selectedRoom.roomType.name}" />
-                    </p:column>
-                </p:row>
-                
-                <p:row>
-                    <p:column colspan="2">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Outlet: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="outlet" value="#{roomManagementManagedBean.selectedRoom.outlet.outletName}" />
+                        </p:column>
+                    </p:row>
 
-                        <p:commandButton icon='ui-icon-trash' actionListener='#{roomManagementManagedBean.deleteRoom}' update="@form formAllRoom:dataTableAllRoom" immediate="true" value="Delete">
-                            <f:attribute name='roomToDelete' value='#{roomManagementManagedBean.selectedRoom}'/>
-                            <p:confirm header='Confirmation' message="Are you sure you want to delete #{roomManagementManagedBean.selectedRoom}?" icon='ui-icon-alert' />
-                        </p:commandButton>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Room number: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="roomNum" value="#{roomManagementManagedBean.selectedRoom.roomNum}" />
+                        </p:column>
+                    </p:row>
 
-                    </p:column>
-                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Room type: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="roomType" value="#{roomManagementManagedBean.selectedRoom.roomType.name}" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="2">
+
+                            <p:commandButton icon='ui-icon-trash' actionListener='#{roomManagementManagedBean.deleteRoom}' update="@form formAllRoom:dataTableAllRoom" immediate="true" value="Delete">
+                                <f:attribute name='roomToDelete' value='#{roomManagementManagedBean.selectedRoom}'/>
+                                <p:confirm header='Confirmation' message="Are you sure you want to delete #{roomManagementManagedBean.selectedRoom}?" icon='ui-icon-alert' />
+                            </p:commandButton>
+
+                        </p:column>
+                    </p:row>
+                    
+                </p:panelGrid>
                 
             </p:dialog>
             
