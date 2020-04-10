@@ -48,7 +48,7 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
 
     
     @Override
-    public FoodOrderTransaction createNewSaleTransaction(Long customerId, FoodOrderTransaction newSaleTransactionEntity) throws CreateNewSaleTransactionException
+    public FoodOrderTransaction createNewFoodOrderTransaction(Long customerId, FoodOrderTransaction newSaleTransactionEntity) throws CreateNewSaleTransactionException
     {
        
         if(newSaleTransactionEntity != null)
@@ -95,7 +95,7 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
     }
     
     @Override
-    public List<FoodOrderTransaction> retrieveAllSaleTransactionsByCustomerID(String customerId)
+    public List<FoodOrderTransaction> retrieveAllFoodOrderTransactionsByCustomerID(Long customerId)
     {
         Query query = entityManager.createQuery("SELECT st FROM SaleTransactionEntity st where st.customerEntity.customerId = :customerID");
         query.setParameter("customerID", customerId);

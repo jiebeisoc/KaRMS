@@ -130,9 +130,6 @@ public class RoomType implements Serializable {
     }
 
     public List<Long> getRoomRateIds() {
-        for (RoomRate rr : roomRates) {
-            roomRateIds.add(rr.getRoomRateId());
-        }
         return roomRateIds;
     }
 

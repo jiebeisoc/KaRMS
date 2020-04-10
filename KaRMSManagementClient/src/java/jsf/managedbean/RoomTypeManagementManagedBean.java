@@ -64,7 +64,7 @@ public class RoomTypeManagementManagedBean implements Serializable {
         
         newRoomType = new RoomType();
         roomRateIdsNew = null;
-        roomRates = roomRateSessionBeanLocal.retrieveAvailableRoomRates();
+        roomRates = roomRateSessionBeanLocal.retrieveAllRoomRates();
         
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New room type created successfully", null));
     }    

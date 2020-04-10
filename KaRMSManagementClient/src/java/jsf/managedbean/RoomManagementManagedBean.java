@@ -44,9 +44,9 @@ public class RoomManagementManagedBean implements Serializable {
     private List<Outlet> outlets;
     
     private Room newRoom;
+    private Long outletId;
     private Room selectedRoom;
     private Long roomTypeId;
-    private Long outletId;
     /**
      * Creates a new instance of RoomManagementManagedBean
      */
@@ -62,10 +62,10 @@ public class RoomManagementManagedBean implements Serializable {
     }
     
     public void createNewRoom(ActionEvent event) {
-        Long roomId = roomSessionBeanLocal.createNewRoom(newRoom, roomTypeId, null);
+        Long roomId = roomSessionBeanLocal.createNewRoom(newRoom, roomTypeId, outletId);
         rooms.add(newRoom);
         roomTypeId = null;
-        
+        outletId = null;
         newRoom = new Room();
         
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New room created successfully", null));
@@ -132,6 +132,14 @@ public class RoomManagementManagedBean implements Serializable {
 
     public void setRoomTypeId(Long roomTypeId) {
         this.roomTypeId = roomTypeId;
+    }
+
+    public Long getOutletId() {
+        return outletId;
+    }
+
+    public void setOutletId(Long outletId) {
+        this.outletId = outletId;
     }
     
 }

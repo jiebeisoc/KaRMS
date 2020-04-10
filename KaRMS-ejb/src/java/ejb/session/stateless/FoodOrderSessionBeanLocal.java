@@ -12,7 +12,7 @@ import util.exception.SaleTransactionNotFoundException;
 
 public interface FoodOrderSessionBeanLocal
 {
-    FoodOrderTransaction createNewSaleTransaction(Long staffId, FoodOrderTransaction newSaleTransactionEntity) throws CreateNewSaleTransactionException;
+    FoodOrderTransaction createNewFoodOrderTransaction(Long staffId, FoodOrderTransaction newSaleTransactionEntity) throws CreateNewSaleTransactionException;
 
     List<FoodOrderTransaction> retrieveAllSaleTransactions();
     
@@ -26,5 +26,5 @@ public interface FoodOrderSessionBeanLocal
     
     void deleteSaleTransaction(FoodOrderTransaction saleTransactionEntity); 
 
-    public List<FoodOrderTransaction> retrieveAllSaleTransactionsByCustomerID(String firstName );
+    public List<FoodOrderTransaction> retrieveAllFoodOrderTransactionsByCustomerID(Long customerId );
 }
