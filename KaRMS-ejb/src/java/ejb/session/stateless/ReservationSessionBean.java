@@ -10,6 +10,9 @@ import entity.Outlet;
 import entity.Promotion;
 import entity.Reservation;
 import entity.Room;
+import entity.RoomRate;
+import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
@@ -19,6 +22,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.enumeration.ReservationStatus;
 import util.exception.CustomerNotFoundException;
+import util.exception.NoAvailableRoomException;
 
 /**
  *
@@ -26,6 +30,9 @@ import util.exception.CustomerNotFoundException;
  */
 @Stateless
 public class ReservationSessionBean implements ReservationSessionBeanLocal {
+
+    @EJB(name = "RoomTypeSessionBeanLocal")
+    private RoomTypeSessionBeanLocal roomTypeSessionBeanLocal;
 
     @EJB(name = "PromotionSessionBeanLocal")
     private PromotionSessionBeanLocal promotionSessionBeanLocal;
@@ -45,6 +52,37 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
 
+    //Retrieve an available room for new reservation    
+    @Override
+    public Long retrieveAvailableRoom(Reservation reservation, Long outletId, Long roomTypeId) throws NoAvailableRoomException {
+        Date startDateTime = reservation.getDate();
+        int duration = reservation.getDuration();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(startDateTime);
+        cal.add(Calendar.HOUR, +duration);
+        Date endDateTime = cal.getTime();
+        
+        Long roomId = null;
+        Boolean isAvailable = false;
+        
+        Query query = em.createQuery("SELECT r FROM Room r WHERE r.outlet.outletId = :inOutletId AND r.roomType.roomTypeId = :inRoomTypeId");
+        List<Room> availableRooms = query.getResultList();
+        
+        for (Room r: availableRooms) {
+            isAvailable = roomSessionBeanLocal.isRoomAvailable(r, startDateTime, endDateTime);
+            if (isAvailable == true) {
+                roomId = r.getRoomId();
+                break;
+            }
+        }
+        
+        if (isAvailable == false) {
+            throw new NoAvailableRoomException("No room is available!");
+        }
+        
+        return roomId;
+    }
+    
     //Create new reservation
     @Override
     public Long createNewReservation(Reservation newReservation, Long memberNum, Long roomId, Long outletId, Long promotionId) throws CustomerNotFoundException {
@@ -60,6 +98,7 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         
         if (roomId != null) {
             Room room = roomSessionBeanLocal.retrieveRoomById(roomId);
+            room.getReservations().add(newReservation);
             newReservation.setRoom(room);
         }
         
@@ -77,6 +116,41 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         em.flush();
         
         return newReservation.getReservationId();
+    }
+    
+    @Override
+    public BigDecimal calculateTotalPrice(Date date, int duration, Long roomTypeId) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+        String roomRateType;
+        
+        if (dayOfWeek < 6) {
+            roomRateType = "WKDAY";
+        } else {
+            roomRateType = "WKEND";
+        }
+        
+        //non-peak is before 6pm, peak is 6pm onwards
+        if (hourOfDay < 18) {
+            roomRateType += "NONPEAK";
+        } else {
+            roomRateType += "PEAK";
+        }
+        
+        BigDecimal roomRate = BigDecimal.ZERO;
+        List<RoomRate> roomRates = roomTypeSessionBeanLocal.retrieveRoomTypeById(roomTypeId).getRoomRates();
+        for (RoomRate rr: roomRates) {
+            String type = rr.getRoomRateType();
+            if (roomRateType.equals(type)) {
+                roomRate = rr.getRate();
+                break;
+            }
+        }
+        
+        BigDecimal totalPrice = roomRate.multiply(new BigDecimal(duration));
+        return totalPrice;
     }
 
     //View all reservations
@@ -116,8 +190,44 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
     
     // Update reservation and status
     @Override
-    public void updateReservation(Reservation reservationToUpdate) {
+    public void updateReservation(Reservation reservationToUpdate, Long roomIdUpdate, Long outletIdUpdate, Long promotionIdUpdate) {
         em.merge(reservationToUpdate);
+        
+        if (roomIdUpdate != null && (!reservationToUpdate.getRoom().getRoomId().equals(roomIdUpdate))) {
+            Room roomToUpdate = roomSessionBeanLocal.retrieveRoomById(roomIdUpdate);
+            
+            List<Reservation> reservations = roomToUpdate.getReservations();
+            for (Reservation r: reservations) {
+                if (r.getReservationId() == reservationToUpdate.getReservationId()) {
+                    roomToUpdate.getReservations().remove(r);
+                    roomToUpdate.getReservations().add(reservationToUpdate);
+                    break;
+                }
+            }
+            
+            reservationToUpdate.setRoom(roomToUpdate);
+        }
+        
+        if (outletIdUpdate != null) {
+            Outlet outletToUpdate = outletSessionBeanLocal.retrieveOutletById(outletIdUpdate);
+            
+            List<Reservation> reservations = outletToUpdate.getReservations();
+            for (Reservation r: reservations) {
+                if (r.getReservationId() == reservationToUpdate.getReservationId()) {
+                    outletToUpdate.getReservations().remove(r);
+                    outletToUpdate.getReservations().add(reservationToUpdate);
+                    break;
+                }
+            }
+            
+            reservationToUpdate.setOutlet(outletToUpdate);
+        }
+        
+        if (promotionIdUpdate != null) {
+            Promotion promotion = promotionSessionBeanLocal.retrievePromotionById(promotionIdUpdate);
+            reservationToUpdate.setPromotion(promotion);
+        }
+        
         em.flush();
     }
 

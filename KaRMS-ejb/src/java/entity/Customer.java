@@ -226,7 +226,6 @@ public class Customer implements Serializable {
         this.reservations = reservations;
     }
 
-<<<<<<< HEAD
     public Long getMemberNum() {
         return memberNum;
     }
@@ -235,10 +234,7 @@ public class Customer implements Serializable {
         this.memberNum = memberNum;
     }
     
-    public List<SaleTransactionEntity> getSaleTransactionEntities() {
-=======
     public List<FoodOrderTransaction> getSaleTransactionEntities() {
->>>>>>> master
         return saleTransactionEntities;
     }
 

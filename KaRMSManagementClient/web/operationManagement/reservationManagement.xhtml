@@ -109,120 +109,121 @@
             
             <p:dialog id="dialogCreateNewReservation" widgetVar="dialogCreateNewReservation" header="Create New Reservation" closable="true">
                 
-                <p:outputPanel>
-                    
-                    <p:layout style="min-width:650px;min-height:300px;">
-                        <p:layoutUnit position="center" size="50%">
-                            <p:panelGrid>
+                <p:panelGrid style="min-height: 300px">
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="memberNum" value="Member No: " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <p:inputText id="memberNum" value="#{reservationManagementManagedBean.memberNum}" placeholder="0000000"
-                                                     required="true" requiredMessage="Member number is required" />            
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="memberNum" value="Member No: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="memberNum" value="#{reservationManagementManagedBean.memberNum}" placeholder="0000000"
+                                         required="true" requiredMessage="Member number is required" />            
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="date" value="Date: " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="outlet" value="Outlet: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu id="outlet" value="#{reservationManagementManagedBean.outletId}"
+                                             required="true" requiredMessage="Outlet is required">
+                                <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
+                                <f:selectItems value="#{reservationManagementManagedBean.outlets}" var="outletEntity" itemValue="#{outletEntity.outletId}" itemLabel="#{outletEntity.outletName}" />
+                            </p:selectOneMenu>            
+                        </p:column>
+                    </p:row>
 
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="numOfPeople" value="No of People: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:spinner id="numOfPeople" value="#{reservationManagementManagedBean.newReservation.numOfPeople}" min="1" max="15"
+                                       required="true" requiredMessage="Number of people is required" />            
+                        </p:column>
+                    </p:row>
 
-                                        <p:datePicker id="date" value="#{reservationManagementManagedBean.newReservation.date}" showTime="true" hourFormat="12" stepMinute="0" 
-                                                      mindate="#{reservationManagementManagedBean.minDate}" maxdate="#{reservationManagementManagedBean.maxDate}" pattern="dd/MM/yyyy" showIcon="true" readonlyInput="true" 
-                                                      valueChangeListener="#{reservationManagementManagedBean.onDateChange}" required="true" requiredMessage="Date is required" >
-                                            <p:ajax event="change" listener="#{reservationManagementManagedBean.dateChange}" update="createNewReservation"/>
-                                        </p:datePicker> 
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="roomType" value="Room Type: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu id="roomType" value="#{reservationManagementManagedBean.roomTypeId}" valueChangeListener="#{reservationManagementManagedBean.onRoomTypeChange}"
+                                             required="true" requiredMessage="Room type is required">
+                                <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
+                                <f:selectItems value="#{reservationManagementManagedBean.roomTypes}" var="roomTypeEntity" itemValue="#{roomTypeEntity.roomTypeId}" itemLabel="#{roomTypeEntity.name}" />
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.roomTypeChange}" update="createNewReservation"/>
+                            </p:selectOneMenu>            
+                        </p:column>
+                    </p:row>
 
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="date" value="Date: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:datePicker id="date" value="#{reservationManagementManagedBean.newReservation.date}" showTime="true" hourFormat="12" stepMinute="0" 
+                                          mindate="#{reservationManagementManagedBean.minDate}" maxdate="#{reservationManagementManagedBean.maxDate}" pattern="dd/MM/yyyy" showIcon="true" readonlyInput="true" 
+                                          valueChangeListener="#{reservationManagementManagedBean.onDateChange}" required="true" requiredMessage="Date is required" >
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.dateChange}" update="createNewReservation"/>
+                            </p:datePicker> 
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="duration" value="Duration (Hrs): " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <p:spinner id="duration" value="#{reservationManagementManagedBean.newReservation.duration}" min="1" max="12"
-                                                   required="true" requiredMessage="Duration is required" />            
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="duration" value="Duration (Hrs): " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:spinner id="duration" value="#{reservationManagementManagedBean.newReservation.duration}" min="1" max="12"
+                                       required="true" requiredMessage="Duration is required" valueChangeListener="#{reservationManagementManagedBean.onDurationChange}">
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.durationChange}" update="createNewReservation"/>
+                            </p:spinner>
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="numOfPeople" value="No of People: " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <p:spinner id="numOfPeople" value="#{reservationManagementManagedBean.newReservation.numOfPeople}" min="1" max="15"
-                                                   required="true" requiredMessage="Number of people is required" />            
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="promotion" value="Promotion: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu id="promotion" value="#{reservationManagementManagedBean.promotionId}" >
+                                <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
+                                <f:selectItems value="#{reservationManagementManagedBean.promotions}" var="promotionEntity" itemValue="#{promotionEntity.promotionId}" itemLabel="#{promotionEntity.promotionName}" />
+                            </p:selectOneMenu>            
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="outlet" value="Outlet: " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <p:selectOneMenu id="outlet" value="#{reservationManagementManagedBean.outletId}"
-                                                         required="true" requiredMessage="Outlet is required">
-                                            <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
-                                            <f:selectItems value="#{reservationManagementManagedBean.outlets}" var="outletEntity" itemValue="#{outletEntity.outletId}" itemLabel="#{outletEntity.outletName}" />
-                                        </p:selectOneMenu>            
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="note" value="Note: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="note" value="#{reservationManagementManagedBean.newReservation.note}" />           
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="roomType" value="Room Type: " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <p:selectOneMenu id="roomType" value="#{reservationManagementManagedBean.roomTypeId}"
-                                                         required="true" requiredMessage="Room type is required">
-                                            <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
-                                            <f:selectItems value="#{reservationManagementManagedBean.roomTypes}" var="roomTypeEntity" itemValue="#{roomTypeEntity.roomTypeId}" itemLabel="#{roomTypeEntity.name}" />
-                                        </p:selectOneMenu>            
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="totalPrice" value="Total Price: " style="font-weight: bold; font-size: 14px" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="totalPrice" value="#{reservationManagementManagedBean.totalPrice}" style="font-weight: bold; font-size: 14px">
+                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2" type="currency" currencyCode="SGD"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="promotion" value="Promotion: " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <p:selectOneMenu id="promotion" value="#{reservationManagementManagedBean.promotionId}" >
-                                            <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
-                                            <f:selectItems value="#{reservationManagementManagedBean.promotions}" var="promotionEntity" itemValue="#{promotionEntity.promotionId}" itemLabel="#{promotionEntity.promotionName}" />
-                                        </p:selectOneMenu>            
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:commandButton type="reset" value="Clear" />&nbsp;
+                            <p:commandButton value="Create" update="@form formAllReservations:dataTableAllReservations"
+                                             actionListener="#{reservationManagementManagedBean.createNewReservation}" oncomplete="PF('dialogCreateNewReservation').hide();" />    
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="note" value="Note: " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <p:inputText id="note" value="#{reservationManagementManagedBean.newReservation.note}" />           
-                                    </p:column>
-                                </p:row>
-
-                                <p:row>
-                                    <p:column colspan="2">
-                                        <p:commandButton type="reset" value="Clear" />&nbsp;
-                                        <p:commandButton value="Create" update="@form formAllReservations:dataTableAllReservations"
-                                                         actionListener="#{reservationManagementManagedBean.createNewReservation}" oncomplete="PF('dialogCreateNewReservation').hide();" />    
-                                    </p:column>
-                                </p:row>
-
-                            </p:panelGrid>
-                        </p:layoutUnit>
-                        
-                        <p:layoutUnit position="east" size="50%">east</p:layoutUnit>
-                    </p:layout>
-                    
-                </p:outputPanel>
+                </p:panelGrid>
                 
             </p:dialog>
             
@@ -232,102 +233,258 @@
             
             <p:dialog id="dialogViewReservation" widgetVar="dialogViewReservation" header="Reservation Details" closable="true">
                 
-                <p:outputPanel>
-                    
-                    <p:layout style="min-width:650px;min-height:300px;">
-                        <p:layoutUnit position="center" size="50%">
-                            <p:panelGrid>
+                <p:panelGrid style="min-height: 300px">
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="memberNum" value="Member No: " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <h:outputText value="#{reservationManagementManagedBean.selectedReservation.customer.memberNum}"          
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="roomNum" value="Room Number: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="roomNum" value="#{reservationManagementManagedBean.selectedReservation.room.roomNum}"/>          
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="date" value="Date: " style="font-weight: bold" />               
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <h:outputText value="#{reservationManagementManagedBean.selectedReservation.date}"
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="memberNum" value="Member No: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="memberNum" value="#{reservationManagementManagedBean.selectedReservation.customer.memberNum}"/>          
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="duration" value="Duration (Hrs): " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <h:outputText value="#{reservationManagementManagedBean.selectedReservation.duration}"          
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="outlet" value="Outlet: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="outlet" value="#{reservationManagementManagedBean.selectedReservation.outlet.outletName}"/>          
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="numOfPeople" value="No of People: " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <h:outputText value="#{reservationManagementManagedBean.selectedReservation.numOfPeople}"           
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="numOfPeople" value="No of People: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="numOfPeople" value="#{reservationManagementManagedBean.selectedReservation.numOfPeople}"/>           
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="outlet" value="Outlet: " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <h:outputText value="#{reservationManagementManagedBean.selectedReservation.outlet.outletName}"          
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="roomType" value="Room Type: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="roomType" value="#{reservationManagementManagedBean.selectedReservation.room.roomType.name}"/>            
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="roomType" value="Room Type: " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <h:outputText value="#{reservationManagementManagedBean.selectedReservation.room.roomType.name}"            
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="date" value="Date: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="date" value="#{reservationManagementManagedBean.selectedReservation.date}">
+                                <f:convertDateTime pattern="dd-MM-YYYY hh:mm a"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="promotion" value="Promotion: " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <h:outputText value="#{reservationManagementManagedBean.selectedReservation.promotion.promotionName}"            
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="duration" value="Duration (Hrs): " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="duration" value="#{reservationManagementManagedBean.selectedReservation.duration}"/>          
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column>
-                                        <p:outputLabel for="note" value="Note: " style="font-weight: bold" />               
-                                    </p:column>
-                                    <p:column>
-                                        <h:outputText value="#{reservationManagementManagedBean.selectedReservation.note}"         
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="promotion" value="Promotion: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="promotion" value="#{reservationManagementManagedBean.selectedReservation.promotion.promotionName}"/>            
+                        </p:column>
+                    </p:row>
 
-                                <p:row>
-                                    <p:column colspan="2">
-                                        <p:commandButton type="reset" value="Clear" />&nbsp;
-                                        <p:commandButton value="Create" update="@form formAllReservations:dataTableAllReservations"
-                                                         actionListener="#{reservationManagementManagedBean.createNewReservation}" oncomplete="PF('dialogCreateNewReservation').hide();" />    
-                                    </p:column>
-                                </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="note" value="Note: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="note" value="#{reservationManagementManagedBean.selectedReservation.note}"/>         
+                        </p:column>
+                    </p:row>
 
-                            </p:panelGrid>
-                        </p:layoutUnit>
-                        
-                        <p:layoutUnit position="east" size="50%">east</p:layoutUnit>
-                    </p:layout>
-                    
-                </p:outputPanel>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="totalPrice" value="Total Price: " style="font-weight: bold; font-size: 14px" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="totalPrice" value="#{reservationManagementManagedBean.selectedReservation.totalPrice}" style="font-weight: bold; font-size: 14px">
+                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2" type="currency" currencyCode="SGD"/>
+                            </h:outputText>         
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:commandButton value="Update" icon="ui-icon-pencil" oncomplete="PF('dialogUpdateReservation').show(); PF('dialogViewReservation').hide()" title="Update"/>&nbsp;
+                            <p:commandButton value="Delete" icon="ui-icon-trash" update="@form formAllReservations:dataTableAllReservations"
+                                             actionListener="#{reservationManagementManagedBean.deleteReservation}" immediate="true"/>
+                                <f:attribute name="reservationToDelete" value="#{reservationManagementManagedBean.selectedReservation}"/>
+                                <p:confirm header="Confirmation" message="Are you sure you want to delete #{reservationManagementManagedBean.selectedReservation}?" icon="ui-icon-alert"/>
+                            </p:commandButton>    
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>
                 
             </p:dialog>
+            
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+            
+        </h:form>
+        
+        <h:form id="updateReservation">
+            
+            <p:dialog id="dialogUpdateReservation" widgetVar="dialogUpdateReservation" header="Update Reservation Details" closable="true">
+                
+                <p:panelGrid style="min-height: 300px">
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="roomNum" value="Room Number: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="roomNum" value="#{reservationManagementManagedBean.selectedReservation.room.roomNum}"/>          
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="memberNum" value="Member No: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="memberNum" value="#{reservationManagementManagedBean.selectedReservation.customer.memberNum}"/>            
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="outlet" value="Outlet: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu id="outlet" value="#{reservationManagementManagedBean.outletIdUpdate}"
+                                             required="true" requiredMessage="Outlet is required">
+                                <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
+                                <f:selectItems value="#{reservationManagementManagedBean.outlets}" var="outletEntity" itemValue="#{outletEntity.outletId}" itemLabel="#{outletEntity.outletName}" />
+                            </p:selectOneMenu>            
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="numOfPeople" value="No of People: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:spinner id="numOfPeople" value="#{reservationManagementManagedBean.selectedReservation.numOfPeople}" min="1" max="15"
+                                       required="true" requiredMessage="Number of people is required" />            
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="roomType" value="Room Type: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu id="roomType" value="#{reservationManagementManagedBean.roomTypeIdUpdate}" valueChangeListener="#{reservationManagementManagedBean.onRoomTypeChange}"
+                                             required="true" requiredMessage="Room type is required">
+                                <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
+                                <f:selectItems value="#{reservationManagementManagedBean.roomTypes}" var="roomTypeEntity" itemValue="#{roomTypeEntity.roomTypeId}" itemLabel="#{roomTypeEntity.name}" />
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.roomTypeChange}" update="updateReservation"/>
+                            </p:selectOneMenu>            
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="date" value="Date: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:datePicker id="date" value="#{reservationManagementManagedBean.newReservation.date}" showTime="true" hourFormat="12" stepMinute="0" 
+                                          mindate="#{reservationManagementManagedBean.minDate}" maxdate="#{reservationManagementManagedBean.maxDate}" pattern="dd/MM/yyyy" showIcon="true" readonlyInput="true" 
+                                          valueChangeListener="#{reservationManagementManagedBean.onDateChange}" required="true" requiredMessage="Date is required" >
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.dateChange}" update="updateReservation"/>
+                            </p:datePicker> 
+
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="duration" value="Duration (Hrs): " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:spinner id="duration" value="#{reservationManagementManagedBean.selectedReservation.duration}" min="1" max="12"
+                                       required="true" requiredMessage="Duration is required" valueChangeListener="#{reservationManagementManagedBean.onDurationChange}">
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.durationChange}" update="updateReservation"/>
+                            </p:spinner> 
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="promotion" value="Promotion: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu id="promotion" value="#{reservationManagementManagedBean.promotionIdUpdate}" >
+                                <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
+                                <f:selectItems value="#{reservationManagementManagedBean.promotions}" var="promotionEntity" itemValue="#{promotionEntity.promotionId}" itemLabel="#{promotionEntity.promotionName}" />
+                            </p:selectOneMenu>            
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="note" value="Note: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="note" value="#{reservationManagementManagedBean.selectedReservation.note}" />           
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="totalPrice" value="Total Price: " style="font-weight: bold; font-size: 14px" />               
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="totalPrice" value="#{reservationManagementManagedBean.selectedReservation.totalPrice}" style="font-weight: bold; font-size: 14px">
+                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2" type="currency" currencyCode="SGD"/>
+                            </h:outputText>        
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:commandButton value="Confirm Update" update="@form formAllReservations:dataTableAllReservations viewReservation" icon="ui-icon-pencil" title="Update"
+                                             actionListener="#{reservationManagementManagedBean.updateReservation}" oncomplete="PF('dialogUpdateReservation').hide(); PF('dialogViewReservation').show()" />    
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>
+
+            </p:dialog>
+            
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
             
         </h:form>
         

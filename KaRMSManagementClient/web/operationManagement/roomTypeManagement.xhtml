@@ -14,31 +14,16 @@
             </p:growl>
             
             <h:form>
-                
-<<<<<<< HEAD
-<<<<<<< HEAD
-                <p:outputLabel style="font-weight: bold; font-size: 20" value="Room Type Management" />&nbsp;
-                <br/>
-                <br/>
-                <p:commandButton value="Create New Room Type" icon="fa fa-plus" onclick="PF('dialogCreateNewRoomType').show()"/>
-=======
-                <p:commandButton value="Create New Room Type" actionListener="#{roomTypeManagementManagedBean.createNewRoomType}" icon="fa fa-plus" onclick="PF('dialogCreateNewRoomType').show()"/>
->>>>>>> master
-                
-            </h:form>
-            
-            <h:form id="formAllRoomType">
 
-=======
                 <p:outputLabel style="font-weight: bold; font-size: 20" value="Room Type Management" />&nbsp;
                 <br/>
+                <br/>
                 <p:commandButton value="Create New Room Type" icon="fa fa-plus" onclick="PF('dialogCreateNewRoomType').show()"/>
-                
+               
             </h:form>
             
             <h:form id="formAllRoomType">                
                 
->>>>>>> master
                 <p:dataTable id="dataTableAllRoomType" widgetVar="dataTableAllRoomType" value="#{roomTypeManagementManagedBean.roomTypes}" var="roomType"
                              selectionMode="single" selection="#{roomTypeManagementManagedBean.selectedRoomType}" rowKey="#{roomType.roomTypeId}" tableStyle="width:80%">
                 

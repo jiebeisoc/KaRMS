@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.Room;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -27,5 +28,7 @@ public interface RoomSessionBeanLocal {
     public void updateRoom(Room roomToUpdate);
 
     public void deleteRoom(Long roomId);
+
+    public boolean isRoomAvailable(Room room, Date startDateTime, Date endDateTime);
     
 }
