@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                template="./../template/defaultTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        
+        <p:growl>
+            <p:autoUpdate />
+        </p:growl>
+        
+        <h:form>
+            
+            <p:outputLabel style="font-weight: bold; font-size: 20" value="Outlet Management" />&nbsp;
+            <br/>
+            <p:commandButton value="Create New Outlet" icon="fa fa-plus" onclick="PF('dialogCreateNewOutlet').show()"/>
+            
+        </h:form>
+        
+        <h:form id="formAllOutlet">
+            
+            <p:dataTable id="dataTableAllOutlet" widgetVar="dataTableAllOutlet" value="#{outletManagedBean.outlets}" var="outlet"
+                         selectionMode="single" selection="#{outletManagedBean.selectedOutlet}" rowKey="#{outlet.outletId}">
+            
+                <p:ajax event='rowSelect' listener='#{outletManagedBean.onRowSelect}' oncomplete="PF('dialogUpdateOutlet').show()" update='@form formUpdateOutlet' />
+                <p:ajax event='rowUnselect' listener='#{outletManagedBean.onRowUnselect}' update='@form formUpdateOutlet' />
+                
+                <p:column headerText="Name" sortBy="#{outlet.outletName}">
+                    <h:outputText value="#{outlet.outletName}" />
+                </p:column>
+                
+                <p:column headerText="Address" sortBy="#{outlet.outletAddress}">
+                    <h:outputText value="#{outlet.outletAddress}" />
+                </p:column>
+                
+                <p:column headerText="Phone No." sortBy="#{outlet.outletPhone}">
+                    <h:outputText value="#{outlet.outletPhone}" />
+                </p:column>
+                
+                <p:column headerText="Opening Hour" sortBy="#{outlet.openingHours}">
+                    <h:outputText value="#{outlet.openingHours}" >
+                        <f:convertDateTime pattern="HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Closing Hour" sortBy="#{outlet.closingHours}">
+                    <h:outputText value="#{outlet.closingHours}" >
+                        <f:convertDateTime pattern="HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+        
+        <h:form id="createNewOutlet">
+            
+            <p:dialog id="dialogCreateNewOutlet" widgetVar="dialogCreateNewOutlet" header="Create New Outlet" closable="true">
+                
+                <p:panelGrid>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="outletName" value="Outlet name: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="outletName" value="#{outletManagedBean.newOutlet.outletName}" required="true" requiredMessage="Outlet name is required"
+                                         placeholder="Outlet name" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="outletAddress" value="Outlet Address: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="outletAddress" value="#{outletManagedBean.newOutlet.outletAddress}" required="true" requiredMessage="Outlet address is required"
+                                         placeholder="Outlet address" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="outletPhone" value="Outlet Phone: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="outletPhone" value="#{outletManagedBean.newOutlet.outletPhone}" required="true" requiredMessage="Outlet phone is required"
+                                         placeholder="Outlet phone" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="openingHour" value="Opening Hour: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:datePicker id="openingHour" value="#{outletManagedBean.newOutlet.openingHours}" timeOnly="true" pattern="HH:mm" required="true"/>
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="closingHours" value="Closing Hour: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:datePicker id="closingHours" value="#{outletManagedBean.newOutlet.closingHours}" timeOnly="true" pattern="HH:mm" required="true"/>
+                        </p:column>
+                    </p:row>
+                                           
+                    <p:row>
+                            
+                        <p:column colspan="2">
+                            <p:commandButton type="reset" value="Clear" />&nbsp;
+                            <p:commandButton value="Create New Outlet" update="@form formAllOutlet:dataTableAllOutlet"
+                                             actionListener="#{outletManagedBean.createNewOutlet}" oncomplete="PF('dialogCreateNewOutlet').hide();" />    
+                        </p:column>
+                            
+                    </p:row>
+                    
+                </p:panelGrid>
+                
+            </p:dialog>
+            
+        </h:form>
+        
+        <h:form id="formUpdateOutlet">
+            
+            <p:dialog id="dialogUpdateOutlet" widgetVar="dialogUpdateOutlet" header="Detials" closable="true">
+                
+                <p:panelGrid>
+                
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Outlet name: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="outletName" value="#{outletManagedBean.selectedOutlet.outletName}" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="outletAddress" value="Outlet address: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="outletAddress" value="#{outletManagedBean.selectedOutlet.outletAddress}" required="true" requiredMessage="Outlet address is required"/>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="outletPhone" value="Outlet phone: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="outletPhone" value="#{outletManagedBean.selectedOutlet.outletPhone}" required="true" requiredMessage="Outlet phone is required"/>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="openingHour" value="Opening Hour: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:datePicker id="openingHour" value="#{outletManagedBean.selectedOutlet.openingHours}" timeOnly="true" pattern="HH:mm" required="true"/>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="closingHours" value="Closing Hour: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <p:datePicker id="closingHours" value="#{outletManagedBean.selectedOutlet.closingHours}" timeOnly="true" pattern="HH:mm" required="true"/>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="2">
+
+                            <p:commandButton actionListener="#{outletManagedBean.updateOutlet}" update='@form formAllOutlet:dataTableAllOutlet formUpdateOutlet' oncomplete="PF('dialogUpdateOutlet').show()" icon='ui-icon-pencil' title='Update' value='Update'/> &nbsp;
+                            <p:commandButton icon='ui-icon-trash' actionListener='#{outletManagedBean.deleteOutlet}' update="@form formAllOutlet:dataTableAllOutlet" immediate="true" value="Delete">
+                                <f:attribute name='outletToDelete' value='#{outletManagedBean.selectedOutlet}'/>
+                                <p:confirm header='Confirmation' message="Are you sure you want to delete #{outletManagedBean.selectedOutlet.outletName}?" icon='ui-icon-alert' />
+                            </p:commandButton>
+
+                        </p:column>
+                    </p:row>
+                    
+                </p:panelGrid>
+                
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+                
+            </p:dialog>
+            
+        </h:form>
+        
+    </ui:define>
+
+</ui:composition>
