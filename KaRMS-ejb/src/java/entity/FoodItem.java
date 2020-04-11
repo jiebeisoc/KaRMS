@@ -58,9 +58,9 @@ public class FoodItem implements Serializable
     @Positive
     @Min(1)
     @Max(5)
-    private Integer productRating;
+    private Integer foodItemRating;
     
-    // Added in v5.0
+  
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private FoodItemCategory categoryEntity;
@@ -75,7 +75,7 @@ public class FoodItem implements Serializable
         quantityOnHand = 0;
     
         unitPrice = new BigDecimal("0.00");
-        productRating = 1;
+        foodItemRating = 1;
         
   
     }
@@ -87,7 +87,7 @@ public class FoodItem implements Serializable
         this.description = description;
         this.quantityOnHand = quantityOnHand;
         this.unitPrice = unitPrice;
-        this.productRating = productRating;
+        this.foodItemRating = productRating;
     }
 
     
@@ -179,13 +179,13 @@ public class FoodItem implements Serializable
     }
 
 
-    public Integer getProductRating() {
-        return productRating;
+    public Integer getFoodItemRating() {
+        return foodItemRating;
     }
 
     // Added in v5.0
-    public void setProductRating(Integer productRating) {
-        this.productRating = productRating;
+    public void setFoodItemRating(Integer foodItemRating) {
+        this.foodItemRating = foodItemRating;
     }
     
     // Added in v5.0

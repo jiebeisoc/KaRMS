@@ -6,8 +6,10 @@
 package ws.restful.resources;
 
 import ejb.session.stateless.CustomerSessionBeanLocal;
+import ejb.session.stateless.FoodItemCategorySessionBeanLocal;
 import ejb.session.stateless.FoodOrderSessionBeanLocal;
 import ejb.session.stateless.FoodSessionBeanLocal;
+import ejb.session.stateless.OutletSessionBeanLocal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.Context;
@@ -20,8 +22,6 @@ import javax.naming.NamingException;
  */
 public class SessionBeanLookup {
 
-
-    
     private final String ejbModuleJndiPath;
 
     public SessionBeanLookup() {
@@ -58,7 +58,26 @@ public class SessionBeanLookup {
         }
     }
     
+    public FoodItemCategorySessionBeanLocal lookupFoodItemCategorySessionBeanLocal()
+    {
+         try {
+            Context c = new InitialContext();
+            return (FoodItemCategorySessionBeanLocal) c.lookup(ejbModuleJndiPath+"FoodItemCategorySessionBean!ejb.session.stateless.FoodItemCategorySessionBeanLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
     
+    public OutletSessionBeanLocal lookupOutletSessionBeanLocal() {
+        try {
+            Context c = new InitialContext();
+            return (OutletSessionBeanLocal) c.lookup(ejbModuleJndiPath+"OutletSessionBean!ejb.session.stateless.OutletSessionBeanLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
     
     
     

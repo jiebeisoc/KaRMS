@@ -1,6 +1,7 @@
 package ejb.session.stateless;
 
 import entity.Customer;
+import entity.FoodItem;
 import entity.FoodOrderTransaction;
 import entity.FoodOrderTransactionLineItem;
 import java.util.List;
@@ -10,11 +11,11 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import util.exception.CreateNewSaleTransactionException;
+import util.exception.CreateNewFoodOrderTransactionException;
 import util.exception.FoodItemInsufficientQuantityOnHandException;
 import util.exception.FoodItemNotFoundException;
-import util.exception.SaleTransactionAlreadyVoidedRefundedException;
-import util.exception.SaleTransactionNotFoundException;
+import util.exception.FoodOrderTransactionAlreadyVoidedRefundedException;
+import util.exception.FoodOrderTransactionNotFoundException;
 
 
 
@@ -43,53 +44,59 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
     {
     }
     
-    
-    
-
-    
+    /**
+     *
+     * @param customerId
+     * @param newFoodOrderTransactionEntity
+     * @return
+     * @throws CreateNewFoodOrderTransactionException
+     */
     @Override
-    public FoodOrderTransaction createNewFoodOrderTransaction(Long customerId, FoodOrderTransaction newSaleTransactionEntity) throws CreateNewSaleTransactionException
+    public FoodOrderTransaction createNewFoodOrderTransaction(Long customerId, FoodOrderTransaction newFoodOrderTransactionEntity) throws CreateNewFoodOrderTransactionException
     {
        
-        if(newSaleTransactionEntity != null)
+        if(newFoodOrderTransactionEntity != null)
         {
             try
             {
                 Customer customerEntity = customerSessionBeanLocal.retrieveCustomerById(customerId);
-                newSaleTransactionEntity.setCustomerEntity(customerEntity);
-                customerEntity.getSaleTransactionEntities().add(newSaleTransactionEntity);
+                newFoodOrderTransactionEntity.setCustomerEntity(customerEntity);
+                customerEntity.getFoodOrderTransactionEntities().add(newFoodOrderTransactionEntity);
 
-                entityManager.persist(newSaleTransactionEntity);
+                entityManager.persist(newFoodOrderTransactionEntity);
 
-                for(FoodOrderTransactionLineItem saleTransactionLineItemEntity:newSaleTransactionEntity.getFoodOrderTransactionLineItemEntities())
+                for(FoodOrderTransactionLineItem foodOrderTransactionLineItemEntity:newFoodOrderTransactionEntity.getFoodOrderTransactionLineItemEntities())
                 {
-                    foodSessionBeanLocal.debitQuantityOnHand(saleTransactionLineItemEntity.getFoodItem().getFoodItemId(), saleTransactionLineItemEntity.getQuantity());
-                    entityManager.persist(saleTransactionLineItemEntity);
+                    
+                    long foodItemId= foodOrderTransactionLineItemEntity.getFoodItem().getFoodItemId();
+                    FoodItem foodItem = entityManager.find(FoodItem.class, foodItemId);
+                    foodOrderTransactionLineItemEntity.setFoodItem(foodItem);
+                    foodSessionBeanLocal.debitQuantityOnHand(foodOrderTransactionLineItemEntity.getFoodItem().getFoodItemId(), foodOrderTransactionLineItemEntity.getQuantity());
+                    entityManager.persist(foodOrderTransactionLineItemEntity);
                 }
 
                 entityManager.flush();
 
-                return newSaleTransactionEntity;
+                return newFoodOrderTransactionEntity;
             }
             catch(FoodItemNotFoundException | FoodItemInsufficientQuantityOnHandException ex)
             {
-                // The line below rolls back all changes made to the database.
-               // eJBContext.setRollbackOnly();
-                throw new CreateNewSaleTransactionException(ex.getMessage());
+              
+                throw new CreateNewFoodOrderTransactionException(ex.getMessage());
             }
         }
         else
         {
-            throw new CreateNewSaleTransactionException("Sale transaction information not provided");
+            throw new CreateNewFoodOrderTransactionException("Food Order transaction information not provided");
         }
     }
     
     
     
     @Override
-    public List<FoodOrderTransaction> retrieveAllSaleTransactions()
+    public List<FoodOrderTransaction> retrieveAllFoodOrderTransactions()
     {
-        Query query = entityManager.createQuery("SELECT st FROM SaleTransactionEntity st");
+        Query query = entityManager.createQuery("SELECT ft FROM FoodOrderTransaction ft");
         
         return query.getResultList();
     }
@@ -97,7 +104,7 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
     @Override
     public List<FoodOrderTransaction> retrieveAllFoodOrderTransactionsByCustomerID(Long customerId)
     {
-        Query query = entityManager.createQuery("SELECT st FROM SaleTransactionEntity st where st.customerEntity.customerId = :customerID");
+        Query query = entityManager.createQuery("SELECT ft FROM FoodOrderTransaction ft where ft.customerEntity.customerId = :customerID");
         query.setParameter("customerID", customerId);
         
         List<FoodOrderTransaction> list = query.getResultList();
@@ -115,10 +122,10 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
     // Added in v4.1
     
     @Override
-    public List<FoodOrderTransactionLineItem> retrieveSaleTransactionLineItemsByProductId(Long productId)
+    public List<FoodOrderTransactionLineItem> retrieveFoodOrderTransactionLineItemsByFoodItemId(Long foodItemId)
     {
-        Query query = entityManager.createNamedQuery("selectAllSaleTransactionLineItemsByProductId");
-        query.setParameter("inProductId", productId);
+        Query query = entityManager.createNamedQuery("selectAllFoodOrderTransactionLineItemsByFoodItemId");
+        query.setParameter("inProductId", foodItemId);
         
         return query.getResultList();
     }
@@ -126,28 +133,28 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
     
     
     @Override
-    public FoodOrderTransaction retrieveSaleTransactionBySaleTransactionId(Long saleTransactionId) throws SaleTransactionNotFoundException
+    public FoodOrderTransaction retrieveFoodOrderTransactionByFoodOrderTransactionId(Long foodOrderTransactionId) throws FoodOrderTransactionNotFoundException
     {
-        FoodOrderTransaction saleTransactionEntity = entityManager.find(FoodOrderTransaction.class, saleTransactionId);
+        FoodOrderTransaction foodOrderTransactionEntity = entityManager.find(FoodOrderTransaction.class, foodOrderTransactionId);
         
-        if(saleTransactionEntity != null)
+        if(foodOrderTransactionEntity != null)
         {
-            saleTransactionEntity.getFoodOrderTransactionLineItemEntities().size();
+            foodOrderTransactionEntity.getFoodOrderTransactionLineItemEntities().size();
             
-            return saleTransactionEntity;
+            return foodOrderTransactionEntity;
         }
         else
         {
-            throw new SaleTransactionNotFoundException("Sale Transaction ID " + saleTransactionId + " does not exist!");
+            throw new FoodOrderTransactionNotFoundException("Food Order Transaction ID " + foodOrderTransactionId + " does not exist!");
         }                
     }
     
     
     
     @Override
-    public void updateSaleTransaction(FoodOrderTransaction saleTransactionEntity)
+    public void updateFoodOrderTransaction(FoodOrderTransaction foodOrderTransactionEntity)
     {
-        entityManager.merge(saleTransactionEntity);
+        entityManager.merge(foodOrderTransactionEntity);
     }
     
     
@@ -155,36 +162,35 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
     // Updated in v4.1
     
     @Override
-    public void voidRefundSaleTransaction(Long saleTransactionId) throws SaleTransactionNotFoundException, SaleTransactionAlreadyVoidedRefundedException
+    public void voidRefundFoodOrderTransaction(Long foodOrderTransactionId) throws FoodOrderTransactionNotFoundException, FoodOrderTransactionAlreadyVoidedRefundedException
     {
-        FoodOrderTransaction saleTransactionEntity = retrieveSaleTransactionBySaleTransactionId(saleTransactionId);
+        FoodOrderTransaction foodOrderTransactionEntity = retrieveFoodOrderTransactionByFoodOrderTransactionId(foodOrderTransactionId);
         
-        if(!saleTransactionEntity.getVoidRefund())
+        if(!foodOrderTransactionEntity.getVoidRefund())
         {
-            for(FoodOrderTransactionLineItem saleTransactionLineItemEntity:saleTransactionEntity.getFoodOrderTransactionLineItemEntities())
+            for(FoodOrderTransactionLineItem foodOrderTransactionLineItemEntity:foodOrderTransactionEntity.getFoodOrderTransactionLineItemEntities())
             {
                 try
                 {
-                    foodSessionBeanLocal.creditQuantityOnHand(saleTransactionLineItemEntity.getFoodItem().getFoodItemId(), saleTransactionLineItemEntity.getQuantity());
+                    foodSessionBeanLocal.creditQuantityOnHand(foodOrderTransactionLineItemEntity.getFoodItem().getFoodItemId(), foodOrderTransactionLineItemEntity.getQuantity());
                 }
                 catch(FoodItemNotFoundException ex)
                 {
-                    ex.printStackTrace(); // Ignore exception since this should not happen
+                    ex.printStackTrace();
                 }                
             }
             
-            saleTransactionEntity.setVoidRefund(true);
+            foodOrderTransactionEntity.setVoidRefund(true);
         }
         else
         {
-            throw new SaleTransactionAlreadyVoidedRefundedException("The sale transaction has aready been voided/refunded");
+            throw new FoodOrderTransactionAlreadyVoidedRefundedException("The food order transaction has aready been voided/refunded");
         }
     }
     
     
     
-    @Override
-    public void deleteSaleTransaction(FoodOrderTransaction saleTransactionEntity)
+    public void deleteFoodOrderTransaction(FoodOrderTransaction foodOrderTransactionEntity)
     {
         throw new UnsupportedOperationException();
     }

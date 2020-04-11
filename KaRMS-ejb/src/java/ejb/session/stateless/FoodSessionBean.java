@@ -161,7 +161,7 @@ public class FoodSessionBean implements FoodSessionBeanLocal
         {
             for(FoodItemCategory subCategoryEntity:categoryEntity.getSubCategoryEntities())
             {
-                foodItems.addAll(addSubCategoryProducts(subCategoryEntity));
+                foodItems.addAll(addSubCategoryFoodItems(subCategoryEntity));
             }
         }
         
@@ -265,7 +265,7 @@ public class FoodSessionBean implements FoodSessionBeanLocal
                     foodItemToUpdate.setDescription(foodItem.getDescription());
                     foodItemToUpdate.setQuantityOnHand(foodItem.getQuantityOnHand());
                     foodItemToUpdate.setUnitPrice(foodItem.getUnitPrice());
-                    foodItemToUpdate.setProductRating((foodItem.getProductRating()));
+                    foodItemToUpdate.setFoodItemRating((foodItem.getFoodItemRating()));
                }
                 else
                 {
@@ -294,9 +294,9 @@ public class FoodSessionBean implements FoodSessionBeanLocal
     {
         FoodItem foodItemToRemove = retrieveFoodItemById(foodItemId);
         
-        List<FoodOrderTransactionLineItem> saleTransactionLineItemEntities = saleTransactionEntitySessionBeanLocal.retrieveSaleTransactionLineItemsByProductId(foodItemId);
+        List<FoodOrderTransactionLineItem> foodOrderTransactionLineItemEntities = saleTransactionEntitySessionBeanLocal.retrieveFoodOrderTransactionLineItemsByFoodItemId(foodItemId);
         
-        if(saleTransactionLineItemEntities.isEmpty())
+        if(foodOrderTransactionLineItemEntities.isEmpty())
         {
             foodItemToRemove.getCategoryEntity().getFoodItems().remove(foodItemToRemove);
             
@@ -311,7 +311,7 @@ public class FoodSessionBean implements FoodSessionBeanLocal
     
     
     
-    // Added in v4.1
+
     
     @Override
     public void debitQuantityOnHand(Long foodItemId, Integer quantityToDebit) throws FoodItemNotFoundException, FoodItemInsufficientQuantityOnHandException
@@ -329,9 +329,7 @@ public class FoodSessionBean implements FoodSessionBeanLocal
     }
     
     
-    
-    // Added in v4.1
-    
+ 
     @Override
     public void creditQuantityOnHand(Long foodItemId, Integer quantityToCredit) throws FoodItemNotFoundException
     {
@@ -340,10 +338,9 @@ public class FoodSessionBean implements FoodSessionBeanLocal
     }
     
     
+
     
-    // Newly added in v5.1
-    
-    private List<FoodItem> addSubCategoryProducts(FoodItemCategory categoryEntity)
+    private List<FoodItem> addSubCategoryFoodItems(FoodItemCategory categoryEntity)
     {
         List<FoodItem> foodItems = new ArrayList<>();
                 
@@ -355,7 +352,7 @@ public class FoodSessionBean implements FoodSessionBeanLocal
         {
             for(FoodItemCategory subCategoryEntity:categoryEntity.getSubCategoryEntities())
             {
-                foodItems.addAll(addSubCategoryProducts(subCategoryEntity));
+                foodItems.addAll(addSubCategoryFoodItems(subCategoryEntity));
             }
             
             return foodItems;

@@ -9,24 +9,24 @@ package util.exception;
  *
  * @author longluqian
  */
-public class SaleTransactionAlreadyVoidedRefundedException extends Exception {
+public class CreateNewFoodOrderTransactionException extends Exception {
 
     /**
      * Creates a new instance of
-     * <code>SaleTransactionAlreadyVoidedRefundedException</code> without detail
+     * <code>CreateNewFoodOrderTransactionException</code> without detail
      * message.
      */
-    public SaleTransactionAlreadyVoidedRefundedException() {
+    public CreateNewFoodOrderTransactionException() {
     }
 
     /**
      * Constructs an instance of
-     * <code>SaleTransactionAlreadyVoidedRefundedException</code> with the
-     * specified detail message.
+     * <code>CreateNewFoodOrderTransactionException</code> with the specified
+     * detail message.
      *
      * @param msg the detail message.
      */
-    public SaleTransactionAlreadyVoidedRefundedException(String msg) {
+    public CreateNewFoodOrderTransactionException(String msg) {
         super(msg);
     }
 }
