@@ -58,13 +58,14 @@ public class Customer implements Serializable {
     private List<Reservation> reservations;
     //Added by Luqian
     @OneToMany(mappedBy = "customerEntity")
-    private List<FoodOrderTransaction> saleTransactionEntities;
+    private List<FoodOrderTransaction> foodOrderTransactionEntities;
 
     public Customer() {
-        this.salt = CryptographicHelper.getInstance().generateRandomString(32);
+        this.points = 0;
+         this.salt = CryptographicHelper.getInstance().generateRandomString(32);
         this.points = 0;
         this.reservations = new ArrayList<>();
-        this.saleTransactionEntities = new ArrayList<>();
+        this.foodOrderTransactionEntities = new ArrayList<>();
     }
 
     public Customer(String name, String phoneNo, String creditCardNo, String username, String password, Date birthday, String email) {
@@ -220,12 +221,12 @@ public class Customer implements Serializable {
         this.reservations = reservations;
     }
 
-    public List<FoodOrderTransaction> getSaleTransactionEntities() {
-        return saleTransactionEntities;
+    public List<FoodOrderTransaction> getFoodOrderTransactionEntities() {
+        return foodOrderTransactionEntities;
     }
 
-    public void setSaleTransactionEntities(List<FoodOrderTransaction> saleTransactionEntities) {
-        this.saleTransactionEntities = saleTransactionEntities;
+    public void setFoodOrderTransactionEntities(List<FoodOrderTransaction> foodOrderTransactionEntities) {
+        this.foodOrderTransactionEntities = foodOrderTransactionEntities;
     }
     
         public String getSalt() {

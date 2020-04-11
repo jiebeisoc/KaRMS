@@ -31,7 +31,11 @@ public class FoodItemManagedBean implements Serializable
 {
 
     @EJB
+    private FoodItemCategorySessionBeanLocal foodItemCategorySessionBeanLocal;
+
+    @EJB
     private FoodSessionBeanLocal foodSessionBeanLocal;
+    
   
     
     
@@ -65,7 +69,7 @@ public class FoodItemManagedBean implements Serializable
     {
        
         foodItems = foodSessionBeanLocal.retrieveAllFoodItems();
-     //   categoryEntities = categoryEntitySessionBeanLocal.retrieveAllLeafCategories();
+        categoryEntities = foodItemCategorySessionBeanLocal.retrieveAllLeafCategories();
     
     }
     
