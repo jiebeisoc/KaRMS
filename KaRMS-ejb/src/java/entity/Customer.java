@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.security.CryptographicHelper;
 
 /**
@@ -31,6 +32,10 @@ public class Customer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
+    @Column(nullable = false, unique = true, length = 7)
+    @NotNull
+    @Size(min = 7, max = 7)
+    private Long memberNum;
     @NotNull
     @Column(nullable = false)
     private String name;
@@ -68,8 +73,9 @@ public class Customer implements Serializable {
         this.foodOrderTransactionEntities = new ArrayList<>();
     }
 
-    public Customer(String name, String phoneNo, String creditCardNo, String username, String password, Date birthday, String email) {
+    public Customer(Long memberNum, String name, String phoneNo, String creditCardNo, String username, String password, Date birthday, String email) {
         this();
+        this.memberNum = memberNum;
         this.name = name;
         this.phoneNo = phoneNo;
         this.creditCardNo = creditCardNo;
@@ -219,6 +225,14 @@ public class Customer implements Serializable {
 
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
+    }
+
+    public Long getMemberNum() {
+        return memberNum;
+    }
+
+    public void setMemberNum(Long memberNum) {
+        this.memberNum = memberNum;
     }
 
     public List<FoodOrderTransaction> getFoodOrderTransactionEntities() {

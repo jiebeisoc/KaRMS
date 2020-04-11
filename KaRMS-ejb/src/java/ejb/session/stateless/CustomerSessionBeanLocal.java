@@ -28,7 +28,9 @@ public interface CustomerSessionBeanLocal {
     public Customer retrieveCustomerById(Long customerId);
 
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException;
-
+    
+    public Customer retrieveCustomerByMemberNum(Long memberNum) throws CustomerNotFoundException;
+ 
     public void updateCustomer(Customer customerToUpdate);
 
     public void deleteCustomer(Long customerId);
@@ -40,7 +42,7 @@ public interface CustomerSessionBeanLocal {
     public void addPoints(Long customerId, int pointsToAdd);
 
     public void redeemPoints(Long customerId, int pointsToDeduct);
-
+ 
     public void updateDetails(String username, String name, String email, String phoneNo, String creditCardNo) throws InvalidLoginCredentialException, CustomerNotFoundException;
 
     public void changePassword(String username, String oldPassword, String newPassword) throws InvalidLoginCredentialException, CustomerNotFoundException, ChangePasswordException;

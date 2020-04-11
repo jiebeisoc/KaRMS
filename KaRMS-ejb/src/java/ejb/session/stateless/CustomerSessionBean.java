@@ -78,6 +78,18 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     }
     
     @Override
+    public Customer retrieveCustomerByMemberNum(Long memberNum) throws CustomerNotFoundException {
+        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.memberNum = :inMemberNum");
+        query.setParameter("inMemberNum", memberNum);
+        
+        try {
+            return (Customer)query.getSingleResult();
+        } catch (NoResultException | NonUniqueResultException ex) {
+            throw new CustomerNotFoundException("Customer member number " + memberNum + " does not exist!");
+        }
+    }
+    
+    @Override
     public void updateCustomer(Customer customerToUpdate) {
         em.merge(customerToUpdate);
         em.flush();
