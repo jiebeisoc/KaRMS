@@ -16,7 +16,7 @@ public class CreateFoodOrderTransactionReq {
      private Long customerId;
      private String username;
      private String password;
-    private FoodOrderTransaction newFoodOrderTransaction;
+     private FoodOrderTransaction newFoodOrderTransaction;
 
     public CreateFoodOrderTransactionReq() {
         

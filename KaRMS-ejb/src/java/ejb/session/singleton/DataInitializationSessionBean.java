@@ -11,6 +11,7 @@ import ejb.session.stateless.RoomRateSessionBeanLocal;
 import ejb.session.stateless.RoomSessionBeanLocal;
 import ejb.session.stateless.RoomTypeSessionBeanLocal;
 import entity.Employee;
+import entity.FoodItemCategory;
 import entity.Outlet;
 import entity.Room;
 import entity.RoomRate;
@@ -21,6 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -77,6 +79,7 @@ public class DataInitializationSessionBean {
     }
 
     private void initializeData() {
+        System.err.println("********Reach Initialization Data*******************");
         employeeSessionBeanLocal.createNewEmployee(new Employee("manager", "password"));
         
         try {
@@ -227,6 +230,28 @@ public class DataInitializationSessionBean {
         roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 6l);
         roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 7l);
         roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 8l);
+        
+        //Add FoodItem Categories
+        FoodItemCategory foodItemCategory1 = new FoodItemCategory("Snacks","All snacks that you are craving");
+        FoodItemCategory foodItemCategory2 = new FoodItemCategory("Potato Chips","All time favorites");
+        FoodItemCategory foodItemCategory3 = new FoodItemCategory("Instant Noodle","Kids Favorites");
+        
+        List<FoodItemCategory> subCategoryEntities = new LinkedList<FoodItemCategory>();
+        subCategoryEntities.add(foodItemCategory2);
+        subCategoryEntities.add(foodItemCategory3);
+        foodItemCategory1.setSubCategoryEntities(subCategoryEntities);
+        
+        foodItemCategory2.setParentCategoryEntity(foodItemCategory1);
+        foodItemCategory3.setParentCategoryEntity(foodItemCategory1);
+        
+        
+        FoodItemCategory foodItemCategory4 = new FoodItemCategory("Main Course","Our experienced chef provides authentic dishes");
+           
+        em.persist(foodItemCategory1);
+        em.persist(foodItemCategory2);
+        em.persist(foodItemCategory3);
+        em.persist(foodItemCategory4);
+        em.flush();
         
     }
 }

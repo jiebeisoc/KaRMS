@@ -63,7 +63,7 @@ public class FoodOrderTransaction implements Serializable
      @Enumerated(EnumType.STRING)
     @NotNull
     @Column(nullable = false)
-    private FoodOrderStatus status;
+    private FoodOrderStatus foodOrderStatus;
     
   
     @ManyToOne(optional = true)
@@ -82,6 +82,7 @@ public class FoodOrderTransaction implements Serializable
     
     public FoodOrderTransaction(Integer totalLineItem, Integer totalQuantity, BigDecimal totalAmount, Date transactionDateTime, Boolean voidRefund)
     {
+        this();
         this.totalLineItem = totalLineItem;
         this.totalQuantity = totalQuantity;
         this.totalAmount = totalAmount;
@@ -93,6 +94,7 @@ public class FoodOrderTransaction implements Serializable
     
     public FoodOrderTransaction(Integer totalLineItem, Integer totalQuantity, BigDecimal totalAmount, Date transactionDateTime, List<FoodOrderTransactionLineItem> saleTransactionLineItemEntities, Boolean voidRefund)
     {
+        this();
         this.totalLineItem = totalLineItem;
         this.totalQuantity = totalQuantity;
         this.totalAmount = totalAmount;
@@ -238,16 +240,16 @@ public class FoodOrderTransaction implements Serializable
     {
         if(this.customerEntity != null)
         {
-            this.customerEntity.getSaleTransactionEntities().remove(this);
+            this.customerEntity.getFoodOrderTransactionEntities().remove(this);
         }
         
         this.customerEntity = customer;
         
         if(this.customerEntity != null)
         {
-            if(!this.customerEntity.getSaleTransactionEntities().contains(this))
+            if(!this.customerEntity.getFoodOrderTransactionEntities().contains(this))
             {
-                this.customerEntity.getSaleTransactionEntities().add(this);
+                this.customerEntity.getFoodOrderTransactionEntities().add(this);
             }
         }
     }
