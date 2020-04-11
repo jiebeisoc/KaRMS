@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
@@ -61,6 +62,10 @@ public class Customer implements Serializable {
 
     public Customer() {
         this.points = 0;
+         this.salt = CryptographicHelper.getInstance().generateRandomString(32);
+        this.points = 0;
+        this.reservations = new ArrayList<>();
+        this.foodOrderTransactionEntities = new ArrayList<>();
     }
 
     public Customer(String name, String phoneNo, String creditCardNo, String username, String password, Date birthday, String email) {

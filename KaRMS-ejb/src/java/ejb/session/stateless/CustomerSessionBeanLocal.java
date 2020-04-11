@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.Customer;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.ChangePasswordException;
 import util.exception.CreateCustomerException;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerUsernameExistException;
@@ -39,5 +40,9 @@ public interface CustomerSessionBeanLocal {
     public void addPoints(Long customerId, int pointsToAdd);
 
     public void redeemPoints(Long customerId, int pointsToDeduct);
+
+    public void updateDetails(String username, String name, String email, String phoneNo, String creditCardNo) throws InvalidLoginCredentialException, CustomerNotFoundException;
+
+    public void changePassword(String username, String oldPassword, String newPassword) throws InvalidLoginCredentialException, CustomerNotFoundException, ChangePasswordException;
     
 }

@@ -6,6 +6,8 @@
 package ejb.session.stateless;
 
 import entity.Outlet;
+import entity.Review;
+import entity.Room;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -68,7 +70,12 @@ public class OutletSessionBean implements OutletSessionBeanLocal {
     public void deleteOutlet(Long outletId)
     {
         Outlet outletToDelete = retrieveOutletById(outletId);
-        em.remove(outletToDelete);
+        
+        for (Room r: outletToDelete.getRooms()) {
+            em.remove(r);
+        }
+        
+        outletToDelete.setIsDisabled(Boolean.TRUE);
     }
     
 
