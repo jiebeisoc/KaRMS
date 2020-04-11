@@ -34,28 +34,29 @@ public class FoodOrderTransactionLineItem implements Serializable
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionLineItemId;
-    @Column(nullable = false)
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     @NotNull
     @Min(1)
-   
     private FoodItem foodItem;
+    
     @Column(nullable = false)
     @NotNull
     @Min(1)
     private Integer quantity;
+    
     @Column(nullable = false, precision = 11, scale = 2)
     @NotNull
     @DecimalMin("0.00")
     @Digits(integer = 9, fraction = 2) // 11 - 2 digits to the left of the decimal point
     private BigDecimal unitPrice;
+    
     @Column(nullable = false, precision = 11, scale = 2)
     @NotNull
     @DecimalMin("0.00")
     @Digits(integer = 9, fraction = 2) // 11 - 2 digits to the left of the decimal point
     private BigDecimal subTotal;
-    
-    
-
     
     
     public FoodOrderTransactionLineItem()
@@ -66,7 +67,7 @@ public class FoodOrderTransactionLineItem implements Serializable
     
     public FoodOrderTransactionLineItem(FoodItem foodItem, Integer quantity, BigDecimal unitPrice, BigDecimal subTotal)
     {
-     
+        this();
         this.foodItem = foodItem;
         this.quantity = quantity;
         this.unitPrice = unitPrice;

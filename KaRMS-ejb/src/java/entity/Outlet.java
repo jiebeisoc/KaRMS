@@ -68,6 +68,7 @@ public class Outlet implements Serializable {
     }
 
     public Outlet(String outletName, String outletAddress, String outletPhone, Date openingHours, Date closingHours) {
+        this();
         this.outletName = outletName;
         this.outletAddress = outletAddress;
         this.outletPhone = outletPhone;
