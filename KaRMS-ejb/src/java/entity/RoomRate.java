@@ -57,12 +57,13 @@ public class RoomRate implements Serializable {
     public RoomRate() {
     }
 
-    public RoomRate(String name, Date startTime, Date endTime, BigDecimal rate) {
+    public RoomRate(String name, Date startTime, Date endTime, BigDecimal rate, RoomRateType roomRateType) {
        this();
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.rate = rate;
+        this.roomRateType = roomRateType;
     }
 
     public Long getRoomRateId() {

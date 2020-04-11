@@ -30,7 +30,7 @@ public class Room implements Serializable {
     private Long roomId;
     @NotNull
     @Column(nullable = false)
-    private int roomNum;
+    private String roomNum;
     @NotNull
     @Column(nullable = false)
     private Boolean isDisabled;
@@ -49,7 +49,7 @@ public class Room implements Serializable {
         this.isDisabled = Boolean.FALSE;
     }
 
-    public Room(int roomNum) {
+    public Room(String roomNum) {
         this();
         this.roomNum = roomNum;
     }
@@ -98,14 +98,14 @@ public class Room implements Serializable {
     /**
      * @return the roomNum
      */
-    public int getRoomNum() {
+    public String getRoomNum() {
         return roomNum;
     }
 
     /**
      * @param roomNum the roomNum to set
      */
-    public void setRoomNum(int roomNum) {
+    public void setRoomNum(String roomNum) {
         this.roomNum = roomNum;
     }
 
