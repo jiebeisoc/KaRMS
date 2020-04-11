@@ -3,28 +3,28 @@ package ejb.session.stateless;
 import entity.FoodOrderTransaction;
 import entity.FoodOrderTransactionLineItem;
 import java.util.List;
-import util.exception.CreateNewSaleTransactionException;
-import util.exception.SaleTransactionAlreadyVoidedRefundedException;
-import util.exception.SaleTransactionNotFoundException;
+import util.exception.CreateNewFoodOrderTransactionException;
+import util.exception.FoodOrderTransactionAlreadyVoidedRefundedException;
+import util.exception.FoodOrderTransactionNotFoundException;
 
 
 
 
 public interface FoodOrderSessionBeanLocal
 {
-    FoodOrderTransaction createNewSaleTransaction(Long staffId, FoodOrderTransaction newSaleTransactionEntity) throws CreateNewSaleTransactionException;
 
-    List<FoodOrderTransaction> retrieveAllSaleTransactions();
-    
-    List<FoodOrderTransactionLineItem> retrieveSaleTransactionLineItemsByProductId(Long productId);
+    public FoodOrderTransaction createNewFoodOrderTransaction(Long customerId, FoodOrderTransaction newFoodOrderTransactionEntity) throws CreateNewFoodOrderTransactionException;
 
-    FoodOrderTransaction retrieveSaleTransactionBySaleTransactionId(Long saleTransactionId) throws SaleTransactionNotFoundException;
-    
-    void updateSaleTransaction(FoodOrderTransaction saleTransactionEntity);
+    public List<FoodOrderTransaction> retrieveAllFoodOrderTransactions();
 
-    void voidRefundSaleTransaction(Long saleTransactionId) throws SaleTransactionNotFoundException, SaleTransactionAlreadyVoidedRefundedException;
-    
-    void deleteSaleTransaction(FoodOrderTransaction saleTransactionEntity); 
+    public List<FoodOrderTransaction> retrieveAllFoodOrderTransactionsByCustomerID(Long customerId);
 
-    public List<FoodOrderTransaction> retrieveAllSaleTransactionsByCustomerID(String firstName );
+    public List<FoodOrderTransactionLineItem> retrieveFoodOrderTransactionLineItemsByFoodItemId(Long foodItemId);
+
+    public FoodOrderTransaction retrieveFoodOrderTransactionByFoodOrderTransactionId(Long foodOrderTransactionId) throws FoodOrderTransactionNotFoundException;
+
+    public void updateFoodOrderTransaction(FoodOrderTransaction foodOrderTransactionEntity);
+
+    public void voidRefundFoodOrderTransaction(Long foodOrderTransactionId) throws FoodOrderTransactionNotFoundException, FoodOrderTransactionAlreadyVoidedRefundedException;
+   
 }

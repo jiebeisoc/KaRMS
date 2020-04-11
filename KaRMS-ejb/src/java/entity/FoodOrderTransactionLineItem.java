@@ -33,13 +33,11 @@ public class FoodOrderTransactionLineItem implements Serializable
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long foodOrderTransactionLineItemId;
+    private Long transactionLineItemId;
     @Column(nullable = false)
     @NotNull
     @Min(1)
-    private Integer serialNumber;
-    @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+   
     private FoodItem foodItem;
     @Column(nullable = false)
     @NotNull
@@ -55,6 +53,8 @@ public class FoodOrderTransactionLineItem implements Serializable
     @DecimalMin("0.00")
     @Digits(integer = 9, fraction = 2) // 11 - 2 digits to the left of the decimal point
     private BigDecimal subTotal;
+    
+    
 
     
     
@@ -64,9 +64,9 @@ public class FoodOrderTransactionLineItem implements Serializable
     
     
     
-    public FoodOrderTransactionLineItem(Integer serialNumber, FoodItem foodItem, Integer quantity, BigDecimal unitPrice, BigDecimal subTotal)
+    public FoodOrderTransactionLineItem(FoodItem foodItem, Integer quantity, BigDecimal unitPrice, BigDecimal subTotal)
     {
-        this.serialNumber = serialNumber;
+     
         this.foodItem = foodItem;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
@@ -81,7 +81,7 @@ public class FoodOrderTransactionLineItem implements Serializable
     public int hashCode()
     {
         int hash = 0;
-        hash += (this.foodOrderTransactionLineItemId != null ? this.foodOrderTransactionLineItemId.hashCode() : 0);
+        hash += (this.transactionLineItemId != null ? this.transactionLineItemId.hashCode() : 0);
         
         return hash;
     }
@@ -98,7 +98,7 @@ public class FoodOrderTransactionLineItem implements Serializable
         
         FoodOrderTransactionLineItem other = (FoodOrderTransactionLineItem) object;
         
-        if ((this.foodOrderTransactionLineItemId == null && other.foodOrderTransactionLineItemId != null) || (this.foodOrderTransactionLineItemId != null && !this.foodOrderTransactionLineItemId.equals(other.foodOrderTransactionLineItemId))) 
+        if ((this.transactionLineItemId == null && other.transactionLineItemId != null) || (this.transactionLineItemId != null && !this.transactionLineItemId.equals(other.transactionLineItemId))) 
         {
             return false;
         }
@@ -111,27 +111,20 @@ public class FoodOrderTransactionLineItem implements Serializable
     @Override
     public String toString() 
     {
-        return "entity.SaleTransactionLineItemEntity[ saleTransactionLineItemId=" + this.foodOrderTransactionLineItemId + " ]";
+        return "entity.SaleTransactionLineItemEntity[ saleTransactionLineItemId=" + this.transactionLineItemId + " ]";
     }
 
     
     
-    public Long getFoodOrderTransactionLineItemId() {
-        return foodOrderTransactionLineItemId;
+    public Long getTransactionLineItemId() {
+        return transactionLineItemId;
     }
 
-    public void setFoodOrderTransactionLineItemId(Long foodOrderTransactionLineItemId) {
-        this.foodOrderTransactionLineItemId = foodOrderTransactionLineItemId;
+    public void setTransactionLineItemId(Long transactionLineItemId) {
+        this.transactionLineItemId = transactionLineItemId;
     }
 
-    public Integer getSerialNumber() {
-        return serialNumber;
-    }
-
-    public void setSerialNumber(Integer serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
+  
   
 
     public Integer getQuantity() {
@@ -165,4 +158,5 @@ public class FoodOrderTransactionLineItem implements Serializable
     public void setFoodItem(FoodItem foodItem) {
         this.foodItem = foodItem;
     }
+
 }
