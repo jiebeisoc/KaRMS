@@ -32,7 +32,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.primefaces.event.SelectEvent;
 import util.enumeration.ReservationStatus;
-import util.exception.CustomerNotFoundException;
 import util.exception.NoAvailableRoomException;
 
 /**
@@ -71,7 +70,7 @@ public class ReservationManagementManagedBean implements Serializable {
     private Date filterDateTo;
         
     private Reservation newReservation;
-    private Long memberNum;
+    private String phoneNo;
     private Long roomTypeId;
     private Long roomId;
     private Long outletId;
@@ -87,9 +86,9 @@ public class ReservationManagementManagedBean implements Serializable {
     
     private Date minDate;
     private Date maxDate;
+    private int minTime;
+    private int maxTime;
 
-    private Long changedRoomTypeId;
-    
     public ReservationManagementManagedBean() {
         newReservation = new Reservation();
     }
@@ -106,16 +105,29 @@ public class ReservationManagementManagedBean implements Serializable {
     }
     
     public void onCreateNewReservation(ActionEvent event) {
+        minTime = 12;
+        maxTime = 23;
+        
         Calendar cal = Calendar.getInstance();
+        
         if (cal.get(Calendar.MINUTE) >= 1) {
+            cal.set(Calendar.MINUTE, 0);
+            
             cal.add(Calendar.HOUR, 1);
         }
-        cal.set(Calendar.MINUTE, 0);
-        System.out.println("time: " + cal.getTime());
+        cal.set(Calendar.SECOND, 0);
+        
+        if (cal.get(Calendar.HOUR_OF_DAY) > maxTime) {
+            cal.add(Calendar.DATE, 1);
+            cal.set(Calendar.HOUR_OF_DAY, minTime);
+        } else if (cal.get(Calendar.HOUR_OF_DAY) < minTime) {
+            cal.set(Calendar.HOUR_OF_DAY, minTime);
+        }
+            
         minDate = cal.getTime();
-        System.out.println("minDate: " + minDate);
         cal.add(Calendar.YEAR, 1);
         maxDate = cal.getTime();
+        
     }
     
     public void createNewReservation(ActionEvent event) {
@@ -123,10 +135,13 @@ public class ReservationManagementManagedBean implements Serializable {
             roomId = reservationSessionBeanLocal.retrieveAvailableRoom(newReservation, outletId, roomTypeId);
             int roomNum = roomSessionBeanLocal.retrieveRoomById(roomId).getRoomNum();
             
-            Long reservationId = reservationSessionBeanLocal.createNewReservation(newReservation, memberNum, roomId, outletId, promotionId);
+            newReservation.setDateReserved(new Date());
+            
+            Long reservationId = reservationSessionBeanLocal.createNewReservation(newReservation, roomId, outletId, promotionId);
             reservations.add(newReservation);
 
-            memberNum = null;
+            totalPrice = new BigDecimal("0.00");
+            phoneNo = null;
             roomId = null;
             outletId = null;
             promotionId = null;
@@ -134,51 +149,62 @@ public class ReservationManagementManagedBean implements Serializable {
 
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New reservation is created successfully (Room Number: " + roomNum + ")", null));
         
-        } catch (NoAvailableRoomException | CustomerNotFoundException ex) {
+        } catch (NoAvailableRoomException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null));
         }
     }
+   
+    public void onRoomTypeChange(ValueChangeEvent event) {
+        roomTypeIdUpdate = (Long)event.getNewValue();
+    }
+
+    public void dateChange(SelectEvent event) {
+        dateUpdate = (Date)event.getObject();
+        promotions = promotionSessionBeanLocal.retrievePromotionByDate(dateUpdate);
+        calculateTotalPrice();
+    }
+
+    public void onDurationChange(ValueChangeEvent event) {
+        durationUpdate = (int)event.getNewValue();
+    }
+        
+    public void onPromotionChange(ValueChangeEvent event) {
+        promotionIdUpdate = (Long)event.getNewValue();
+    }
     
+    public void onOutletChange(ValueChangeEvent event) {
+        outletIdUpdate = (Long)event.getNewValue();
+    }
+    
+    public void outletChange(AjaxBehaviorEvent event) {
+        Outlet outlet = outletSessionBeanLocal.retrieveOutletById(outletIdUpdate);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(outlet.getOpeningHours());
+        minTime = cal.get(Calendar.HOUR_OF_DAY);
+        cal.setTime(outlet.getClosingHours());
+        maxTime = cal.get(Calendar.HOUR_OF_DAY) - 1; 
+
+    }
+     
     public void calculateTotalPrice() {
-        if (durationUpdate != 0 && roomTypeIdUpdate != 0L) {
-            totalPrice = reservationSessionBeanLocal.calculateTotalPrice(dateUpdate, durationUpdate, roomTypeIdUpdate);
-        }
+        totalPrice = reservationSessionBeanLocal.calculateTotalPrice(dateUpdate, durationUpdate, roomTypeIdUpdate, promotionIdUpdate);
+        totalPrice = totalPrice.setScale(2, BigDecimal.ROUND_DOWN);
+        
+        if (newReservation != null) {
+            newReservation.setTotalPrice(totalPrice);
+        } 
         
         if (selectedReservation != null) {
             selectedReservation.setTotalPrice(totalPrice);
         }
-    }
-        
-    public void onRoomTypeChange(ValueChangeEvent event) {
-        roomTypeIdUpdate = (Long)event.getNewValue();
-    }
     
-    public void roomTypeChange(AjaxBehaviorEvent event) {
-        calculateTotalPrice();  
     }
-    
-    public void onDateChange(ValueChangeEvent event) {
-        dateUpdate = (Date)event.getNewValue();
-    }
-    
-    public void dateChange(AjaxBehaviorEvent event) {
-        promotions = promotionSessionBeanLocal.retrievePromotionByDate(dateUpdate);
-        calculateTotalPrice();
-    }
-    
-    public void onDurationChange(ValueChangeEvent event) {
-        durationUpdate = (int)event.getNewValue();
-    }
-    
-    public void durationChange(AjaxBehaviorEvent event) {
-        calculateTotalPrice();  
-    }
-    
+       
     public void updateReservation() {
         try { 
             roomIdUpdate = reservationSessionBeanLocal.retrieveAvailableRoom(selectedReservation, outletIdUpdate, roomTypeIdUpdate);
             int roomNum = roomSessionBeanLocal.retrieveRoomById(roomIdUpdate).getRoomNum();
-
+            
             reservationSessionBeanLocal.updateReservation(selectedReservation, roomIdUpdate, outletIdUpdate, promotionIdUpdate);
 
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Reservation updated successfully (Room Number: " + roomNum + ")", null));
@@ -215,6 +241,33 @@ public class ReservationManagementManagedBean implements Serializable {
         this.roomTypeIdUpdate = selectedReservation.getRoom().getRoomType().getRoomTypeId();
         this.outletIdUpdate = selectedReservation.getOutlet().getOutletId();
         this.promotionIdUpdate = selectedReservation.getPromotion().getPromotionId();
+        
+        dateUpdate = selectedReservation.getDate();
+        durationUpdate = selectedReservation.getDuration();
+        promotions = promotionSessionBeanLocal.retrievePromotionByDate(dateUpdate); 
+        
+        minTime = 12;
+        maxTime = 23;
+        
+        Calendar cal = Calendar.getInstance();
+        
+        if (cal.get(Calendar.MINUTE) >= 1) {
+            cal.set(Calendar.MINUTE, 0);
+            
+            cal.add(Calendar.HOUR, 1);
+        }
+        cal.set(Calendar.SECOND, 0);
+        
+        if (cal.get(Calendar.HOUR_OF_DAY) > maxTime) {
+            cal.add(Calendar.DATE, 1);
+            cal.set(Calendar.HOUR_OF_DAY, minTime);
+        } else if (cal.get(Calendar.HOUR_OF_DAY) < minTime) {
+            cal.set(Calendar.HOUR_OF_DAY, minTime);
+        }
+            
+        minDate = cal.getTime();
+        cal.add(Calendar.YEAR, 1);
+        maxDate = cal.getTime();
     }
     
     public void onRowUnselect(SelectEvent event) {
@@ -222,6 +275,9 @@ public class ReservationManagementManagedBean implements Serializable {
         this.roomTypeIdUpdate = null;
         this.outletIdUpdate = null;
         this.promotionIdUpdate = null;
+        promotions = new ArrayList<>();
+        dateUpdate = null;
+        durationUpdate = 0;
     }
     
     public List<Reservation> getReservations() {
@@ -240,12 +296,12 @@ public class ReservationManagementManagedBean implements Serializable {
         this.newReservation = newReservation;
     }
 
-    public Long getMemberNum() {
-        return memberNum;
+    public String getPhoneNo() {
+        return phoneNo;
     }
 
-    public void setMemberNum(Long memberNum) {
-        this.memberNum = memberNum;
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
     }
 
     public Long getRoomId() {
@@ -376,14 +432,22 @@ public class ReservationManagementManagedBean implements Serializable {
         this.maxDate = maxDate;
     }
 
-    public Long getChangedRoomTypeId() {
-        return changedRoomTypeId;
+    public int getMinTime() {
+        return minTime;
     }
 
-    public void setChangedRoomTypeId(Long changedRoomTypeId) {
-        this.changedRoomTypeId = changedRoomTypeId;
+    public void setMinTime(int minTime) {
+        this.minTime = minTime;
     }
-    
+
+    public int getMaxTime() {
+        return maxTime;
+    }
+
+    public void setMaxTime(int maxTime) {
+        this.maxTime = maxTime;
+    }
+
     public Date getDateUpdate() {
         return dateUpdate;
     }

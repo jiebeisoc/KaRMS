@@ -14,8 +14,10 @@ public interface ReservationSessionBeanLocal {
     public Long retrieveAvailableRoom(Reservation reservation, Long outletId, Long roomTypeId) throws NoAvailableRoomException;
 
     public Long createNewReservation(Reservation newReservation, Long customerId, Long roomId, Long outletId, Long promotionId) throws CustomerNotFoundException;
+        
+    public Long createNewReservation(Reservation newReservation, Long roomId, Long outletId, Long promotionId);
 
-    public BigDecimal calculateTotalPrice(Date date, int duration, Long roomTypeId);
+    public BigDecimal calculateTotalPrice(Date date, int duration, Long roomTypeId, Long promotionId);
         
     public List<Reservation> retrieveAllReservations();
 
@@ -24,6 +26,8 @@ public interface ReservationSessionBeanLocal {
     public List<Reservation> retrieveReservationByStatus(ReservationStatus status);
 
     public List<Long> retrieveReservationByDate(Date dateFrom, Date dateTo);
+    
+    public List<Reservation> retrieveReservationByPhoneNo(String phoneNo);
     
     public void updateReservation(Reservation reservationToUpdate, Long roomIdUpdate, Long outletIdUpdate, Long promotionIdUpdate);
 

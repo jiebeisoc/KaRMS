@@ -29,8 +29,8 @@
                          scrollRows="20" scrollable="true" liveScroll="true" 
                          emptyMessage="No reservations found with given criteria" filteredValue="#{reservationManagementManagedBean.filteredReservations}">
            
-                <p:ajax event="rowSelect" listener="#{reservationManagementManagedBean.onRowSelect}"/>
-                <p:ajax event="rowUnselect" listener="#{reservationManagementManagedBean.onRowUnselect}"/>
+                <p:ajax event="rowSelect" listener="#{reservationManagementManagedBean.onRowSelect}" oncomplete="PF('dialogViewReservation').show()" update="viewReservation updateReservation"/>
+                <p:ajax event="rowUnselect" listener="#{reservationManagementManagedBean.onRowUnselect}" update="viewReservation updateReservation"/>
                 
                 <f:facet name="header">
                     <p:outputPanel style="text-align: left">
@@ -39,11 +39,15 @@
                     </p:outputPanel>
                 </f:facet>
                 
-                <p:column sortBy="#{reservation.reservationId}" filterBy="#{reservation.reservationId}" headerText="ID" filterMatchMode="contains" style="width: 5%">
+                <p:column sortBy="#{reservation.reservationId}" filterBy="#{reservation.reservationId}" headerText="ID" filterMatchMode="contains" style="width: 9.5%">
                     <h:outputText value="#{reservation.reservationId}"/>
                 </p:column>
+                 
+                <p:column sortBy="#{reservation.walkInPhoneNo}" filterBy="#{reservation.walkInPhoneNo}" headerText="Phone No" filterMatchMode="contains" style="width: 10.5%">
+                    <h:outputText value="#{reservation.walkInPhoneNo}"/>
+                </p:column>
                 
-                <p:column sortBy="#{reservation.date}" filterBy="#{reservation.date}" headerText="Date" filterFunction="#{dateRangeFilter.filterByDate}" style="width: 150px">
+                <p:column sortBy="#{reservation.date}" filterBy="#{reservation.date}" headerText="Date" filterFunction="#{dateRangeFilter.filterByDate}" style="width: 22.5%">
                     <f:facet name="filter">
                         <h:inputHidden id="dateFilter" />
                     </f:facet>
@@ -61,19 +65,15 @@
                         <f:convertDateTime type="date" pattern="dd/MM/yyyy hh:mm a"/>
                     </h:outputText>
                 </p:column>
-                
-                <p:column sortBy="#{reservation.customer.memberNum}" filterBy="#{reservation.customer.memberNum}" headerText="Member No" filterMatchMode="contains" style="width: 5%">
-                    <h:outputText value="#{reservation.customer.memberNum}"/>
-                </p:column>
-                
-                <p:column sortBy="#{reservation.duration}" filterBy="#{reservation.duration}" headerText="Duration (Hrs)" filterMatchMode="contains" style="width: 10%">
+               
+                <p:column sortBy="#{reservation.duration}" filterBy="#{reservation.duration}" headerText="Duration" filterMatchMode="contains" style="width: 11%">
                     <f:facet name="filter">
                         <p:spinner onchange="PF('dataTableAllReservations').filter()" min="1" max="10"/>
                     </f:facet>
                     <h:outputText value="#{reservation.duration}"/>
                 </p:column>
                 
-                <p:column sortBy="#{reservation.status}" filterBy="#{reservation.status}" headerText="Status" filterMatchMode="equals" style="width: 120px">
+                <p:column sortBy="#{reservation.status}" filterBy="#{reservation.status}" headerText="Status" filterMatchMode="equals" style="width: 12%">
                     <f:facet name="filter">
                         <p:selectCheckboxMenu label="[Status]" onchange="PF('dataTableAllReservations').filter()" multiple="true">
                             <f:selectItems value="#{reservationManagementManagedBean.statusList}"/>
@@ -82,7 +82,16 @@
                     <h:outputText value="#{reservation.status}"/>
                 </p:column>
                 
-                <p:column sortBy="#{reservation.dateReserved}" filterBy="#{reservation.dateReserved}" headerText="Date Reserved" filterFunction="#{dateRangeFilter.filterByDate}" style="width: 150px">
+                <p:column sortBy="#{reservation.outlet.outletName}" filterBy="#{reservation.outlet.outletName}" headerText="Outlet" filterMatchMode="equals" style="width: 12%">
+                    <f:facet name="filter">
+                        <p:selectCheckboxMenu label="[Outlet]" onchange="PF('dataTableAllReservations').filter()" multiple="true">
+                            <f:selectItems value="#{reservationManagementManagedBean.outlets}" var="outletEntity" itemValue="#{outletEntity.outletId}" itemLabel="#{outletEntity.outletName}"/>
+                        </p:selectCheckboxMenu>
+                    </f:facet>
+                    <h:outputText value="#{reservation.outlet.outletName}"/>
+                </p:column>
+                
+                <p:column sortBy="#{reservation.dateReserved}" filterBy="#{reservation.dateReserved}" headerText="Date Reserved" filterFunction="#{dateRangeFilter.filterByDate}" style="width: 22.5%">
                     <f:facet name="filter">
                         <h:inputHidden id="dateReservedFilter" />
                     </f:facet>
@@ -109,15 +118,15 @@
             
             <p:dialog id="dialogCreateNewReservation" widgetVar="dialogCreateNewReservation" header="Create New Reservation" closable="true">
                 
-                <p:panelGrid style="min-height: 300px">
+                <p:panelGrid id="createNewReservationPanel" style="min-height: 300px">
 
                     <p:row>
                         <p:column>
-                            <p:outputLabel for="memberNum" value="Member No: " style="font-weight: bold" />               
+                            <p:outputLabel for="walkInPhoneNo" value="Phone No: " style="font-weight: bold" />               
                         </p:column>
                         <p:column>
-                            <p:inputText id="memberNum" value="#{reservationManagementManagedBean.memberNum}" placeholder="0000000"
-                                         required="true" requiredMessage="Member number is required" />            
+                            <p:inputText id="walkInPhoneNo" value="#{reservationManagementManagedBean.newReservation.walkInPhoneNo}" placeholder="91234567"
+                                         required="true" requiredMessage="Phone number is required" />            
                         </p:column>
                     </p:row>
 
@@ -126,10 +135,11 @@
                             <p:outputLabel for="outlet" value="Outlet: " style="font-weight: bold" />               
                         </p:column>
                         <p:column>
-                            <p:selectOneMenu id="outlet" value="#{reservationManagementManagedBean.outletId}"
+                            <p:selectOneMenu id="outlet" value="#{reservationManagementManagedBean.outletId}" valueChangeListener="#{reservationManagementManagedBean.onOutletChange}"
                                              required="true" requiredMessage="Outlet is required">
                                 <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
                                 <f:selectItems value="#{reservationManagementManagedBean.outlets}" var="outletEntity" itemValue="#{outletEntity.outletId}" itemLabel="#{outletEntity.outletName}" />
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.outletChange}" update="date"/>
                             </p:selectOneMenu>            
                         </p:column>
                     </p:row>
@@ -153,32 +163,68 @@
                                              required="true" requiredMessage="Room type is required">
                                 <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
                                 <f:selectItems value="#{reservationManagementManagedBean.roomTypes}" var="roomTypeEntity" itemValue="#{roomTypeEntity.roomTypeId}" itemLabel="#{roomTypeEntity.name}" />
-                                <p:ajax event="change" listener="#{reservationManagementManagedBean.roomTypeChange}" update="createNewReservation"/>
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.calculateTotalPrice}" update="totalPrice"/>
                             </p:selectOneMenu>            
                         </p:column>
                     </p:row>
-
+                    
                     <p:row>
                         <p:column>
                             <p:outputLabel for="date" value="Date: " style="font-weight: bold" />               
                         </p:column>
                         <p:column>
-                            <p:datePicker id="date" value="#{reservationManagementManagedBean.newReservation.date}" showTime="true" hourFormat="12" stepMinute="0" 
-                                          mindate="#{reservationManagementManagedBean.minDate}" maxdate="#{reservationManagementManagedBean.maxDate}" pattern="dd/MM/yyyy" showIcon="true" readonlyInput="true" 
-                                          valueChangeListener="#{reservationManagementManagedBean.onDateChange}" required="true" requiredMessage="Date is required" >
-                                <p:ajax event="change" listener="#{reservationManagementManagedBean.dateChange}" update="createNewReservation"/>
+                            <p:calendar id="date" value="#{reservationManagementManagedBean.newReservation.date}" showOn="both" readonlyInput="true"
+                                        mindate="#{reservationManagementManagedBean.minDate}" maxdate="#{reservationManagementManagedBean.maxDate}" pattern="dd/MM/yyyy hh:mm a"
+                                        minHour="#{reservationManagementManagedBean.minTime}" maxHour="#{reservationManagementManagedBean.maxTime}" stepMinute="60"
+                                        required="true" requiredMessage="Date is required" >
+                                <p:ajax event="dateSelect" listener="#{reservationManagementManagedBean.dateChange}" update="promotion totalPrice"/>
+                            </p:calendar> 
+                        </p:column>
+                    </p:row>
+
+                    <!--
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="date" value="Date: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:datePicker id="date" value="#{reservationManagementManagedBean.newReservation.date}" showIcon="true" readonlyInput="true" 
+                                          mindate="#{reservationManagementManagedBean.minDate}" maxdate="#{reservationManagementManagedBean.maxDate}" pattern="dd/MM/yyyy"  
+                                          required="true" requiredMessage="Date is required" >
+                                <p:ajax event="dateSelect" listener="#{reservationManagementManagedBean.dateChange}" update="promotion totalPrice"/>
                             </p:datePicker> 
                         </p:column>
                     </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="time" value="Time: " style="font-weight: bold" />               
+                        </p:column>
+                        <p:column>
+                            <p:calendar id="time" value="#{reservationManagementManagedBean.selectedTime}" timeOnly="true" stepMinute="30" readonly="true" showOn="both"
+                                        minHour="#{reservationManagementManagedBean.minTime}" maxHour="#{reservationManagementManagedBean.maxTime}" pattern="hh:mm a" placeholder="12pm - 11pm" defaultHour="12"
+                                        valueChangeListener="#{reservationManagementManagedBean.onTimeChange}" required="true" requiredMessage="Time is required" >
+                                <p:ajax event="dateSelect" listener="#{reservationManagementManagedBean.timeChange}" update="promotion totalPrice"/>
+                            </p:calendar>
+                            
+                            <p:datePicker id="time" value="#{reservationManagementManagedBean.newReservation.date.time}" showIcon="true" timeOnly="true" hourFormat="12" stepMinute="30" readonlyInput="true"
+                                          mindate="#{reservationManagementManagedBean.minTime}" maxdate="#{reservationManagementManagedBean.maxTime}" pattern="hh:mm" placeholder="12pm - 12am"
+                                          required="true" requiredMessage="Time is required" >
+                                <p:ajax event="dateSelect" listener="#{reservationManagementManagedBean.timeChange}" update="promotion totalPrice"/>
+                            </p:datePicker> 
+                            
+                        </p:column>
+                    </p:row>
+                    -->
 
                     <p:row>
                         <p:column>
                             <p:outputLabel for="duration" value="Duration (Hrs): " style="font-weight: bold" />               
                         </p:column>
                         <p:column>
-                            <p:spinner id="duration" value="#{reservationManagementManagedBean.newReservation.duration}" min="1" max="12"
+                            <p:spinner id="duration" value="#{reservationManagementManagedBean.newReservation.duration}" min="0" max="12"
                                        required="true" requiredMessage="Duration is required" valueChangeListener="#{reservationManagementManagedBean.onDurationChange}">
-                                <p:ajax event="change" listener="#{reservationManagementManagedBean.durationChange}" update="createNewReservation"/>
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.calculateTotalPrice}" update="totalPrice"/>
                             </p:spinner>
                         </p:column>
                     </p:row>
@@ -188,9 +234,10 @@
                             <p:outputLabel for="promotion" value="Promotion: " style="font-weight: bold" />               
                         </p:column>
                         <p:column>
-                            <p:selectOneMenu id="promotion" value="#{reservationManagementManagedBean.promotionId}" >
+                            <p:selectOneMenu id="promotion" value="#{reservationManagementManagedBean.promotionId}" valueChangeListener="#{reservationManagementManagedBean.onPromotionChange}">
                                 <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
                                 <f:selectItems value="#{reservationManagementManagedBean.promotions}" var="promotionEntity" itemValue="#{promotionEntity.promotionId}" itemLabel="#{promotionEntity.promotionName}" />
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.calculateTotalPrice}" update="totalPrice"/>
                             </p:selectOneMenu>            
                         </p:column>
                     </p:row>
@@ -209,7 +256,7 @@
                             <p:outputLabel for="totalPrice" value="Total Price: " style="font-weight: bold; font-size: 14px" />               
                         </p:column>
                         <p:column>
-                            <h:outputText id="totalPrice" value="#{reservationManagementManagedBean.totalPrice}" style="font-weight: bold; font-size: 14px">
+                            <h:outputText id="totalPrice" value="#{reservationManagementManagedBean.newReservation.totalPrice}" style="font-weight: bold; font-size: 14px">
                                 <f:convertNumber minFractionDigits="2" maxFractionDigits="2" type="currency" currencyCode="SGD"/>
                             </h:outputText>
                         </p:column>
@@ -246,10 +293,10 @@
 
                     <p:row>
                         <p:column>
-                            <p:outputLabel for="memberNum" value="Member No: " style="font-weight: bold" />               
+                            <p:outputLabel for="walkInPhoneNo" value="Phone No: " style="font-weight: bold" />               
                         </p:column>
                         <p:column>
-                            <h:outputText id="memberNum" value="#{reservationManagementManagedBean.selectedReservation.customer.memberNum}"/>          
+                            <h:outputText id="walkInPhoneNo" value="#{reservationManagementManagedBean.selectedReservation.walkInPhoneNo}"/>            
                         </p:column>
                     </p:row>
 
@@ -286,7 +333,7 @@
                         </p:column>
                         <p:column>
                             <h:outputText id="date" value="#{reservationManagementManagedBean.selectedReservation.date}">
-                                <f:convertDateTime pattern="dd-MM-YYYY hh:mm a"/>
+                                <f:convertDateTime pattern="dd/MM/yyyy hh:mm a"/>
                             </h:outputText>
                         </p:column>
                     </p:row>
@@ -333,9 +380,9 @@
                         <p:column colspan="2">
                             <p:commandButton value="Update" icon="ui-icon-pencil" oncomplete="PF('dialogUpdateReservation').show(); PF('dialogViewReservation').hide()" title="Update"/>&nbsp;
                             <p:commandButton value="Delete" icon="ui-icon-trash" update="@form formAllReservations:dataTableAllReservations"
-                                             actionListener="#{reservationManagementManagedBean.deleteReservation}" immediate="true"/>
+                                             actionListener="#{reservationManagementManagedBean.deleteReservation}" immediate="true">
                                 <f:attribute name="reservationToDelete" value="#{reservationManagementManagedBean.selectedReservation}"/>
-                                <p:confirm header="Confirmation" message="Are you sure you want to delete #{reservationManagementManagedBean.selectedReservation}?" icon="ui-icon-alert"/>
+                                <p:confirm header="Confirmation" message="Are you sure you want to delete reservation?" icon="ui-icon-alert"/>
                             </p:commandButton>    
                         </p:column>
                     </p:row>
@@ -368,10 +415,11 @@
 
                     <p:row>
                         <p:column>
-                            <p:outputLabel for="memberNum" value="Member No: " style="font-weight: bold" />               
+                            <p:outputLabel for="walkInPhoneNo" value="Phone No: " style="font-weight: bold" />               
                         </p:column>
                         <p:column>
-                            <h:outputText id="memberNum" value="#{reservationManagementManagedBean.selectedReservation.customer.memberNum}"/>            
+                            <p:inputText id="walkInPhoneNo" value="#{reservationManagementManagedBean.selectedReservation.walkInPhoneNo}" placeholder="91234567"
+                                         required="true" requiredMessage="Phone number is required" />            
                         </p:column>
                     </p:row>
 
@@ -407,7 +455,7 @@
                                              required="true" requiredMessage="Room type is required">
                                 <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
                                 <f:selectItems value="#{reservationManagementManagedBean.roomTypes}" var="roomTypeEntity" itemValue="#{roomTypeEntity.roomTypeId}" itemLabel="#{roomTypeEntity.name}" />
-                                <p:ajax event="change" listener="#{reservationManagementManagedBean.roomTypeChange}" update="updateReservation"/>
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.calculateTotalPrice}" update="totalPrice"/>
                             </p:selectOneMenu>            
                         </p:column>
                     </p:row>
@@ -417,12 +465,12 @@
                             <p:outputLabel for="date" value="Date: " style="font-weight: bold" />               
                         </p:column>
                         <p:column>
-                            <p:datePicker id="date" value="#{reservationManagementManagedBean.newReservation.date}" showTime="true" hourFormat="12" stepMinute="0" 
-                                          mindate="#{reservationManagementManagedBean.minDate}" maxdate="#{reservationManagementManagedBean.maxDate}" pattern="dd/MM/yyyy" showIcon="true" readonlyInput="true" 
-                                          valueChangeListener="#{reservationManagementManagedBean.onDateChange}" required="true" requiredMessage="Date is required" >
-                                <p:ajax event="change" listener="#{reservationManagementManagedBean.dateChange}" update="updateReservation"/>
-                            </p:datePicker> 
-
+                            <p:calendar id="date" value="#{reservationManagementManagedBean.selectedReservation.date}" showOn="both" readonlyInput="true"
+                                        mindate="#{reservationManagementManagedBean.minDate}" maxdate="#{reservationManagementManagedBean.maxDate}" pattern="dd/MM/yyyy hh:mm a"
+                                        minHour="#{reservationManagementManagedBean.minTime}" maxHour="#{reservationManagementManagedBean.maxTime}" stepMinute="60"
+                                        required="true" requiredMessage="Date is required" >
+                                <p:ajax event="dateSelect" listener="#{reservationManagementManagedBean.dateChange}" update="promotion totalPrice"/>
+                            </p:calendar> 
                         </p:column>
                     </p:row>
 
@@ -433,7 +481,7 @@
                         <p:column>
                             <p:spinner id="duration" value="#{reservationManagementManagedBean.selectedReservation.duration}" min="1" max="12"
                                        required="true" requiredMessage="Duration is required" valueChangeListener="#{reservationManagementManagedBean.onDurationChange}">
-                                <p:ajax event="change" listener="#{reservationManagementManagedBean.durationChange}" update="updateReservation"/>
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.calculateTotalPrice}" update="totalPrice"/>
                             </p:spinner> 
                         </p:column>
                     </p:row>
@@ -443,9 +491,10 @@
                             <p:outputLabel for="promotion" value="Promotion: " style="font-weight: bold" />               
                         </p:column>
                         <p:column>
-                            <p:selectOneMenu id="promotion" value="#{reservationManagementManagedBean.promotionIdUpdate}" >
+                            <p:selectOneMenu id="promotion" value="#{reservationManagementManagedBean.promotionIdUpdate}" valueChangeListener="#{reservationManagementManagedBean.onPromotionChange}">
                                 <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
                                 <f:selectItems value="#{reservationManagementManagedBean.promotions}" var="promotionEntity" itemValue="#{promotionEntity.promotionId}" itemLabel="#{promotionEntity.promotionName}" />
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.calculateTotalPrice}" update="totalPrice"/>
                             </p:selectOneMenu>            
                         </p:column>
                     </p:row>

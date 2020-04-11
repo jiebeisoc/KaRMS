@@ -66,6 +66,8 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         Boolean isAvailable = false;
         
         Query query = em.createQuery("SELECT r FROM Room r WHERE r.outlet.outletId = :inOutletId AND r.roomType.roomTypeId = :inRoomTypeId");
+        query.setParameter("inOutletId", outletId);
+        query.setParameter("inRoomTypeId", roomTypeId);
         List<Room> availableRooms = query.getResultList();
         
         for (Room r: availableRooms) {
@@ -119,37 +121,87 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
     }
     
     @Override
-    public BigDecimal calculateTotalPrice(Date date, int duration, Long roomTypeId) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-        int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
-        String roomRateType;
+    public Long createNewReservation(Reservation newReservation, Long roomId, Long outletId, Long promotionId) {
         
-        if (dayOfWeek < 6) {
-            roomRateType = "WKDAY";
-        } else {
-            roomRateType = "WKEND";
+        System.out.println("Date: " + newReservation.getDate());
+        System.out.println("Duration: " + newReservation.getDuration());
+        System.out.println("Number of People: " + newReservation.getNumOfPeople());
+        System.out.println("Total Price: " + newReservation.getTotalPrice());
+        System.out.println("Status: " + newReservation.getStatus());
+        System.out.println("Date Reserved: " + newReservation.getDateReserved());
+        System.out.println("Phone No: " + newReservation.getWalkInPhoneNo());
+        System.out.println("PromoId: " + promotionId);
+        
+        
+        em.persist(newReservation);
+        
+        newReservation.setCustomer(null);
+        
+        if (roomId != null) {
+            Room room = roomSessionBeanLocal.retrieveRoomById(roomId);
+            room.getReservations().add(newReservation);
+            newReservation.setRoom(room);
         }
         
-        //non-peak is before 6pm, peak is 6pm onwards
-        if (hourOfDay < 18) {
-            roomRateType += "NONPEAK";
-        } else {
-            roomRateType += "PEAK";
+        if (outletId != null) {
+            Outlet outlet = outletSessionBeanLocal.retrieveOutletById(outletId);
+            outlet.getReservations().add(newReservation);
+            newReservation.setOutlet(outlet);
         }
         
-        BigDecimal roomRate = BigDecimal.ZERO;
-        List<RoomRate> roomRates = roomTypeSessionBeanLocal.retrieveRoomTypeById(roomTypeId).getRoomRates();
-        for (RoomRate rr: roomRates) {
-            String type = rr.getRoomRateType();
-            if (roomRateType.equals(type)) {
-                roomRate = rr.getRate();
-                break;
+        if (promotionId != null) {
+            Promotion promotion = promotionSessionBeanLocal.retrievePromotionById(promotionId);
+            newReservation.setPromotion(promotion);
+        }
+        
+        em.flush();
+        
+        return newReservation.getReservationId();
+    }
+    
+    @Override
+    public BigDecimal calculateTotalPrice(Date date, int duration, Long roomTypeId, Long promotionId) {
+        
+        BigDecimal totalPrice = new BigDecimal("0.00");
+        
+        if (date != null && duration != 0 && roomTypeId != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+            int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+            String roomRateType;
+
+            if (dayOfWeek < 6) {
+                roomRateType = "WKDAY";
+            } else {
+                roomRateType = "WKEND";
+            }
+
+            //non-peak is before 6pm, peak is 6pm onwards
+            if (hourOfDay < 18) {
+                roomRateType += "NONPEAK";
+            } else {
+                roomRateType += "PEAK";
+            }
+
+            BigDecimal roomRate = BigDecimal.ZERO;
+            List<RoomRate> roomRates = roomTypeSessionBeanLocal.retrieveRoomTypeById(roomTypeId).getRoomRates();
+            for (RoomRate rr: roomRates) {
+                String type = rr.getRoomRateType();
+                if (roomRateType.equals(type)) {
+                    roomRate = rr.getRate();
+                    break;
+                }
+            }
+
+            if (promotionId == null || promotionId == 0) {
+                totalPrice = roomRate.multiply(new BigDecimal(duration));
+            } else {
+                double promotionDiscount = promotionSessionBeanLocal.retrievePromotionById(promotionId).getDiscountRate();
+                totalPrice = roomRate.multiply(new BigDecimal(duration)).multiply(new BigDecimal(1 - promotionDiscount));
             }
         }
         
-        BigDecimal totalPrice = roomRate.multiply(new BigDecimal(duration));
         return totalPrice;
     }
 
@@ -188,6 +240,15 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         return query.getResultList();
     }
     
+    //Retrieve reservation by walk-in customer's phone no
+    @Override
+    public List<Reservation> retrieveReservationByPhoneNo(String phoneNo) {
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.walkInPhoneNo = :inWalkInPhoneNo");
+        query.setParameter("inWalkInPhoneNo", phoneNo);
+        
+        return query.getResultList();
+    }
+    
     // Update reservation and status
     @Override
     public void updateReservation(Reservation reservationToUpdate, Long roomIdUpdate, Long outletIdUpdate, Long promotionIdUpdate) {
@@ -195,7 +256,7 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         
         if (roomIdUpdate != null && (!reservationToUpdate.getRoom().getRoomId().equals(roomIdUpdate))) {
             Room roomToUpdate = roomSessionBeanLocal.retrieveRoomById(roomIdUpdate);
-            
+            /*
             List<Reservation> reservations = roomToUpdate.getReservations();
             for (Reservation r: reservations) {
                 if (r.getReservationId() == reservationToUpdate.getReservationId()) {
@@ -204,13 +265,13 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
                     break;
                 }
             }
-            
+            */
             reservationToUpdate.setRoom(roomToUpdate);
         }
         
         if (outletIdUpdate != null) {
             Outlet outletToUpdate = outletSessionBeanLocal.retrieveOutletById(outletIdUpdate);
-            
+            /*
             List<Reservation> reservations = outletToUpdate.getReservations();
             for (Reservation r: reservations) {
                 if (r.getReservationId() == reservationToUpdate.getReservationId()) {
@@ -219,12 +280,14 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
                     break;
                 }
             }
-            
+            */
             reservationToUpdate.setOutlet(outletToUpdate);
         }
         
         if (promotionIdUpdate != null) {
+            System.out.println("promoId: " + promotionIdUpdate);
             Promotion promotion = promotionSessionBeanLocal.retrievePromotionById(promotionIdUpdate);
+            System.out.println("rId: " + reservationToUpdate);
             reservationToUpdate.setPromotion(promotion);
         }
         

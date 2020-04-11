@@ -22,6 +22,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import util.enumeration.ReservationStatus;
 
@@ -47,8 +49,10 @@ public class Reservation implements Serializable {
     @Column(nullable = false)
     private int numOfPeople;
     private String note;
+    @Column(nullable = false, precision = 11, scale = 2)
     @NotNull
-    @Column(nullable = false)
+    @DecimalMin("0.00")
+    @Digits(integer = 9, fraction = 2)
     private BigDecimal totalPrice;
     @Enumerated(EnumType.STRING)
     @NotNull
@@ -58,6 +62,7 @@ public class Reservation implements Serializable {
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateReserved;
+    private String walkInPhoneNo;
     
     @ManyToOne
     private Room room;
@@ -228,6 +233,14 @@ public class Reservation implements Serializable {
 
     public void setDateReserved(Date dateReserved) {
         this.dateReserved = dateReserved;
+    }
+
+    public String getWalkInPhoneNo() {
+        return walkInPhoneNo;
+    }
+
+    public void setWalkInPhoneNo(String walkInPhoneNo) {
+        this.walkInPhoneNo = walkInPhoneNo;
     }
 
 }
