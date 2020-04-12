@@ -8,6 +8,7 @@ package jsf.managedbean;
 import ejb.session.stateless.OutletSessionBeanLocal;
 import ejb.session.stateless.RoomSessionBeanLocal;
 import ejb.session.stateless.RoomTypeSessionBeanLocal;
+import entity.Employee;
 import entity.Outlet;
 import entity.Room;
 import entity.RoomType;
@@ -56,7 +57,8 @@ public class RoomManagementManagedBean implements Serializable {
     
     @PostConstruct
     public void postConstuct() {
-        rooms = roomSessionBeanLocal.retrieveAllRoom();
+        Employee employee = (Employee)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("currentEmployee");
+        rooms = roomSessionBeanLocal.retrieveAllRoom(employee.getOutlet().getOutletId());
         roomTypes = roomTypeSessionBeanLocal.retrieveAllRoomTypes();
         outlets = outletSessionBeanLocal.retrieveAllOutlets();
     }

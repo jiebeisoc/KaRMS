@@ -10,6 +10,7 @@ import ejb.session.stateless.PromotionSessionBeanLocal;
 import ejb.session.stateless.ReservationSessionBeanLocal;
 import ejb.session.stateless.RoomSessionBeanLocal;
 import ejb.session.stateless.RoomTypeSessionBeanLocal;
+import entity.Employee;
 import entity.Outlet;
 import entity.Promotion;
 import entity.Reservation;
@@ -95,9 +96,10 @@ public class ReservationManagementManagedBean implements Serializable {
     
     @PostConstruct
     public void postConstruct() {
+        Employee employee = (Employee)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("currentEmployee");
         reservations = reservationSessionBeanLocal.retrieveAllReservations();
         roomTypes = roomTypeSessionBeanLocal.retrieveAllRoomTypes();
-        rooms = roomSessionBeanLocal.retrieveAllRoom();
+        rooms = roomSessionBeanLocal.retrieveAllRoom(employee.getOutlet().getOutletId());
         outlets = outletSessionBeanLocal.retrieveAllOutlets();
         promotions = new ArrayList<>();
         statusList = ReservationStatus.values();
