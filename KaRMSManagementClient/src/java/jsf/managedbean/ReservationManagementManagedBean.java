@@ -72,13 +72,18 @@ public class ReservationManagementManagedBean implements Serializable {
         
     private Reservation newReservation;
     private String phoneNo;
-    private BigDecimal totalPrice; 
+    private BigDecimal totalPrice;
+    private String roomNum;
     private Long roomTypeIdUpdate;
     private Long roomIdUpdate;
     private Long outletIdUpdate;
     private Long promotionIdUpdate;
     private Date dateUpdate;
-    private int durationUpdate;    
+    private int durationUpdate;
+    
+    private Boolean isAvailable;
+    private Boolean payNow;
+    private Boolean byCreditCard;
     
     private Date minDate;
     private Date maxDate;
@@ -104,9 +109,15 @@ public class ReservationManagementManagedBean implements Serializable {
         statusList = ReservationStatus.values();
         totalPrice = new BigDecimal("0.00"); 
         durationUpdate = 1;
+        
+        isAvailable = false;
+        payNow = false;
+        byCreditCard = false;
     }
     
     public void onCreateNewReservation(ActionEvent event) {
+        isAvailable = false;
+        
         minTime = 12;
         maxTime = 23;
         
@@ -131,39 +142,52 @@ public class ReservationManagementManagedBean implements Serializable {
         
     }
     
-    public void createNewReservation(ActionEvent event) {
+    public void checkAvailableRoom(ActionEvent event) {
         try {
             roomIdUpdate = reservationSessionBeanLocal.retrieveAvailableRoom(newReservation, outletIdUpdate, roomTypeIdUpdate);
-            String roomNum = roomSessionBeanLocal.retrieveRoomById(roomIdUpdate).getRoomNum();
+            isAvailable = true;
             
-            newReservation.setDateReserved(new Date());
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Room is available!", null));
             
-            Long reservationId = reservationSessionBeanLocal.createNewReservation(newReservation, roomIdUpdate, outletIdUpdate, promotionIdUpdate);
-            reservations.add(newReservation);
-
-            totalPrice = new BigDecimal("0.00");
-            phoneNo = null;
-            roomIdUpdate = null;
-            roomTypeIdUpdate = null;
-            outletIdUpdate = null;
-            promotionIdUpdate = null;
-            newReservation = new Reservation();
-
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New reservation is created successfully (Room Number: " + roomNum + ")", null));
-        
         } catch (NoAvailableRoomException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null));
         }
     }
-   
-    public void onRoomTypeChange(ValueChangeEvent event) {
-        roomTypeIdUpdate = (Long)event.getNewValue();
-    }
+    
+    public void onNext(ActionEvent event) {
+        roomNum = roomSessionBeanLocal.retrieveRoomById(roomIdUpdate).getRoomNum();
 
-    public void dateChange(SelectEvent event) {
-        dateUpdate = (Date)event.getObject();
         promotions = promotionSessionBeanLocal.retrievePromotionByDate(dateUpdate);
         calculateTotalPrice();
+    }
+    
+    public void createNewReservation(ActionEvent event) {
+        newReservation.setDateReserved(new Date());
+        
+        if (payNow == true) {
+            newReservation.setStatus(ReservationStatus.PAID);
+        }
+
+        Long reservationId = reservationSessionBeanLocal.createNewReservation(newReservation, roomIdUpdate, outletIdUpdate, promotionIdUpdate);
+        reservations.add(newReservation);
+
+        totalPrice = new BigDecimal("0.00");
+        phoneNo = null;
+        roomIdUpdate = null;
+        roomTypeIdUpdate = null;
+        outletIdUpdate = null;
+        promotionIdUpdate = null;
+        newReservation = new Reservation();
+        
+        isAvailable = false;
+        payNow = false;
+        byCreditCard = false;
+
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New reservation is created successfully (Room Number: " + roomNum + ")", null));
+    }
+    
+    public void dateChange(SelectEvent event) {
+        dateUpdate = (Date)event.getObject();
     }
 
     public void onDurationChange(ValueChangeEvent event) {
@@ -174,7 +198,15 @@ public class ReservationManagementManagedBean implements Serializable {
         promotionIdUpdate = (Long)event.getNewValue();
     }
     
-    /*
+    /*     
+    public void onBack(ActionEvent event) {
+        isAvailable = false;
+    }
+    
+    public void onRoomTypeChange(ValueChangeEvent event) {
+        roomTypeIdUpdate = (Long)event.getNewValue();
+    }
+    
     public void onOutletChange(ValueChangeEvent event) {
         outletIdUpdate = (Long)event.getNewValue();
     }
@@ -207,7 +239,7 @@ public class ReservationManagementManagedBean implements Serializable {
     public void updateReservation() {
         try { 
             roomIdUpdate = reservationSessionBeanLocal.retrieveAvailableRoom(selectedReservation, outletIdUpdate, roomTypeIdUpdate);
-            String roomNum = roomSessionBeanLocal.retrieveRoomById(roomIdUpdate).getRoomNum();
+            roomNum = roomSessionBeanLocal.retrieveRoomById(roomIdUpdate).getRoomNum();
             
             reservationSessionBeanLocal.updateReservation(selectedReservation, roomIdUpdate, outletIdUpdate, promotionIdUpdate);
 
@@ -471,6 +503,38 @@ public class ReservationManagementManagedBean implements Serializable {
 
     public void setPromotionIdUpdate(Long promotionIdUpdate) {
         this.promotionIdUpdate = promotionIdUpdate;
+    }
+
+    public Boolean getIsAvailable() {
+        return isAvailable;
+    }
+
+    public void setIsAvailable(Boolean isAvailable) {
+        this.isAvailable = isAvailable;
+    }
+
+    public Boolean getPayNow() {
+        return payNow;
+    }
+
+    public void setPayNow(Boolean payNow) {
+        this.payNow = payNow;
+    }
+
+    public String getRoomNum() {
+        return roomNum;
+    }
+
+    public void setRoomNum(String roomNum) {
+        this.roomNum = roomNum;
+    }
+
+    public Boolean getByCreditCard() {
+        return byCreditCard;
+    }
+
+    public void setByCreditCard(Boolean byCreditCard) {
+        this.byCreditCard = byCreditCard;
     }
     
 }
