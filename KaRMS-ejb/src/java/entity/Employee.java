@@ -13,6 +13,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import util.enumeration.AccessRightEnum;
 
@@ -36,6 +37,9 @@ public class Employee implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AccessRightEnum accessRightEnum;
+    
+    @OneToOne
+    private Outlet outlet;
 
     public Employee() {
     }
@@ -102,6 +106,14 @@ public class Employee implements Serializable {
 
     public void setAccessRightEnum(AccessRightEnum accessRightEnum) {
         this.accessRightEnum = accessRightEnum;
+    }
+
+    public Outlet getOutlet() {
+        return outlet;
+    }
+
+    public void setOutlet(Outlet outlet) {
+        this.outlet = outlet;
     }
 
 }
