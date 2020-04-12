@@ -61,7 +61,7 @@ public class Outlet implements Serializable {
     @OneToMany(mappedBy = "outlet")
     private List<Review> reviews;
     
-    @OneToOne (mappedBy = "employee")
+    @OneToOne (mappedBy = "outlet")
     private Employee employee;
 
     public Outlet() {
