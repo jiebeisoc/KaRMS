@@ -58,7 +58,11 @@ public class RoomManagementManagedBean implements Serializable {
     @PostConstruct
     public void postConstuct() {
         Employee employee = (Employee)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("currentEmployee");
-        rooms = roomSessionBeanLocal.retrieveAllRoom(employee.getOutlet().getOutletId());
+        Long outletId = null;
+        if (employee.getOutlet() != null) {
+            outletId = employee.getOutlet().getOutletId();
+        }
+        rooms = roomSessionBeanLocal.retrieveAllRoom(outletId);
         roomTypes = roomTypeSessionBeanLocal.retrieveAllRoomTypes();
         outlets = outletSessionBeanLocal.retrieveAllOutlets();
     }

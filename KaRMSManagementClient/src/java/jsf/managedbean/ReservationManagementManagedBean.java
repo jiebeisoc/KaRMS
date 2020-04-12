@@ -97,9 +97,13 @@ public class ReservationManagementManagedBean implements Serializable {
     @PostConstruct
     public void postConstruct() {
         Employee employee = (Employee)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("currentEmployee");
+        Long outletId = null;
+        if (employee.getOutlet() != null) {
+            outletId = employee.getOutlet().getOutletId();
+        }
         reservations = reservationSessionBeanLocal.retrieveAllReservations();
         roomTypes = roomTypeSessionBeanLocal.retrieveAllRoomTypes();
-        rooms = roomSessionBeanLocal.retrieveAllRoom(employee.getOutlet().getOutletId());
+        rooms = roomSessionBeanLocal.retrieveAllRoom(outletId);
         outlets = outletSessionBeanLocal.retrieveAllOutlets();
         promotions = new ArrayList<>();
         statusList = ReservationStatus.values();
