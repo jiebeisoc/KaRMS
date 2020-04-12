@@ -37,4 +37,6 @@ public interface ReservationSessionBeanLocal {
 
     public void payReservation(Long reservationId);
 
+    public List<Reservation> retrieveReservationObjByDate(Date dateFrom, Date dateTo, Long outletId);
+
 }
