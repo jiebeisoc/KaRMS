@@ -72,7 +72,7 @@ public class RoomTypeManagementManagedBean implements Serializable {
     public void updateRoomType() {
         roomTypeSessionBeanLocal.updateRoomType(selectedRoomType, roomRateIdsUpdate);
 
-        roomRateIdsUpdate = selectedRoomType.getRoomRateIds();
+        roomRateIdsUpdate = roomTypeSessionBeanLocal.retrieveRoomRateIds(selectedRoomType.getRoomTypeId());
         for (RoomRate rr: selectedRoomType.getRoomRates()) {
             roomRates.add(rr);
         }
@@ -95,7 +95,7 @@ public class RoomTypeManagementManagedBean implements Serializable {
     
     public void onRowSelect(SelectEvent event) {
         selectedRoomType = (RoomType)event.getObject();
-        roomRateIdsUpdate = selectedRoomType.getRoomRateIds();
+        roomRateIdsUpdate = roomTypeSessionBeanLocal.retrieveRoomRateIds(selectedRoomType.getRoomTypeId());
 
         System.out.println("room rate id update size: " + roomRateIdsUpdate.size());
         System.out.println("Room rate size total: " + roomRates.size());

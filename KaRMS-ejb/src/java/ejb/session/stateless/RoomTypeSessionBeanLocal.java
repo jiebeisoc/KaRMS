@@ -27,5 +27,7 @@ public interface RoomTypeSessionBeanLocal {
 
     public void deleteRoomType(Long roomTypeId) throws DeleteRoomTypeException;
 
+    public List<Long> retrieveRoomRateIds(Long roomTypeId);
+
 
 }
