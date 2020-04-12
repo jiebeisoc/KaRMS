@@ -60,10 +60,17 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
     }
     
     @Override
-    public List<Room> retrieveAllRoom() {
-        Query query = em.createQuery("SELECT r FROM Room r");
+    public List<Room> retrieveAllRoom(Long outletId) {
+        if (outletId == null) {
+            Query query = em.createQuery("SELECT r FROM Room r");
         
-        return query.getResultList();
+            return query.getResultList();
+        } else {
+            Query query = em.createQuery("Select r FROM Room r WHERE r.outlet.outletId = :inOutletId");
+            query.setParameter("inOutletId", outletId);
+            
+            return query.getResultList();
+        }
     }
     
     @Override

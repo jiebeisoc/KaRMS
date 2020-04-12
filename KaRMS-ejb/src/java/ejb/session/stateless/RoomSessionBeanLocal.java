@@ -19,7 +19,7 @@ public interface RoomSessionBeanLocal {
 
     public Long createNewRoom(Room newRoom, Long roomTypeId, Long outletId);
 
-    public List<Room> retrieveAllRoom();
+    public List<Room> retrieveAllRoom(Long outletId);
 
     public Room retrieveRoomById(Long roomId);
 
