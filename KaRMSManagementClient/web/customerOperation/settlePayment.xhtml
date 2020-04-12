@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                template="./../template/defaultTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        
+        <p:growl>
+            <p:autoUpdate />
+        </p:growl>
+        
+        <h3>Settle Payment</h3>
+        
+        <h:form id="formAllUnpaidReservations">
+            
+            <p:dataTable id="dataTableAllUnpaidReservations" widgetVar="dataTableAllUnpaidReservations" value="#{paymentManagedBean.unpaidReservations}" var="reservation"
+                         selectionMode="single" selection="#{paymentManagedBean.selectedReservation}" rowKey="#{reservation.reservationId}"
+                         scrollRows="20" scrollable="true" liveScroll="true" >           
+                
+                <f:facet name="header">
+                    <p:outputPanel style="text-align: left">
+                        <!-- <h:outputLabel for="globalFilter" value="Search: "/> -->
+                        <p:inputText id="globalFilter" onkeyup="PF('dataTableAllReservations').filter()" placeholder="&#xf002; Search keyword" style="font-size: 13px; font-family: FontAwesome, Verdana; width: 150px"/>
+                    </p:outputPanel>
+                </f:facet>
+                
+                <p:column sortBy="#{reservation.reservationId}" headerText="Reservation Id" style="width: 8%">
+                    <h:outputText value="#{reservation.reservationId}"/>
+                </p:column>
+                 
+                <p:column sortBy="#{reservation.walkInPhoneNo}" headerText="Reservation phone no" style="width: 10.5%">
+                    <h:outputText value="#{reservation.walkInPhoneNo}"/>
+                </p:column>
+                
+                <p:column sortBy="#{reservation.date}" headerText="Date" style="width: 20%">
+                    <h:outputText value="#{reservation.date}">
+                        <f:convertDateTime type="date" pattern="dd/MM/yyyy hh:mm a"/>
+                    </h:outputText>
+                </p:column>
+               
+                <p:column sortBy="#{reservation.duration}" headerText="Duration" style="width: 10%">
+                    <h:outputText value="#{reservation.duration}"/>
+                </p:column>
+                
+                <p:column sortBy="#{reservation.status}" headerText="Status" style="width: 10%">
+                    <h:outputText value="#{reservation.status}"/>
+                </p:column>
+                
+                <p:column sortBy="#{reservation.outlet.outletName}" headerText="Outlet" style="width: 12%">
+                    <h:outputText value="#{reservation.outlet.outletName}"/>
+                </p:column>
+                
+                <p:column sortBy="#{reservation.dateReserved}" headerText="Date Reserved" style="width: 21.5%">
+                    <h:outputText value="#{reservation.dateReserved}" >
+                        <f:convertDateTime type="date" pattern="dd/MM/yyyy hh:mm a" />
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Action" style="width: 8%">
+                    <p:commandButton value="Checkout" actionListener="#{paymentManagedBean.payReservation}" onclick="PF('dialogCheckout').show()">
+                        <f:attribute name="reservationToPay" value="#{reservation}" />
+                    </p:commandButton>
+                </p:column>
+                
+            </p:dataTable>
+            
+        </h:form>
+        
+        <h:form>
+            
+            <p:dialog id="dialogCheckout" widgetVar="dialogCheckout" header="Select Payment" closable="true">
+                
+                <h:panelGrid>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="Payment method:" />
+                        </p:column>
+                        <p:column>
+                            <p:selectOneRadio value="#{paymentManagedBean.payment}">
+                                <f:selectItem itemLabel="Credit Card" itemValue="Credit Card" />
+                                <f:selectItem itemLabel="Cash" itemValue="Cash" />
+                            </p:selectOneRadio>
+                        </p:column>                    
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:commandButton value="Pay" update="@form formAllUnpaidReservations:dataTableAllUnpaidReservations" oncomplete="PF('dialogCheckout').hide()" />
+                        </p:column>
+                    </p:row>
+                </h:panelGrid>
+                
+            </p:dialog> 
+            
+        </h:form>
+        
+    </ui:define>
+
+</ui:composition>

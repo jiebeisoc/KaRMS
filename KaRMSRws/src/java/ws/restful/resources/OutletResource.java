@@ -59,6 +59,7 @@ public class OutletResource {
             o.getRooms().clear();
             o.getReservations().clear();
             o.getReviews().clear();
+            o.setEmployee(null);
         }
         
         return Response.status(Status.OK).entity(new RetrieveAllOutletsRsp(outlets)).build();

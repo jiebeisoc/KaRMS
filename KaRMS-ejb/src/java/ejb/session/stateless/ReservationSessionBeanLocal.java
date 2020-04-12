@@ -34,4 +34,10 @@ public interface ReservationSessionBeanLocal {
 
     public void deleteReservation(Long reservationId) throws DeleteReservationException;
 
+    public List<Reservation> retrieveReservationByDateAndStatus(Date currentDate, Long outletId);
+
+    public void payReservation(Long reservationId);
+
+    public List<Reservation> retrieveReservationObjByDate(Date dateFrom, Date dateTo, Long outletId);
+
 }

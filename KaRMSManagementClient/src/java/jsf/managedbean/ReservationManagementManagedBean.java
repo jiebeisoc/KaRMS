@@ -89,6 +89,8 @@ public class ReservationManagementManagedBean implements Serializable {
     private Date maxDate;
     private int minTime;
     private int maxTime;
+    
+    private Employee employee;
 
     public ReservationManagementManagedBean() {
         newReservation = new Reservation();
@@ -96,7 +98,7 @@ public class ReservationManagementManagedBean implements Serializable {
     
     @PostConstruct
     public void postConstruct() {
-        Employee employee = (Employee)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("currentEmployee");
+        employee = (Employee)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("currentEmployee");
         Long outletId = null;
         if (employee.getOutlet() != null) {
             outletId = employee.getOutlet().getOutletId();
@@ -263,7 +265,7 @@ public class ReservationManagementManagedBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null));
         }
     }
-    
+  
 //    public void filterByDate(AjaxBehaviorEvent event) {
 //        List<Long> filteredReservationIdsByDate = reservationSessionBeanLocal.retrieveReservationByDate(filterDateFrom, filterDateTo);
 //        
