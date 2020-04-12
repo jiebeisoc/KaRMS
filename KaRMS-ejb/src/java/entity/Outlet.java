@@ -15,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -59,6 +60,9 @@ public class Outlet implements Serializable {
     
     @OneToMany(mappedBy = "outlet")
     private List<Review> reviews;
+    
+    @OneToOne (mappedBy = "employee")
+    private Employee employee;
 
     public Outlet() {
         this.isDisabled = Boolean.FALSE;
@@ -179,6 +183,14 @@ public class Outlet implements Serializable {
 
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
 }

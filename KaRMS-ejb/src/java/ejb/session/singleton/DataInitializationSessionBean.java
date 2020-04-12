@@ -31,6 +31,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import util.enumeration.AccessRightEnum;
 import util.enumeration.RoomRateType;
 import util.exception.EmployeeNotFoundException;
 
@@ -80,7 +81,15 @@ public class DataInitializationSessionBean {
 
     private void initializeData() {
         System.err.println("********Reach Initialization Data*******************");
-        employeeSessionBeanLocal.createNewEmployee(new Employee("manager", "password"));
+        employeeSessionBeanLocal.createNewEmployee(new Employee("manager", "password", AccessRightEnum.MANAGER), null);
+        employeeSessionBeanLocal.createNewEmployee(new Employee("amk", "password", AccessRightEnum.CASHIER), 1l);
+        employeeSessionBeanLocal.createNewEmployee(new Employee("bedok", "password", AccessRightEnum.CASHIER), 2l);
+        employeeSessionBeanLocal.createNewEmployee(new Employee("woodlands", "password", AccessRightEnum.CASHIER), 3l);
+        employeeSessionBeanLocal.createNewEmployee(new Employee("jurongeast", "password", AccessRightEnum.CASHIER), 4l);
+        employeeSessionBeanLocal.createNewEmployee(new Employee("bishan", "password", AccessRightEnum.CASHIER), 5l);
+        employeeSessionBeanLocal.createNewEmployee(new Employee("tampines", "password", AccessRightEnum.CASHIER), 6l);
+        employeeSessionBeanLocal.createNewEmployee(new Employee("sembawang", "password", AccessRightEnum.CASHIER), 7l);
+        employeeSessionBeanLocal.createNewEmployee(new Employee("buonavista", "password", AccessRightEnum.CASHIER), 8l);
         
         try {
             Date openingHour = timeFormat.parse("12:00");
