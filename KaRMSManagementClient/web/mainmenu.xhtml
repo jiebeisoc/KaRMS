@@ -21,11 +21,7 @@
                    
                     </p:submenu>
                     
-                    <p:submenu label="Operation Management" rendered="#{sessionScope.isLogin == true}">
-                        <p:submenu label="Reservation Management" rendered="#{sessionScope.isLogin == true}">
-                            <p:menuitem value="Reservation" outcome="/operationManagement/reservationManagement.xhtml" />
-                        </p:submenu>
-                        
+                    <p:submenu label="Operation Management" rendered="#{sessionScope.isLogin == true}">  
                         <p:submenu label="Room Management">
                             <p:menuitem value="Room Rate" outcome="/operationManagement/roomRateManagement.xhtml" />
                             <p:menuitem value="Room Type" outcome="/operationManagement/roomTypeManagement.xhtml" />
@@ -49,6 +45,7 @@
                     
                     <p:submenu label="Customer Operation" rendered="#{sessionScope.isLogin == true}">
                         <p:menuitem value="Settle Payment" outcome="/customerOperation/settlePayment.xhtml" />
+                        <p:menuitem value="Reservation" outcome="/customerOperation/reservationManagement.xhtml" />
                     </p:submenu>
                     
                 </p:panelMenu>

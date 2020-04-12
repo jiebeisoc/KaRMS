@@ -19,6 +19,7 @@ import entity.RoomType;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +28,7 @@ import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -66,7 +68,7 @@ public class ReservationManagementManagedBean implements Serializable {
 
     private List<Reservation> filteredReservations;
     private Reservation selectedReservation;
-    private ReservationStatus[] statusList;
+    private List<ReservationStatus> statusList;
     private Date filterDateFrom;
     private Date filterDateTo;
         
@@ -80,6 +82,7 @@ public class ReservationManagementManagedBean implements Serializable {
     private Long promotionIdUpdate;
     private Date dateUpdate;
     private int durationUpdate;
+    private int durationUpdateNew;
     
     private Boolean isAvailable;
     private Boolean payNow;
@@ -108,7 +111,7 @@ public class ReservationManagementManagedBean implements Serializable {
         rooms = roomSessionBeanLocal.retrieveAllRoom(outletId);
         outlets = outletSessionBeanLocal.retrieveAllOutlets();
         promotions = new ArrayList<>();
-        statusList = ReservationStatus.values();
+        statusList = Arrays.asList(ReservationStatus.values());
         totalPrice = new BigDecimal("0.00"); 
         durationUpdate = 1;
         
@@ -188,12 +191,42 @@ public class ReservationManagementManagedBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New reservation is created successfully (Room Number: " + roomNum + ")", null));
     }
     
+    public void onDateChange(ValueChangeEvent event) {
+        dateUpdate = (Date)event.getOldValue();
+    }
+    
     public void dateChange(SelectEvent event) {
-        dateUpdate = (Date)event.getObject();
+        Date dateUpdateNew = (Date)event.getObject();
+        
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dateUpdateNew);
+        // if exceed closing hour, change back to old value
+        if ((cal.get(Calendar.HOUR_OF_DAY) + durationUpdate) > maxTime + 1) {
+            newReservation.setDate(dateUpdate);
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Time exceeded closing hour", null));
+        } else {
+            dateUpdate = dateUpdateNew;
+        }
+        System.out.println("date: " + newReservation.getDate());
     }
 
     public void onDurationChange(ValueChangeEvent event) {
-        durationUpdate = (int)event.getNewValue();
+        durationUpdate = (int)event.getOldValue();
+        durationUpdateNew = (int)event.getNewValue();
+    }
+    
+    public void durationChange(AjaxBehaviorEvent event) {
+        
+        if (dateUpdate != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dateUpdate);
+            if ((cal.get(Calendar.HOUR_OF_DAY) + durationUpdateNew) > maxTime + 1) {
+                newReservation.setDuration(durationUpdate);
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Time exceeded closing hour", null));
+            } else {
+                durationUpdate = durationUpdateNew;
+            }
+        }
     }
         
     public void onPromotionChange(ValueChangeEvent event) {
@@ -419,11 +452,11 @@ public class ReservationManagementManagedBean implements Serializable {
         this.filterDateTo = filterDateTo;
     }
 
-    public ReservationStatus[] getStatusList() {
+    public List<ReservationStatus> getStatusList() {
         return statusList;
     }
 
-    public void setStatusList(ReservationStatus[] statusList) {
+    public void setStatusList(List<ReservationStatus> statusList) {
         this.statusList = statusList;
     }
 
@@ -537,6 +570,14 @@ public class ReservationManagementManagedBean implements Serializable {
 
     public void setByCreditCard(Boolean byCreditCard) {
         this.byCreditCard = byCreditCard;
+    }
+
+    public int getDurationUpdateNew() {
+        return durationUpdateNew;
+    }
+
+    public void setDurationUpdateNew(int durationUpdateNew) {
+        this.durationUpdateNew = durationUpdateNew;
     }
     
 }
