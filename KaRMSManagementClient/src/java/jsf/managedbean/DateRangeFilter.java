@@ -52,7 +52,7 @@ public class DateRangeFilter implements Serializable {
             return false;
         }
 
-        return (dateFrom == null || filterDate.after(dateFrom)) && (dateTo == null || filterDate.before(dateTo));
+        return (dateFrom == null || filterDate.after(dateFrom) || filterDate.equals(dateFrom)) && (dateTo == null || filterDate.before(dateTo) || filterDate.equals(dateTo));
     }
      
 }
