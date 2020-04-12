@@ -72,7 +72,7 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
         
         if (outletId != null) {
             Outlet outlet = outletSessionBeanLocal.retrieveOutletById(outletId);
-
+            newEmployee.setOutlet(outlet);
             outlet.setEmployee(newEmployee);
         }
         em.flush();
