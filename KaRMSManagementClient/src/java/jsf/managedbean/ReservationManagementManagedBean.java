@@ -133,7 +133,7 @@ public class ReservationManagementManagedBean implements Serializable {
     public void createNewReservation(ActionEvent event) {
         try {
             roomId = reservationSessionBeanLocal.retrieveAvailableRoom(newReservation, outletId, roomTypeId);
-            int roomNum = roomSessionBeanLocal.retrieveRoomById(roomId).getRoomNum();
+            String roomNum = roomSessionBeanLocal.retrieveRoomById(roomId).getRoomNum();
             
             newReservation.setDateReserved(new Date());
             
@@ -203,7 +203,7 @@ public class ReservationManagementManagedBean implements Serializable {
     public void updateReservation() {
         try { 
             roomIdUpdate = reservationSessionBeanLocal.retrieveAvailableRoom(selectedReservation, outletIdUpdate, roomTypeIdUpdate);
-            int roomNum = roomSessionBeanLocal.retrieveRoomById(roomIdUpdate).getRoomNum();
+            String roomNum = roomSessionBeanLocal.retrieveRoomById(roomIdUpdate).getRoomNum();
             
             reservationSessionBeanLocal.updateReservation(selectedReservation, roomIdUpdate, outletIdUpdate, promotionIdUpdate);
 

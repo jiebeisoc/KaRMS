@@ -6,6 +6,8 @@
 package ejb.session.stateless;
 
 import entity.Employee;
+import entity.Outlet;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -21,6 +23,9 @@ import util.exception.InvalidLoginCredentialException;
  */
 @Stateless
 public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
+
+    @EJB(name = "OutletSessionBeanLocal")
+    private OutletSessionBeanLocal outletSessionBeanLocal;
 
     @PersistenceContext(unitName = "KaRMS-ejbPU")
     private EntityManager em;
@@ -62,8 +67,14 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
     }
     
     @Override
-    public Long createNewEmployee(Employee newEmployee) {
+    public Long createNewEmployee(Employee newEmployee, Long outletId) {
         em.persist(newEmployee);
+        
+        if (outletId != null) {
+            Outlet outlet = outletSessionBeanLocal.retrieveOutletById(outletId);
+
+            outlet.setEmployee(newEmployee);
+        }
         em.flush();
         
         return newEmployee.getEmployeeId();
