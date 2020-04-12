@@ -240,6 +240,31 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         return query.getResultList();
     }
     
+    //Retrieve reservation for settling payment by cash
+    @Override
+    public List<Reservation> retrieveReservationByDateAndStatus(Date currentDate, Long outletId) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(currentDate);
+        cal.add(Calendar.DATE, 1);
+        Date endDate = cal.getTime();
+        if (outletId == null) {
+            Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.date BETWEEN :inDateFrom AND :inDateTo AND r.status = :inStatus");
+            query.setParameter("inDateFrom", currentDate);
+            query.setParameter("inDateTo", endDate);
+            query.setParameter("inStatus", ReservationStatus.NOTPAID);
+
+            return query.getResultList();
+        }  else {
+            Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.date BETWEEN :inDateFrom AND :inDateTo AND r.status = :inStatus AND r.outlet.outletId = :inOutletId");
+            query.setParameter("inDateFrom", currentDate);
+            query.setParameter("inDateTo", endDate);            
+            query.setParameter("inStatus", ReservationStatus.NOTPAID);
+            query.setParameter("inOutletId", outletId);
+
+            return query.getResultList();
+        }
+    }
+    
     //Retrieve reservation by walk-in customer's phone no
     @Override
     public List<Reservation> retrieveReservationByPhoneNo(String phoneNo) {
@@ -247,6 +272,14 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         query.setParameter("inWalkInPhoneNo", phoneNo);
         
         return query.getResultList();
+    }
+    
+    //Settle reservation payment
+    @Override
+    public void payReservation(Long reservationId) {
+        Reservation reservation = retrieveReservationById(reservationId);
+        
+        reservation.setStatus(ReservationStatus.PAID);
     }
     
     // Update reservation and status
@@ -300,14 +333,6 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         Reservation reservationToDelete = retrieveReservationById(reservationId);
         
         em.remove(reservationToDelete);
-    }
-    
-    
-    
-    
-    
-    
-    
-    
+    }   
     
 }

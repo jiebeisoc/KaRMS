@@ -33,4 +33,8 @@ public interface ReservationSessionBeanLocal {
 
     public void deleteReservation(Long reservationId);
 
+    public List<Reservation> retrieveReservationByDateAndStatus(Date currentDate, Long outletId);
+
+    public void payReservation(Long reservationId);
+
 }

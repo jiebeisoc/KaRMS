@@ -42,7 +42,6 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
                 roomRate.setRoomType(newRoomType);
             }
         }
-        newRoomType.setRoomRateIds(roomRateIds);
         em.flush();
         
         return newRoomType.getRoomTypeId();
@@ -51,6 +50,16 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
     @Override
     public List<RoomType> retrieveAllRoomTypes() {
         Query query = em.createQuery("SELECT rt FROM RoomType rt");
+        
+        return query.getResultList();
+    }
+    
+    @Override
+    public List<Long> retrieveRoomRateIds(Long roomTypeId) {
+        RoomType roomType = retrieveRoomTypeById(roomTypeId);
+        
+        Query query = em.createQuery("SELECT rr.roomRateId FROM RoomRate rr WHERE rr.roomType.roomTypeId =:inRoomType");
+        query.setParameter("inRoomType", roomType.getRoomTypeId());
         
         return query.getResultList();
     }
@@ -72,7 +81,6 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
             RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
             roomTypeToUpdate.getRoomRates().add(roomRate);
         }
-        roomTypeToUpdate.setRoomRateIds(roomRateIds);
         em.flush();
     }
 

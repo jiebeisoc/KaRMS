@@ -47,6 +47,10 @@
                         </p:submenu>
                     </p:submenu>
                     
+                    <p:submenu label="Customer Operation" rendered="#{sessionScope.isLogin == true}">
+                        <p:menuitem value="Settle Payment" outcome="/customerOperation/settlePayment.xhtml" />
+                    </p:submenu>
+                    
                 </p:panelMenu>
                 
             </h:form>

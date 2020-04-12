@@ -39,14 +39,11 @@ public class RoomType implements Serializable {
     private List<Room> rooms;
     
     @OneToMany
-    private List<RoomRate> roomRates;
-    
-    private List<Long> roomRateIds;
+    private List<RoomRate> roomRates;   
 
     public RoomType() {
         this.rooms = new ArrayList<>();
         this.roomRates = new ArrayList<>();
-        this.roomRateIds = new ArrayList<>();
     }
 
     public RoomType(String name, int capacity, String roomDetails) {
@@ -129,12 +126,4 @@ public class RoomType implements Serializable {
         this.roomRates = roomRates;
     }
 
-    public List<Long> getRoomRateIds() {
-        return roomRateIds;
-    }
-
-    public void setRoomRateIds(List<Long> roomRateIds) {
-        this.roomRateIds = roomRateIds;
-    }
-    
 }
