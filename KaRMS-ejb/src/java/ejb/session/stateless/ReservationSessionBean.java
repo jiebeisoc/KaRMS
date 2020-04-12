@@ -22,6 +22,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.enumeration.ReservationStatus;
 import util.exception.CustomerNotFoundException;
+import util.exception.DeleteReservationException;
 import util.exception.NoAvailableRoomException;
 
 /**
@@ -120,6 +121,7 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         return newReservation.getReservationId();
     }
     
+    //Create new reservation for walk-in and call-in customers
     @Override
     public Long createNewReservation(Reservation newReservation, Long roomId, Long outletId, Long promotionId) {
         
@@ -252,35 +254,15 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
     // Update reservation and status
     @Override
     public void updateReservation(Reservation reservationToUpdate, Long roomIdUpdate, Long outletIdUpdate, Long promotionIdUpdate) {
-        em.merge(reservationToUpdate);
+        
         
         if (roomIdUpdate != null && (!reservationToUpdate.getRoom().getRoomId().equals(roomIdUpdate))) {
             Room roomToUpdate = roomSessionBeanLocal.retrieveRoomById(roomIdUpdate);
-            /*
-            List<Reservation> reservations = roomToUpdate.getReservations();
-            for (Reservation r: reservations) {
-                if (r.getReservationId() == reservationToUpdate.getReservationId()) {
-                    roomToUpdate.getReservations().remove(r);
-                    roomToUpdate.getReservations().add(reservationToUpdate);
-                    break;
-                }
-            }
-            */
             reservationToUpdate.setRoom(roomToUpdate);
         }
         
         if (outletIdUpdate != null) {
             Outlet outletToUpdate = outletSessionBeanLocal.retrieveOutletById(outletIdUpdate);
-            /*
-            List<Reservation> reservations = outletToUpdate.getReservations();
-            for (Reservation r: reservations) {
-                if (r.getReservationId() == reservationToUpdate.getReservationId()) {
-                    outletToUpdate.getReservations().remove(r);
-                    outletToUpdate.getReservations().add(reservationToUpdate);
-                    break;
-                }
-            }
-            */
             reservationToUpdate.setOutlet(outletToUpdate);
         }
         
@@ -291,15 +273,36 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
             reservationToUpdate.setPromotion(promotion);
         }
         
+        em.merge(reservationToUpdate);
         em.flush();
     }
 
     // Delete reservation
     @Override
-    public void deleteReservation(Long reservationId) {
+    public void deleteReservation(Long reservationId) throws DeleteReservationException {
         Reservation reservationToDelete = retrieveReservationById(reservationId);
         
-        em.remove(reservationToDelete);
+        if (reservationToDelete.getStatus() != ReservationStatus.COMPLETED) {
+        
+            Room room = reservationToDelete.getRoom();
+            reservationToDelete.setRoom(null);
+            room.getReservations().remove(reservationToDelete);
+
+            Customer customer = reservationToDelete.getCustomer();
+            reservationToDelete.setCustomer(null);
+            customer.getReservations().remove(reservationToDelete);
+            
+            Outlet outlet = reservationToDelete.getOutlet();
+            reservationToDelete.setOutlet(null);
+            outlet.getReservations().remove(reservationToDelete);
+            
+            reservationToDelete.setPromotion(null);
+            reservationToDelete.setReview(null);
+
+            em.remove(reservationToDelete);
+        } else {
+            throw new DeleteReservationException("Reservation cannot be deleted!");
+        }
     }
     
     

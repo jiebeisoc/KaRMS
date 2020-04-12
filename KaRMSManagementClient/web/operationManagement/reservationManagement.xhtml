@@ -135,11 +135,11 @@
                             <p:outputLabel for="outlet" value="Outlet: " style="font-weight: bold" />               
                         </p:column>
                         <p:column>
-                            <p:selectOneMenu id="outlet" value="#{reservationManagementManagedBean.outletId}" valueChangeListener="#{reservationManagementManagedBean.onOutletChange}"
+                            <p:selectOneMenu id="outlet" value="#{reservationManagementManagedBean.outletIdUpdate}" 
                                              required="true" requiredMessage="Outlet is required">
                                 <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
                                 <f:selectItems value="#{reservationManagementManagedBean.outlets}" var="outletEntity" itemValue="#{outletEntity.outletId}" itemLabel="#{outletEntity.outletName}" />
-                                <p:ajax event="change" listener="#{reservationManagementManagedBean.outletChange}" update="date"/>
+                                <!-- <p:ajax event="change" listener="#{reservationManagementManagedBean.outletChange}" update="date"/> -->
                             </p:selectOneMenu>            
                         </p:column>
                     </p:row>
@@ -159,7 +159,7 @@
                             <p:outputLabel for="roomType" value="Room Type: " style="font-weight: bold" />               
                         </p:column>
                         <p:column>
-                            <p:selectOneMenu id="roomType" value="#{reservationManagementManagedBean.roomTypeId}" valueChangeListener="#{reservationManagementManagedBean.onRoomTypeChange}"
+                            <p:selectOneMenu id="roomType" value="#{reservationManagementManagedBean.roomTypeIdUpdate}" valueChangeListener="#{reservationManagementManagedBean.onRoomTypeChange}"
                                              required="true" requiredMessage="Room type is required">
                                 <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
                                 <f:selectItems value="#{reservationManagementManagedBean.roomTypes}" var="roomTypeEntity" itemValue="#{roomTypeEntity.roomTypeId}" itemLabel="#{roomTypeEntity.name}" />
@@ -175,7 +175,7 @@
                         <p:column>
                             <p:calendar id="date" value="#{reservationManagementManagedBean.newReservation.date}" showOn="both" readonlyInput="true"
                                         mindate="#{reservationManagementManagedBean.minDate}" maxdate="#{reservationManagementManagedBean.maxDate}" pattern="dd/MM/yyyy hh:mm a"
-                                        minHour="#{reservationManagementManagedBean.minTime}" maxHour="#{reservationManagementManagedBean.maxTime}" stepMinute="60"
+                                        minHour="#{reservationManagementManagedBean.minTime}" maxHour="#{reservationManagementManagedBean.maxTime}" stepMinute="60" defaultHour="2"
                                         required="true" requiredMessage="Date is required" >
                                 <p:ajax event="dateSelect" listener="#{reservationManagementManagedBean.dateChange}" update="promotion totalPrice"/>
                             </p:calendar> 
@@ -222,7 +222,7 @@
                             <p:outputLabel for="duration" value="Duration (Hrs): " style="font-weight: bold" />               
                         </p:column>
                         <p:column>
-                            <p:spinner id="duration" value="#{reservationManagementManagedBean.newReservation.duration}" min="0" max="12"
+                            <p:spinner id="duration" value="#{reservationManagementManagedBean.newReservation.duration}" min="1" max="12"
                                        required="true" requiredMessage="Duration is required" valueChangeListener="#{reservationManagementManagedBean.onDurationChange}">
                                 <p:ajax event="change" listener="#{reservationManagementManagedBean.calculateTotalPrice}" update="totalPrice"/>
                             </p:spinner>
@@ -234,7 +234,7 @@
                             <p:outputLabel for="promotion" value="Promotion: " style="font-weight: bold" />               
                         </p:column>
                         <p:column>
-                            <p:selectOneMenu id="promotion" value="#{reservationManagementManagedBean.promotionId}" valueChangeListener="#{reservationManagementManagedBean.onPromotionChange}">
+                            <p:selectOneMenu id="promotion" value="#{reservationManagementManagedBean.promotionIdUpdate}" valueChangeListener="#{reservationManagementManagedBean.onPromotionChange}">
                                 <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
                                 <f:selectItems value="#{reservationManagementManagedBean.promotions}" var="promotionEntity" itemValue="#{promotionEntity.promotionId}" itemLabel="#{promotionEntity.promotionName}" />
                                 <p:ajax event="change" listener="#{reservationManagementManagedBean.calculateTotalPrice}" update="totalPrice"/>

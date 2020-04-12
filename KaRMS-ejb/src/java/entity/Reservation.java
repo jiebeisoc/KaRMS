@@ -87,6 +87,7 @@ public class Reservation implements Serializable {
     public Reservation() {
         this.status = ReservationStatus.NOTPAID;
         this.songQueue = new ArrayList<>();
+        totalPrice = new BigDecimal("0.00");
     }
     
     public Reservation(Date date, int duration, int numOfPeople, ReservationStatus status) {
@@ -94,6 +95,7 @@ public class Reservation implements Serializable {
         this.date = date;
         this.duration = duration;
         this.numOfPeople = numOfPeople;
+        
     }
     
     public Long getReservationId() {

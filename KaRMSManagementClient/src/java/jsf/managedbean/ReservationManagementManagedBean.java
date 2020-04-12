@@ -27,12 +27,12 @@ import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.primefaces.event.SelectEvent;
 import util.enumeration.ReservationStatus;
+import util.exception.DeleteReservationException;
 import util.exception.NoAvailableRoomException;
 
 /**
@@ -72,12 +72,7 @@ public class ReservationManagementManagedBean implements Serializable {
         
     private Reservation newReservation;
     private String phoneNo;
-    private Long roomTypeId;
-    private Long roomId;
-    private Long outletId;
-    private Long promotionId;
-    private BigDecimal totalPrice;
-     
+    private BigDecimal totalPrice; 
     private Long roomTypeIdUpdate;
     private Long roomIdUpdate;
     private Long outletIdUpdate;
@@ -108,6 +103,7 @@ public class ReservationManagementManagedBean implements Serializable {
         promotions = new ArrayList<>();
         statusList = ReservationStatus.values();
         totalPrice = new BigDecimal("0.00"); 
+        durationUpdate = 1;
     }
     
     public void onCreateNewReservation(ActionEvent event) {
@@ -118,10 +114,9 @@ public class ReservationManagementManagedBean implements Serializable {
         
         if (cal.get(Calendar.MINUTE) >= 1) {
             cal.set(Calendar.MINUTE, 0);
-            
-            cal.add(Calendar.HOUR, 1);
         }
         cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         
         if (cal.get(Calendar.HOUR_OF_DAY) > maxTime) {
             cal.add(Calendar.DATE, 1);
@@ -129,7 +124,7 @@ public class ReservationManagementManagedBean implements Serializable {
         } else if (cal.get(Calendar.HOUR_OF_DAY) < minTime) {
             cal.set(Calendar.HOUR_OF_DAY, minTime);
         }
-            
+
         minDate = cal.getTime();
         cal.add(Calendar.YEAR, 1);
         maxDate = cal.getTime();
@@ -138,19 +133,20 @@ public class ReservationManagementManagedBean implements Serializable {
     
     public void createNewReservation(ActionEvent event) {
         try {
-            roomId = reservationSessionBeanLocal.retrieveAvailableRoom(newReservation, outletId, roomTypeId);
-            String roomNum = roomSessionBeanLocal.retrieveRoomById(roomId).getRoomNum();
+            roomIdUpdate = reservationSessionBeanLocal.retrieveAvailableRoom(newReservation, outletIdUpdate, roomTypeIdUpdate);
+            String roomNum = roomSessionBeanLocal.retrieveRoomById(roomIdUpdate).getRoomNum();
             
             newReservation.setDateReserved(new Date());
             
-            Long reservationId = reservationSessionBeanLocal.createNewReservation(newReservation, roomId, outletId, promotionId);
+            Long reservationId = reservationSessionBeanLocal.createNewReservation(newReservation, roomIdUpdate, outletIdUpdate, promotionIdUpdate);
             reservations.add(newReservation);
 
             totalPrice = new BigDecimal("0.00");
             phoneNo = null;
-            roomId = null;
-            outletId = null;
-            promotionId = null;
+            roomIdUpdate = null;
+            roomTypeIdUpdate = null;
+            outletIdUpdate = null;
+            promotionIdUpdate = null;
             newReservation = new Reservation();
 
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New reservation is created successfully (Room Number: " + roomNum + ")", null));
@@ -178,6 +174,7 @@ public class ReservationManagementManagedBean implements Serializable {
         promotionIdUpdate = (Long)event.getNewValue();
     }
     
+    /*
     public void onOutletChange(ValueChangeEvent event) {
         outletIdUpdate = (Long)event.getNewValue();
     }
@@ -191,6 +188,7 @@ public class ReservationManagementManagedBean implements Serializable {
         maxTime = cal.get(Calendar.HOUR_OF_DAY) - 1; 
 
     }
+    */
      
     public void calculateTotalPrice() {
         totalPrice = reservationSessionBeanLocal.calculateTotalPrice(dateUpdate, durationUpdate, roomTypeIdUpdate, promotionIdUpdate);
@@ -221,12 +219,17 @@ public class ReservationManagementManagedBean implements Serializable {
     }
     
     public void deleteReservation(ActionEvent event) {
-        Reservation reservationToDelete = (Reservation)event.getComponent().getAttributes().get("reservationToDelete");
-        
-        reservationSessionBeanLocal.deleteReservation(reservationToDelete.getReservationId());
-        reservations.remove(reservationToDelete);
-        
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Reservation is deleted successfully", null));
+        try {
+            Reservation reservationToDelete = (Reservation)event.getComponent().getAttributes().get("reservationToDelete");
+
+            reservationSessionBeanLocal.deleteReservation(reservationToDelete.getReservationId());
+            reservations.remove(reservationToDelete);
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Reservation is deleted successfully", null));
+            
+        } catch (DeleteReservationException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null));
+        }
     }
     
 //    public void filterByDate(AjaxBehaviorEvent event) {
@@ -283,7 +286,7 @@ public class ReservationManagementManagedBean implements Serializable {
         this.promotionIdUpdate = null;
         promotions = new ArrayList<>();
         dateUpdate = null;
-        durationUpdate = 0;
+        durationUpdate = 1;
     }
     
     public List<Reservation> getReservations() {
@@ -308,38 +311,6 @@ public class ReservationManagementManagedBean implements Serializable {
 
     public void setPhoneNo(String phoneNo) {
         this.phoneNo = phoneNo;
-    }
-
-    public Long getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(Long roomId) {
-        this.roomId = roomId;
-    }
-
-    public Long getOutletId() {
-        return outletId;
-    }
-
-    public void setOutletId(Long outletId) {
-        this.outletId = outletId;
-    }
-
-    public Long getPromotionId() {
-        return promotionId;
-    }
-
-    public void setPromotionId(Long promotionId) {
-        this.promotionId = promotionId;
-    }
-
-    public Long getRoomTypeId() {
-        return roomTypeId;
-    }
-
-    public void setRoomTypeId(Long roomTypeId) {
-        this.roomTypeId = roomTypeId;
     }
 
     public BigDecimal getTotalPrice() {
