@@ -34,7 +34,6 @@ public class Customer implements Serializable {
     private Long customerId;
     @Column(nullable = false, unique = true, length = 7)
     @NotNull
-    @Size(min = 7, max = 7)
     private Long memberNum;
     @NotNull
     @Column(nullable = false)

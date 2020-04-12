@@ -240,6 +240,18 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         return query.getResultList();
     }
     
+    @Override
+    public List<Reservation> retrieveReservationObjByDate(Date dateFrom, Date dateTo, Long outletId) {
+        Outlet outlet = outletSessionBeanLocal.retrieveOutletById(outletId);
+        
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.date BETWEEN :inDateFrom AND :inDateTo AND r.outlet = :inOutlet");
+        query.setParameter("inDateFrom", dateFrom);
+        query.setParameter("inDateTo", dateTo);
+        query.setParameter("inOutlet", outlet);
+        
+        return query.getResultList();
+    }
+    
     //Retrieve reservation for settling payment by cash
     @Override
     public List<Reservation> retrieveReservationByDateAndStatus(Date currentDate, Long outletId) {

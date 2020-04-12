@@ -10,6 +10,7 @@ import ejb.session.stateless.FoodItemCategorySessionBeanLocal;
 import ejb.session.stateless.FoodOrderSessionBeanLocal;
 import ejb.session.stateless.FoodSessionBeanLocal;
 import ejb.session.stateless.OutletSessionBeanLocal;
+import ejb.session.stateless.ReservationSessionBeanLocal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.Context;
@@ -79,7 +80,15 @@ public class SessionBeanLookup {
         }
     }
     
-    
+    public ReservationSessionBeanLocal lookupReservationSessionBeanLocal() {
+        try {
+            Context c = new InitialContext();
+            return (ReservationSessionBeanLocal) c.lookup(ejbModuleJndiPath+"ReservationSessionBean!ejb.session.stateless.ReservationSessionBeanLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
     
     
 }
