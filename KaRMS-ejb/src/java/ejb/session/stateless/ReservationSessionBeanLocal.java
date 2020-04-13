@@ -20,7 +20,7 @@ public interface ReservationSessionBeanLocal {
 
     public BigDecimal calculateTotalPrice(Date date, int duration, Long roomTypeId, Long promotionId);
         
-    public List<Reservation> retrieveAllReservations();
+    public List<Reservation> retrieveAllReservations(Long outletId);
 
     public Reservation retrieveReservationById(Long reservationId);
 
