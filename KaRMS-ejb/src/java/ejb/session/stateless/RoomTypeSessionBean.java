@@ -11,9 +11,12 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.DeleteRoomTypeException;
+import util.exception.RoomTypeNotFoundException;
 
 /**
  *
@@ -69,6 +72,17 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
         RoomType roomType = em.find(RoomType.class, roomTypeId);
         
         return roomType;
+    }
+    
+    @Override
+    public RoomType retrieveRoomTypeByName(String name) throws RoomTypeNotFoundException {
+        Query query = em.createQuery("SELECT rt FROM RoomType rt WHERE rt.name = :inName");
+        query.setParameter("inName", name);
+        try {
+            return (RoomType)query.getSingleResult();
+        } catch (NonUniqueResultException | NoResultException ex) {
+            throw new RoomTypeNotFoundException();
+        }
     }
     
     @Override

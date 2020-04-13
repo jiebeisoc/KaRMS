@@ -30,5 +30,7 @@ public interface RoomSessionBeanLocal {
     public void deleteRoom(Long roomId);
 
     public boolean isRoomAvailable(Room room, Date startDateTime, Date endDateTime);
+
+    public List<Room> retrieveRoomByOutletAndRoomType(Long outletId, Long roomTypeId);
     
 }

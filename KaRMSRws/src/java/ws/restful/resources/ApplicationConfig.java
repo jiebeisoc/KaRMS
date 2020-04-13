@@ -33,6 +33,8 @@ public class ApplicationConfig extends javax.ws.rs.core.Application {
         resources.add(ws.restful.resources.FoodOrderResource.class);
         resources.add(ws.restful.resources.OutletResource.class);
         resources.add(ws.restful.resources.ReservationResource.class);
+        resources.add(ws.restful.resources.RoomResource.class);
+        resources.add(ws.restful.resources.RoomTypeResource.class);
     }
     
 }

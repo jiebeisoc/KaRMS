@@ -12,14 +12,14 @@ import java.util.List;
  *
  * @author chai
  */
-public class RetrieveReservationByDateRsp {
+public class RetrieveReservationRsp {
     
     private List<Reservation> reservations;
 
-    public RetrieveReservationByDateRsp() {
+    public RetrieveReservationRsp() {
     }
 
-    public RetrieveReservationByDateRsp(List<Reservation> reservations) {
+    public RetrieveReservationRsp(List<Reservation> reservations) {
         this.reservations = reservations;
     }
 

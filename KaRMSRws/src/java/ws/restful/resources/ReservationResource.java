@@ -6,7 +6,9 @@
 package ws.restful.resources;
 
 import ejb.session.stateless.ReservationSessionBeanLocal;
+import ejb.session.stateless.RoomTypeSessionBeanLocal;
 import entity.Reservation;
+import entity.RoomType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -23,8 +25,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import util.exception.RoomTypeNotFoundException;
 import ws.restful.model.ErrorRsp;
-import ws.restful.model.RetrieveReservationByDateRsp;
+import ws.restful.model.RetrieveReservationRsp;
 
 /**
  * REST Web Service
@@ -41,6 +44,8 @@ public class ReservationResource {
     
     private final ReservationSessionBeanLocal reservationSessionBeanLocal;
     
+    private final RoomTypeSessionBeanLocal roomTypeSessionBeanLocal;
+    
     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
     /**
@@ -50,6 +55,7 @@ public class ReservationResource {
         sessionBeanLookup = new SessionBeanLookup();
         
         reservationSessionBeanLocal = sessionBeanLookup.lookupReservationSessionBeanLocal();
+        roomTypeSessionBeanLocal = sessionBeanLookup.lookupRoomTypeSessionBeanLocal();
     }
 
     /**
@@ -60,7 +66,9 @@ public class ReservationResource {
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response retrieveReservationByDate(@QueryParam("date") String dateString, @QueryParam("outletId") Long outletId) {
+    public Response retrieveReservationByDate(@QueryParam("date") String dateString,
+            @QueryParam("outletId") Long outletId, 
+            @QueryParam("roomTypeId") Long roomTypeId) {
         System.out.println("******** ReservationResource.retrieveReservationByDate()");
         
         try {
@@ -70,7 +78,7 @@ public class ReservationResource {
             cal.add(Calendar.DATE, 1);
             Date dateTo = cal.getTime();
 
-            List<Reservation> reservations = reservationSessionBeanLocal.retrieveReservationObjByDate(dateFrom, dateTo, outletId);
+            List<Reservation> reservations = reservationSessionBeanLocal.retrieveReservationByDateOutletAndRoomType(dateFrom, dateTo, outletId, roomTypeId);
 
             for (Reservation r : reservations) {
                 r.setRoom(null);
@@ -82,7 +90,7 @@ public class ReservationResource {
                 System.out.println(r.getReservationId());
             }
 
-            return Response.status(Status.OK).entity(new RetrieveReservationByDateRsp(reservations)).build();
+            return Response.status(Status.OK).entity(new RetrieveReservationRsp(reservations)).build();
 
         } catch (ParseException ex) {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
@@ -90,6 +98,41 @@ public class ReservationResource {
         }
         
         
+    }
+    
+    @Path("retrieveReservationByRoomAndDate")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveReservationByRoomAndDate(@QueryParam("date") String dateString, 
+            @QueryParam("roomId") Long roomId) {
+        
+        System.out.println("******** ReservationResource.retrieveReservationByRoomAndDate()");
+        try {
+            Date dateFrom = formatter.parse(dateString);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dateFrom);
+            cal.add(Calendar.DATE, 1);
+            Date dateTo = cal.getTime();
+            
+            List<Reservation> reservations = reservationSessionBeanLocal.retrieveReservationByRoomAndDate(dateFrom, dateTo, roomId);
+            
+            for (Reservation r : reservations) {
+                r.setRoom(null);
+                r.setOutlet(null);
+                r.setReview(null);
+                r.getSongQueue().clear();
+                r.setPromotion(null);
+                r.setCustomer(null);
+                System.out.println(r.getReservationId());
+            }
+
+            return Response.status(Status.OK).entity(new RetrieveReservationRsp(reservations)).build();
+            
+        } catch (ParseException ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
     }
 
     /**
@@ -100,5 +143,7 @@ public class ReservationResource {
     @Consumes(MediaType.APPLICATION_XML)
     public void putXml(String content) {
     }
+
+    
 
 }

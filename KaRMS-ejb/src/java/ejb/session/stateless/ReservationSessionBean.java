@@ -11,7 +11,11 @@ import entity.Promotion;
 import entity.Reservation;
 import entity.Room;
 import entity.RoomRate;
+import entity.RoomType;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -84,7 +88,7 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         
         return roomId;
     }
-    
+        
     //Create new reservation
     @Override
     public Long createNewReservation(Reservation newReservation, Long memberNum, Long roomId, Long outletId, Long promotionId) throws CustomerNotFoundException {
@@ -241,13 +245,24 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
     }
     
     @Override
-    public List<Reservation> retrieveReservationObjByDate(Date dateFrom, Date dateTo, Long outletId) {
+    public List<Reservation> retrieveReservationByDateOutletAndRoomType(Date dateFrom, Date dateTo, Long outletId, Long roomTypeId) {
         Outlet outlet = outletSessionBeanLocal.retrieveOutletById(outletId);
-        
-        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.date BETWEEN :inDateFrom AND :inDateTo AND r.outlet = :inOutlet");
+        RoomType roomType = roomTypeSessionBeanLocal.retrieveRoomTypeById(roomTypeId);
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.date BETWEEN :inDateFrom AND :inDateTo AND r.outlet = :inOutlet AND r.room.roomType = :inRoomType");
         query.setParameter("inDateFrom", dateFrom);
         query.setParameter("inDateTo", dateTo);
         query.setParameter("inOutlet", outlet);
+        query.setParameter("inRoomType", roomType);
+        
+        return query.getResultList();
+    }
+    
+    @Override
+    public List<Reservation> retrieveReservationByRoomAndDate(Date dateFrom, Date dateTo, Long roomId) {
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.date BETWEEN :inDateFrom AND :inDateTo AND r.room.roomId = :inRoomId ORDER BY r.date");
+        query.setParameter("inDateFrom", dateFrom);
+        query.setParameter("inDateTo", dateTo);
+        query.setParameter("inRoomId", roomId);
         
         return query.getResultList();
     }
