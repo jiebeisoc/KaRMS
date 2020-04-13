@@ -18,7 +18,10 @@
             <br/>
             <br/>
             <p:commandButton value="Create New Reservation" actionListener="#{reservationManagementManagedBean.onCreateNewReservation}" update="@form createNewReservationLevel1" oncomplete="PF('dialogCreateNewReservationLevel1').show()" icon="fa fa-plus" style="font-size: 12px"/>
-            <br/>
+            
+            <p:inputSwitch value="#{reservationManagementManagedBean.viewAll}" onLabel="All" offLabel="Outlet Only" style="float: right" rendered="#{reservationManagementManagedBean.employee.outlet != null}">
+                <p:ajax listener="#{reservationManagementManagedBean.onViewAll}" update="@form formAllReservations" />
+            </p:inputSwitch>
     
         </h:form>
         
@@ -84,7 +87,7 @@
                     <h:outputText value="#{reservation.status}"/>
                 </p:column>
                 
-                <p:column sortBy="#{reservation.outlet.outletName}" filterBy="#{reservation.outlet.outletName}" headerText="Outlet" filterMatchMode="in" style="width: 12%">
+                <p:column sortBy="#{reservation.outlet.outletName}" filterBy="#{reservation.outlet.outletName}" headerText="Outlet" filterMatchMode="in" style="width: 12%" rendered="#{reservationManagementManagedBean.viewAll}">
                     <f:facet name="filter">
                         <p:selectCheckboxMenu label="[Outlet]" onchange="PF('dataTableAllReservations').filter()" multiple="true">
                             <f:selectItems value="#{reservationManagementManagedBean.outlets}" var="outletEntity" itemValue="#{outletEntity.outletName}" itemLabel="#{outletEntity.outletName}"/>
@@ -133,7 +136,7 @@
                                              required="true" requiredMessage="Outlet is required">
                                 <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
                                 <f:selectItems value="#{reservationManagementManagedBean.outlets}" var="outletEntity" itemValue="#{outletEntity.outletId}" itemLabel="#{outletEntity.outletName}" />
-                                <!-- <p:ajax event="change" listener="#{reservationManagementManagedBean.outletChange}" update="date"/> -->
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.outletChange}" oncomplete="PF('dateWidget').setDate(null)" update="date buttons"/> -->
                             </p:selectOneMenu>            
                         </p:column>
                     </p:row>
@@ -147,6 +150,7 @@
                                              required="true" requiredMessage="Room type is required">
                                 <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
                                 <f:selectItems value="#{reservationManagementManagedBean.roomTypes}" var="roomTypeEntity" itemValue="#{roomTypeEntity.roomTypeId}" itemLabel="#{roomTypeEntity.name}" />
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.roomTypeChange}" update="buttons" />
                             </p:selectOneMenu>            
                         </p:column>
                     </p:row>
@@ -160,7 +164,7 @@
                                         mindate="#{reservationManagementManagedBean.minDate}" maxdate="#{reservationManagementManagedBean.maxDate}" pattern="dd/MM/yyyy hh:mm a"
                                         minHour="#{reservationManagementManagedBean.minTime}" maxHour="#{reservationManagementManagedBean.maxTime}" stepMinute="60"
                                         showMinute="false" required="true" requiredMessage="Date is required" >
-                                <p:ajax event="dateSelect" listener="#{reservationManagementManagedBean.dateChange}" update="growl"/>
+                                <p:ajax event="dateSelect" listener="#{reservationManagementManagedBean.dateChange}" update="buttons"/>
                             </p:calendar> 
                         </p:column>
                     </p:row>
@@ -172,7 +176,7 @@
                         <p:column>
                             <p:spinner id="duration" value="#{reservationManagementManagedBean.newReservation.duration}" min="1" max="12"
                                        valueChangeListener="#{reservationManagementManagedBean.onDurationChange}" required="true" requiredMessage="Duration is required">
-                                <p:ajax listener="#{reservationManagementManagedBean.durationChange}" update="duration growl"/>
+                                <p:ajax listener="#{reservationManagementManagedBean.durationChange}" update="buttons"/>
                             </p:spinner>
                         </p:column>
                     </p:row>
@@ -259,7 +263,7 @@
                         <p:column>
                             <p:selectBooleanButton id="payment" value="#{reservationManagementManagedBean.payNow}" onLabel="Now" offLabel="Later" 
                                                    required="true" requiredMessage="Payment is required">
-                                <p:ajax update="paymentMethodPanel1 paymentMethodPanel2 creditCardPanel1 creditCardPanel2"/>
+                                <p:ajax update="paymentMethodPanel1 paymentMethodPanel2" />
                             </p:selectBooleanButton>
                         </p:column>
                     </p:row>
@@ -272,24 +276,10 @@
                         </p:column>
                         <p:column>
                             <p:outputPanel id="paymentMethodPanel2" >
-                                <p:selectOneRadio id="paymentMethod" value="#{reservationManagementManagedBean.byCreditCard}" rendered="#{reservationManagementManagedBean.payNow}">
-                                    <f:selectItem itemLabel="Cash" itemValue="#{false}"/>
-                                    <f:selectItem itemLabel="Credit Card" itemValue="#{true}"/>
-                                    <p:ajax event="change" update="creditCardPanel1 creditCardPanel2"/>
+                                <p:selectOneRadio id="paymentMethod" rendered="#{reservationManagementManagedBean.payNow}">
+                                    <f:selectItem itemLabel="Cash" itemValue="#{true}"/>
+                                    <f:selectItem itemLabel="Credit Card" itemValue="#{false}"/>
                                 </p:selectOneRadio>
-                            </p:outputPanel>
-                        </p:column>
-                    </p:row>
-                    
-                    <p:row>
-                        <p:column>
-                            <p:outputPanel id="creditCardPanel1">
-                                <p:outputLabel for="creditCard" value="Credit Card No: " style="font-weight: bold" rendered="#{reservationManagementManagedBean.byCreditCard and reservationManagementManagedBean.payNow}"/>
-                            </p:outputPanel>
-                        </p:column>
-                        <p:column>
-                            <p:outputPanel id="creditCardPanel2">
-                                <p:inputMask id="creditCard" mask="9999 9999 9999 9999" rendered="#{reservationManagementManagedBean.byCreditCard and reservationManagementManagedBean.payNow}"/>
                             </p:outputPanel>
                         </p:column>
                     </p:row>

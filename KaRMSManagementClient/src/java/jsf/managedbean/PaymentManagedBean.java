@@ -17,8 +17,8 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 /**
  *
@@ -57,6 +57,7 @@ public class PaymentManagedBean implements Serializable {
             Date currentDate = formatter.parse(formatter.format(new Date()));
             
             unpaidReservations = reservationSessionBeanLocal.retrieveReservationByDateAndStatus(currentDate, outletId);
+            System.out.println(unpaidReservations.isEmpty());
         } catch (ParseException ex) {
             System.out.println("Wrong format");
         }

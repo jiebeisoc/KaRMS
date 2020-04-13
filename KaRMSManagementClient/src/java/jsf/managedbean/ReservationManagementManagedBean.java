@@ -65,6 +65,8 @@ public class ReservationManagementManagedBean implements Serializable {
     private List<Room> rooms;
     private List<Outlet> outlets;
     private List<Promotion> promotions;
+    
+    private Boolean viewAll;
 
     private List<Reservation> filteredReservations;
     private Reservation selectedReservation;
@@ -82,11 +84,9 @@ public class ReservationManagementManagedBean implements Serializable {
     private Long promotionIdUpdate;
     private Date dateUpdate;
     private int durationUpdate;
-    private int durationUpdateNew;
     
     private Boolean isAvailable;
     private Boolean payNow;
-    private Boolean byCreditCard;
     
     private Date minDate;
     private Date maxDate;
@@ -103,10 +103,15 @@ public class ReservationManagementManagedBean implements Serializable {
     public void postConstruct() {
         employee = (Employee)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("currentEmployee");
         Long outletId = null;
+        viewAll = true;
+        // if not manager
         if (employee.getOutlet() != null) {
             outletId = employee.getOutlet().getOutletId();
+            outletIdUpdate = outletId;
+            viewAll = false;
         }
-        reservations = reservationSessionBeanLocal.retrieveAllReservations();
+        
+        reservations = reservationSessionBeanLocal.retrieveAllReservations(outletId);
         roomTypes = roomTypeSessionBeanLocal.retrieveAllRoomTypes();
         rooms = roomSessionBeanLocal.retrieveAllRoom(outletId);
         outlets = outletSessionBeanLocal.retrieveAllOutlets();
@@ -117,12 +122,22 @@ public class ReservationManagementManagedBean implements Serializable {
         
         isAvailable = false;
         payNow = false;
-        byCreditCard = false;
+    }
+    
+    public void onViewAll(AjaxBehaviorEvent event) {
+        Long outletId = employee.getOutlet().getOutletId();
+
+        if (viewAll == true) {
+            reservations = reservationSessionBeanLocal.retrieveAllReservations(null);
+        } else {
+            reservations = reservationSessionBeanLocal.retrieveAllReservations(outletId);
+        }
     }
     
     public void onCreateNewReservation(ActionEvent event) {
         isAvailable = false;
         
+        // Default minHour and maxHour based on 12pm-12am
         minTime = 12;
         maxTime = 23;
         
@@ -146,17 +161,94 @@ public class ReservationManagementManagedBean implements Serializable {
         maxDate = cal.getTime();
         
     }
+        
+    public void outletChange(AjaxBehaviorEvent event) {
+        isAvailable = false;
+        
+        Outlet outlet = outletSessionBeanLocal.retrieveOutletById(outletIdUpdate);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(outlet.getOpeningHours());
+        minTime = cal.get(Calendar.HOUR_OF_DAY);
+        cal.setTime(outlet.getClosingHours());
+        maxTime = cal.get(Calendar.HOUR_OF_DAY);
+        
+        if (maxTime == 0) {
+            maxTime = 23;
+        } else {
+            maxTime -= 1;
+        }
+        
+        cal = Calendar.getInstance();
+        // if current time exceeded closing hour, change minDate to next day
+        if (cal.get(Calendar.HOUR_OF_DAY) > maxTime) {
+            cal.add(Calendar.DATE, 1);
+            cal.set(Calendar.HOUR_OF_DAY, minTime);
+            
+            minDate = cal.getTime();
+            cal.add(Calendar.YEAR, 1);
+            maxDate = cal.getTime();
+        // if current time earlier than opening hour
+        } else if (cal.get(Calendar.HOUR_OF_DAY) < minTime) {
+            cal.set(Calendar.HOUR_OF_DAY, minTime);
+            
+            minDate = cal.getTime();
+            cal.add(Calendar.YEAR, 1);
+            maxDate = cal.getTime();
+        }
+    }
+        
+    public void roomTypeChange(AjaxBehaviorEvent event) {
+        isAvailable = false;
+    }
+    
+    public void onDateChange(ValueChangeEvent event) {
+        dateUpdate = (Date)event.getNewValue();
+    }
+    
+    public void dateChange(SelectEvent event) {
+        isAvailable = false;
+    }
+
+    public void onDurationChange(ValueChangeEvent event) {
+        durationUpdate = (int)event.getNewValue();
+    }
+    
+    public void durationChange(AjaxBehaviorEvent event) {
+        isAvailable = false;
+    }
     
     public void checkAvailableRoom(ActionEvent event) {
-        try {
-            roomIdUpdate = reservationSessionBeanLocal.retrieveAvailableRoom(newReservation, outletIdUpdate, roomTypeIdUpdate);
-            isAvailable = true;
-            
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Room is available!", null));
-            
-        } catch (NoAvailableRoomException ex) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null));
+        
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dateUpdate);
+        // if exceed closing hour
+        if ((cal.get(Calendar.HOUR_OF_DAY) + durationUpdate - 1) > maxTime) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Time exceeded closing hour", null));
+        } else {
+            try {
+                roomIdUpdate = reservationSessionBeanLocal.retrieveAvailableRoom(newReservation, outletIdUpdate, roomTypeIdUpdate);
+                isAvailable = true;
+
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Room is available!", null));
+
+            } catch (NoAvailableRoomException ex) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null));
+            }
         }
+    }
+        
+    public void calculateTotalPrice() {
+        totalPrice = reservationSessionBeanLocal.calculateTotalPrice(dateUpdate, durationUpdate, roomTypeIdUpdate, promotionIdUpdate);
+        totalPrice = totalPrice.setScale(2, BigDecimal.ROUND_DOWN);
+        
+        if (newReservation != null) {
+            newReservation.setTotalPrice(totalPrice);
+        } 
+        
+        if (selectedReservation != null) {
+            selectedReservation.setTotalPrice(totalPrice);
+        }
+    
     }
     
     public void onNext(ActionEvent event) {
@@ -164,6 +256,10 @@ public class ReservationManagementManagedBean implements Serializable {
 
         promotions = promotionSessionBeanLocal.retrievePromotionByDate(dateUpdate);
         calculateTotalPrice();
+    }
+            
+    public void onPromotionChange(ValueChangeEvent event) {
+        promotionIdUpdate = (Long)event.getNewValue();
     }
     
     public void createNewReservation(ActionEvent event) {
@@ -186,91 +282,10 @@ public class ReservationManagementManagedBean implements Serializable {
         
         isAvailable = false;
         payNow = false;
-        byCreditCard = false;
 
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New reservation is created successfully (Room Number: " + roomNum + ")", null));
     }
-    
-    public void onDateChange(ValueChangeEvent event) {
-        dateUpdate = (Date)event.getOldValue();
-    }
-    
-    public void dateChange(SelectEvent event) {
-        Date dateUpdateNew = (Date)event.getObject();
-        
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(dateUpdateNew);
-        // if exceed closing hour, change back to old value
-        if ((cal.get(Calendar.HOUR_OF_DAY) + durationUpdate) > maxTime + 1) {
-            newReservation.setDate(dateUpdate);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Time exceeded closing hour", null));
-        } else {
-            dateUpdate = dateUpdateNew;
-        }
-        System.out.println("date: " + newReservation.getDate());
-    }
-
-    public void onDurationChange(ValueChangeEvent event) {
-        durationUpdate = (int)event.getOldValue();
-        durationUpdateNew = (int)event.getNewValue();
-    }
-    
-    public void durationChange(AjaxBehaviorEvent event) {
-        
-        if (dateUpdate != null) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(dateUpdate);
-            if ((cal.get(Calendar.HOUR_OF_DAY) + durationUpdateNew) > maxTime + 1) {
-                newReservation.setDuration(durationUpdate);
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Time exceeded closing hour", null));
-            } else {
-                durationUpdate = durationUpdateNew;
-            }
-        }
-    }
-        
-    public void onPromotionChange(ValueChangeEvent event) {
-        promotionIdUpdate = (Long)event.getNewValue();
-    }
-    
-    /*     
-    public void onBack(ActionEvent event) {
-        isAvailable = false;
-    }
-    
-    public void onRoomTypeChange(ValueChangeEvent event) {
-        roomTypeIdUpdate = (Long)event.getNewValue();
-    }
-    
-    public void onOutletChange(ValueChangeEvent event) {
-        outletIdUpdate = (Long)event.getNewValue();
-    }
-    
-    public void outletChange(AjaxBehaviorEvent event) {
-        Outlet outlet = outletSessionBeanLocal.retrieveOutletById(outletIdUpdate);
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(outlet.getOpeningHours());
-        minTime = cal.get(Calendar.HOUR_OF_DAY);
-        cal.setTime(outlet.getClosingHours());
-        maxTime = cal.get(Calendar.HOUR_OF_DAY) - 1; 
-
-    }
-    */
-     
-    public void calculateTotalPrice() {
-        totalPrice = reservationSessionBeanLocal.calculateTotalPrice(dateUpdate, durationUpdate, roomTypeIdUpdate, promotionIdUpdate);
-        totalPrice = totalPrice.setScale(2, BigDecimal.ROUND_DOWN);
-        
-        if (newReservation != null) {
-            newReservation.setTotalPrice(totalPrice);
-        } 
-        
-        if (selectedReservation != null) {
-            selectedReservation.setTotalPrice(totalPrice);
-        }
-    
-    }
-       
+      
     public void updateReservation() {
         try { 
             roomIdUpdate = reservationSessionBeanLocal.retrieveAvailableRoom(selectedReservation, outletIdUpdate, roomTypeIdUpdate);
@@ -564,20 +579,19 @@ public class ReservationManagementManagedBean implements Serializable {
         this.roomNum = roomNum;
     }
 
-    public Boolean getByCreditCard() {
-        return byCreditCard;
+    public Boolean getViewAll() {
+        return viewAll;
     }
 
-    public void setByCreditCard(Boolean byCreditCard) {
-        this.byCreditCard = byCreditCard;
+    public void setViewAll(Boolean viewAll) {
+        this.viewAll = viewAll;
     }
 
-    public int getDurationUpdateNew() {
-        return durationUpdateNew;
+    public Employee getEmployee() {
+        return employee;
     }
 
-    public void setDurationUpdateNew(int durationUpdateNew) {
-        this.durationUpdateNew = durationUpdateNew;
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
-    
 }

@@ -209,10 +209,17 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
 
     //View all reservations
     @Override
-    public List<Reservation> retrieveAllReservations() {
-        Query query = em.createQuery("SELECT r FROM Reservation r");
+    public List<Reservation> retrieveAllReservations(Long outletId) {
+        if (outletId == null) {
+            Query query = em.createQuery("SELECT r FROM Reservation r");
         
-        return query.getResultList();
+            return query.getResultList();
+        } else {
+            Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.outlet.outletId = :inOutletId");
+            query.setParameter("inOutletId", outletId);
+            
+            return query.getResultList();
+        }
     }
 
     //View reservation details
