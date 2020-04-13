@@ -3,6 +3,7 @@ package ejb.session.stateless;
 
 import entity.Reservation;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import util.enumeration.ReservationStatus;
@@ -38,6 +39,9 @@ public interface ReservationSessionBeanLocal {
 
     public void payReservation(Long reservationId);
 
-    public List<Reservation> retrieveReservationObjByDate(Date dateFrom, Date dateTo, Long outletId);
+    public List<Reservation> retrieveReservationByDateOutletAndRoomType(Date dateFrom, Date dateTo, Long outletId, Long roomTypeId);
+
+    public List<Reservation> retrieveReservationByRoomAndDate(Date dateFrom, Date dateTo, Long roomId);
+
 
 }

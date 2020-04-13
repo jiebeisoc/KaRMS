@@ -73,6 +73,14 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
         }
     }
     
+    public List<Room> retrieveRoomByOutletAndRoomType(Long outletId, Long roomTypeId) {
+        Query query = em.createQuery("SELECT r FROM Room r WHERE r.outlet.outletId = :inOutletId AND r.roomType.roomTypeId = :inRoomTypeId");
+        query.setParameter("inOutletId", outletId);
+        query.setParameter("inRoomTypeId", roomTypeId);
+        
+        return query.getResultList();
+    }
+    
     @Override
     public Room retrieveRoomById(Long roomId) {
         Room room = em.find(Room.class, roomId);

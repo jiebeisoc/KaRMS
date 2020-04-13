@@ -11,6 +11,8 @@ import ejb.session.stateless.FoodOrderSessionBeanLocal;
 import ejb.session.stateless.FoodSessionBeanLocal;
 import ejb.session.stateless.OutletSessionBeanLocal;
 import ejb.session.stateless.ReservationSessionBeanLocal;
+import ejb.session.stateless.RoomSessionBeanLocal;
+import ejb.session.stateless.RoomTypeSessionBeanLocal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.Context;
@@ -90,5 +92,23 @@ public class SessionBeanLookup {
         }
     }
     
+    public RoomTypeSessionBeanLocal lookupRoomTypeSessionBeanLocal() {
+        try {
+            javax.naming.Context c = new InitialContext();
+            return (RoomTypeSessionBeanLocal) c.lookup(ejbModuleJndiPath+"RoomTypeSessionBean!ejb.session.stateless.RoomTypeSessionBeanLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
     
+    public RoomSessionBeanLocal lookupRoomSessionBeanLocal() {
+        try {
+            javax.naming.Context c = new InitialContext();
+            return (RoomSessionBeanLocal) c.lookup("java:global/KaRMS/KaRMS-ejb/RoomSessionBean!ejb.session.stateless.RoomSessionBeanLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
 }

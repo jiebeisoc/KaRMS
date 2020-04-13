@@ -43,7 +43,7 @@ public class Customer implements Serializable {
     private String phoneNo;
     private String creditCardNo;
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
     @NotNull
     @Column(nullable = false)
@@ -53,7 +53,7 @@ public class Customer implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date birthday;
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
     private int points;
     private String salt;
