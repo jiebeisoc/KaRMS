@@ -13,9 +13,6 @@ import entity.Room;
 import entity.RoomRate;
 import entity.RoomType;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -90,14 +87,13 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         return roomId;
     }
         
-    //Create new reservation
+    //Create new reservation for a member
     @Override
-    public Long createNewReservation(Reservation newReservation, Long memberNum, Long roomId, Long outletId, Long promotionId) throws CustomerNotFoundException {
+    public Long createNewReservation(Reservation newReservation, Long customerId, Long roomId, Long outletId, Long promotionId) throws CustomerNotFoundException {
         
         em.persist(newReservation);
         
-        if (memberNum != null) {
-            Long customerId = customerSessionBeanLocal.retrieveCustomerByMemberNum(memberNum).getCustomerId();
+        if (customerId != null) {
             Customer customer = customerSessionBeanLocal.retrieveCustomerById(customerId);
             customer.getReservations().add(newReservation);
             newReservation.setCustomer(customer);
@@ -165,6 +161,7 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         return newReservation.getReservationId();
     }
     
+    //Calculate total price for a reservation
     @Override
     public BigDecimal calculateTotalPrice(Date date, int duration, Long roomTypeId, Long promotionId) {
         
@@ -234,7 +231,31 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         return reservation;
     }
     
-    //View reservation details
+    //Retrieve a member's upcoming reservations
+    @Override
+    public List<Reservation> retrieveUpcomingReservationByCustomer(Long customerId) {
+        Date currentDate = new Date();
+        
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE (r.customer.customerId = :inCustomerId) AND (r.date >= :inDate)");
+        query.setParameter("inCustomerId", customerId);
+        query.setParameter("inDate", currentDate);
+        
+        return query.getResultList();
+    }
+    
+    //Retrieve a member's past reservations
+    @Override
+    public List<Reservation> retrievePastReservationByCustomer(Long customerId) {
+        Date currentDate = new Date();
+        
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE (r.customer.customerId = :inCustomerId) AND (r.date < :inDate)");
+        query.setParameter("inCustomerId", customerId);
+        query.setParameter("inDate", currentDate);
+        
+        return query.getResultList();
+    }
+ 
+    //Retrieve reservations by status
     @Override
     public List<Reservation> retrieveReservationByStatus(ReservationStatus status) {
         Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.status = :inStatus");

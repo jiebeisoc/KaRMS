@@ -65,6 +65,9 @@ public class Reservation implements Serializable {
     private String walkInPhoneNo;
     
     @ManyToOne
+    private Customer customer;
+    
+    @ManyToOne
     private Room room;
     
     @ManyToOne
@@ -78,11 +81,6 @@ public class Reservation implements Serializable {
     
     @ManyToOne
     private Promotion promotion;
-    
-    @ManyToOne
-    private Customer customer;
-    
-  
 
     public Reservation() {
         this.status = ReservationStatus.NOTPAID;
