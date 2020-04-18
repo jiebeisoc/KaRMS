@@ -9,6 +9,10 @@ import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.FoodItemCategorySessionBeanLocal;
 import ejb.session.stateless.FoodOrderSessionBeanLocal;
 import ejb.session.stateless.FoodSessionBeanLocal;
+import ejb.session.stateless.OutletSessionBeanLocal;
+import ejb.session.stateless.ReservationSessionBeanLocal;
+import ejb.session.stateless.RoomSessionBeanLocal;
+import ejb.session.stateless.RoomTypeSessionBeanLocal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.Context;
@@ -21,12 +25,6 @@ import javax.naming.NamingException;
  */
 public class SessionBeanLookup {
 
- 
-
-   
-
-
-    
     private final String ejbModuleJndiPath;
 
     public SessionBeanLookup() {
@@ -74,9 +72,43 @@ public class SessionBeanLookup {
         }
     }
     
+    public OutletSessionBeanLocal lookupOutletSessionBeanLocal() {
+        try {
+            Context c = new InitialContext();
+            return (OutletSessionBeanLocal) c.lookup(ejbModuleJndiPath+"OutletSessionBean!ejb.session.stateless.OutletSessionBeanLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
     
+    public ReservationSessionBeanLocal lookupReservationSessionBeanLocal() {
+        try {
+            Context c = new InitialContext();
+            return (ReservationSessionBeanLocal) c.lookup(ejbModuleJndiPath+"ReservationSessionBean!ejb.session.stateless.ReservationSessionBeanLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
     
+    public RoomTypeSessionBeanLocal lookupRoomTypeSessionBeanLocal() {
+        try {
+            javax.naming.Context c = new InitialContext();
+            return (RoomTypeSessionBeanLocal) c.lookup(ejbModuleJndiPath+"RoomTypeSessionBean!ejb.session.stateless.RoomTypeSessionBeanLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
     
-    
-    
+    public RoomSessionBeanLocal lookupRoomSessionBeanLocal() {
+        try {
+            javax.naming.Context c = new InitialContext();
+            return (RoomSessionBeanLocal) c.lookup("java:global/KaRMS/KaRMS-ejb/RoomSessionBean!ejb.session.stateless.RoomSessionBeanLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
 }

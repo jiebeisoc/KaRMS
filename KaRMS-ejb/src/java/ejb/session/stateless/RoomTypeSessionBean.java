@@ -11,9 +11,12 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.DeleteRoomTypeException;
+import util.exception.RoomTypeNotFoundException;
 
 /**
  *
@@ -42,7 +45,6 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
                 roomRate.setRoomType(newRoomType);
             }
         }
-        newRoomType.setRoomRateIds(roomRateIds);
         em.flush();
         
         return newRoomType.getRoomTypeId();
@@ -51,6 +53,16 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
     @Override
     public List<RoomType> retrieveAllRoomTypes() {
         Query query = em.createQuery("SELECT rt FROM RoomType rt");
+        
+        return query.getResultList();
+    }
+    
+    @Override
+    public List<Long> retrieveRoomRateIds(Long roomTypeId) {
+        RoomType roomType = retrieveRoomTypeById(roomTypeId);
+        
+        Query query = em.createQuery("SELECT rr.roomRateId FROM RoomRate rr WHERE rr.roomType.roomTypeId =:inRoomType");
+        query.setParameter("inRoomType", roomType.getRoomTypeId());
         
         return query.getResultList();
     }
@@ -63,6 +75,17 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
     }
     
     @Override
+    public RoomType retrieveRoomTypeByName(String name) throws RoomTypeNotFoundException {
+        Query query = em.createQuery("SELECT rt FROM RoomType rt WHERE rt.name = :inName");
+        query.setParameter("inName", name);
+        try {
+            return (RoomType)query.getSingleResult();
+        } catch (NonUniqueResultException | NoResultException ex) {
+            throw new RoomTypeNotFoundException();
+        }
+    }
+    
+    @Override
     public void updateRoomType(RoomType roomTypeToUpdate, List<Long> roomRateIds) {
         em.merge(roomTypeToUpdate);
         
@@ -72,7 +95,6 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
             RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
             roomTypeToUpdate.getRoomRates().add(roomRate);
         }
-        roomTypeToUpdate.setRoomRateIds(roomRateIds);
         em.flush();
     }
 

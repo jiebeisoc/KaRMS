@@ -6,8 +6,11 @@
 package ejb.session.stateless;
 
 import entity.Outlet;
+import entity.Reservation;
 import entity.Room;
 import entity.RoomType;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -57,8 +60,23 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
     }
     
     @Override
-    public List<Room> retrieveAllRoom() {
-        Query query = em.createQuery("SELECT r FROM Room r");
+    public List<Room> retrieveAllRoom(Long outletId) {
+        if (outletId == null) {
+            Query query = em.createQuery("SELECT r FROM Room r");
+        
+            return query.getResultList();
+        } else {
+            Query query = em.createQuery("Select r FROM Room r WHERE r.outlet.outletId = :inOutletId");
+            query.setParameter("inOutletId", outletId);
+            
+            return query.getResultList();
+        }
+    }
+    
+    public List<Room> retrieveRoomByOutletAndRoomType(Long outletId, Long roomTypeId) {
+        Query query = em.createQuery("SELECT r FROM Room r WHERE r.outlet.outletId = :inOutletId AND r.roomType.roomTypeId = :inRoomTypeId");
+        query.setParameter("inOutletId", outletId);
+        query.setParameter("inRoomTypeId", roomTypeId);
         
         return query.getResultList();
     }
@@ -76,7 +94,29 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
         query.setParameter("inRoomType", roomType);
         
         return query.getResultList();
-    }    
+    }
+
+    @Override
+    public boolean isRoomAvailable(Room room, Date startDateTime, Date endDateTime) {
+        boolean isAvailable = true;
+        List<Reservation> reservations = room.getReservations();
+        
+        for (Reservation r: reservations) {
+            Date rStartDateTime = r.getDate();
+            int rDuration = r.getDuration();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(rStartDateTime);
+            cal.add(Calendar.HOUR, +rDuration);
+            Date rEndDateTime = cal.getTime();
+
+            //once overlapped, break
+            if (startDateTime.before(rEndDateTime) && endDateTime.after(rStartDateTime)) {
+                isAvailable = false;
+                break;
+            }
+        }
+        return isAvailable;
+    }
     
     @Override
     public void updateRoom(Room roomToUpdate) {

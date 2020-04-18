@@ -54,8 +54,8 @@ public class RoomRateManagementManagedBean implements Serializable {
         newRoomRate = new RoomRate();
         try {
             nonPeakStart = timeFormat.parse("12:00");
-            nonPeakEnd = timeFormat.parse("18:59");
-            peakStart = timeFormat.parse("19:00");
+            nonPeakEnd = timeFormat.parse("17:59");
+            peakStart = timeFormat.parse("18:00");
             peakEnd = timeFormat.parse("00:00");
         } catch (ParseException ex) {
             System.out.println("Wrong Format");
