@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +22,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import util.enumeration.ReservationStatus;
 
@@ -46,10 +49,20 @@ public class Reservation implements Serializable {
     @Column(nullable = false)
     private int numOfPeople;
     private String note;
+    @Column(nullable = false, precision = 11, scale = 2)
+    @NotNull
+    @DecimalMin("0.00")
+    @Digits(integer = 9, fraction = 2)
+    private BigDecimal totalPrice;
     @Enumerated(EnumType.STRING)
     @NotNull
     @Column(nullable = false)
     private ReservationStatus status;
+    @NotNull
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateReserved;
+    private String walkInPhoneNo;
     
     @ManyToOne
     private Room room;
@@ -74,6 +87,7 @@ public class Reservation implements Serializable {
     public Reservation() {
         this.status = ReservationStatus.NOTPAID;
         this.songQueue = new ArrayList<>();
+        totalPrice = new BigDecimal("0.00");
     }
     
     public Reservation(Date date, int duration, int numOfPeople, ReservationStatus status) {
@@ -81,6 +95,7 @@ public class Reservation implements Serializable {
         this.date = date;
         this.duration = duration;
         this.numOfPeople = numOfPeople;
+        
     }
     
     public Long getReservationId() {
@@ -205,5 +220,29 @@ public class Reservation implements Serializable {
     }
 
 
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public Date getDateReserved() {
+        return dateReserved;
+    }
+
+    public void setDateReserved(Date dateReserved) {
+        this.dateReserved = dateReserved;
+    }
+
+    public String getWalkInPhoneNo() {
+        return walkInPhoneNo;
+    }
+
+    public void setWalkInPhoneNo(String walkInPhoneNo) {
+        this.walkInPhoneNo = walkInPhoneNo;
+    }
 
 }

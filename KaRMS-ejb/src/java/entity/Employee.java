@@ -8,10 +8,14 @@ package entity;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
+import util.enumeration.AccessRightEnum;
 
 /**
  *
@@ -30,13 +34,21 @@ public class Employee implements Serializable {
     @NotNull
     @Column(nullable = false)
     private String password;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccessRightEnum accessRightEnum;
+    
+    @OneToOne
+    private Outlet outlet;
 
     public Employee() {
     }
 
-    public Employee(String username, String password) {
+    public Employee(String username, String password, AccessRightEnum accessRightEnum) {
+        this();
         this.username = username;
         this.password = password;
+        this.accessRightEnum = accessRightEnum;
     }
     
     public Long getEmployeeId() {
@@ -87,5 +99,21 @@ public class Employee implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
+    public AccessRightEnum getAccessRightEnum() {
+        return accessRightEnum;
+    }
+
+    public void setAccessRightEnum(AccessRightEnum accessRightEnum) {
+        this.accessRightEnum = accessRightEnum;
+    }
+
+    public Outlet getOutlet() {
+        return outlet;
+    }
+
+    public void setOutlet(Outlet outlet) {
+        this.outlet = outlet;
+    }
+
 }

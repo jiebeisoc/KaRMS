@@ -9,6 +9,7 @@ import entity.RoomType;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.DeleteRoomTypeException;
+import util.exception.RoomTypeNotFoundException;
 
 /**
  *
@@ -26,6 +27,10 @@ public interface RoomTypeSessionBeanLocal {
     public void updateRoomType(RoomType roomTypeToUpdate, List<Long> roomRateIds);
 
     public void deleteRoomType(Long roomTypeId) throws DeleteRoomTypeException;
+
+    public List<Long> retrieveRoomRateIds(Long roomTypeId);
+
+    public RoomType retrieveRoomTypeByName(String name) throws RoomTypeNotFoundException;
 
 
 }
