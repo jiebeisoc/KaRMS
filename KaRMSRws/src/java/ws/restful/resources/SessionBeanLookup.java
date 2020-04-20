@@ -10,6 +10,7 @@ import ejb.session.stateless.FoodItemCategorySessionBeanLocal;
 import ejb.session.stateless.FoodOrderSessionBeanLocal;
 import ejb.session.stateless.FoodSessionBeanLocal;
 import ejb.session.stateless.OutletSessionBeanLocal;
+import ejb.session.stateless.PromotionSessionBeanLocal;
 import ejb.session.stateless.ReservationSessionBeanLocal;
 import ejb.session.stateless.RoomSessionBeanLocal;
 import ejb.session.stateless.RoomTypeSessionBeanLocal;
@@ -128,6 +129,16 @@ public class SessionBeanLookup {
         try {
             javax.naming.Context c = new InitialContext();
             return (SongCategorySessionBeanLocal) c.lookup(ejbModuleJndiPath+"SongCategorySessionBean!ejb.session.stateless.SongCategorySessionBeanLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
+    
+    public PromotionSessionBeanLocal lookupPromotionSessionBeanLocal() {
+        try {
+            javax.naming.Context c = new InitialContext();
+            return (PromotionSessionBeanLocal) c.lookup(ejbModuleJndiPath+"PromotionSessionBean!ejb.session.stateless.PromotionSessionBeanLocal");
         } catch (NamingException ne) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
             throw new RuntimeException(ne);
