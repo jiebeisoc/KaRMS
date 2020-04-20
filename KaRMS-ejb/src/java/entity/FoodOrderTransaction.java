@@ -69,6 +69,8 @@ public class FoodOrderTransaction implements Serializable
     @ManyToOne(optional = true)
     @JoinColumn(nullable = true)
     private Customer customerEntity;
+    
+    private Outlet outlet;
 
     
     
@@ -252,5 +254,21 @@ public class FoodOrderTransaction implements Serializable
                 this.customerEntity.getFoodOrderTransactionEntities().add(this);
             }
         }
+    }
+
+    public FoodOrderStatus getFoodOrderStatus() {
+        return foodOrderStatus;
+    }
+
+    public void setFoodOrderStatus(FoodOrderStatus foodOrderStatus) {
+        this.foodOrderStatus = foodOrderStatus;
+    }
+
+    public Outlet getOutlet() {
+        return outlet;
+    }
+
+    public void setOutlet(Outlet outlet) {
+        this.outlet = outlet;
     }
 }
