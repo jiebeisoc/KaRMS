@@ -65,12 +65,4 @@ public class OutletResource {
         return Response.status(Status.OK).entity(new RetrieveAllOutletsRsp(outlets)).build();
     }
 
-    /**
-     * PUT method for updating or creating an instance of OutletResource
-     * @param content representation for the resource
-     */
-    @PUT
-    @Consumes(MediaType.APPLICATION_XML)
-    public void putXml(String content) {
-    }
 }

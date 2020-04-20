@@ -23,11 +23,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import util.exception.FoodItemNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import ws.restful.model.CreateFoodOrderTransactionReq;
 import ws.restful.model.CreateFoodOrderTransactionRsp;
 import ws.restful.model.ErrorRsp;
 import ws.restful.model.RetrieveAllFoodItemRsp;
+import ws.restful.model.RetrieveFoodItemRsp;
 import ws.restful.model.RetrievePastFoodOrderTransactionRsp;
 
 /**
@@ -85,6 +87,43 @@ public class FoodOrderResource {
             }
         return Response.status(Response.Status.OK).entity(new RetrieveAllFoodItemRsp(foodItemList)).build();
     }
+    
+    @Path("retrieveFoodItem/{foodItemId}")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveFoodItem(@PathParam("foodItemId") Long foodItemId)
+    {
+        try
+        {
+             FoodItem foodItem = foodSessionBeanLocal.retrieveFoodItemById(foodItemId);
+          
+            
+            if(foodItem.getCategoryEntity().getParentCategoryEntity() != null)
+            {
+                foodItem.getCategoryEntity().getParentCategoryEntity().getSubCategoryEntities().clear();
+            }
+
+            foodItem.getCategoryEntity().getFoodItems().clear();
+       
+            return Response.status(Status.OK).entity(new RetrieveFoodItemRsp(foodItem)).build();
+        }
+       
+        catch(FoodItemNotFoundException ex)
+        {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            
+            return Response.status(Status.BAD_REQUEST).entity(errorRsp).build();
+        }
+        catch(Exception ex)
+        {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    
 
     
     
