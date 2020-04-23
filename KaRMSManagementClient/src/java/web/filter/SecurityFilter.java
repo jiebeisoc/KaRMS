@@ -5,6 +5,7 @@
  */
 package web.filter;
 
+import entity.Employee;
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -16,6 +17,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import util.enumeration.AccessRightEnum;
 
 /**
  *
@@ -51,7 +53,12 @@ public class SecurityFilter implements Filter {
         if (!excludeLoginCheck(requestServletPath)) {
         
             if (isLogin == true) {
-                chain.doFilter(request, response);
+                Employee currentEmployee = (Employee)httpSession.getAttribute("currentEmployee");
+                if (checkAccessRight(requestServletPath, currentEmployee.getAccessRightEnum())) {
+                    chain.doFilter(request, response);
+                } else {
+                    httpServletResponse.sendRedirect(CONTEXT_ROOT + "/accessRightError.xhtml");
+                }
             } else {
                 httpServletResponse.sendRedirect(CONTEXT_ROOT + "/accessRightError.xhtml");
             }  
@@ -61,6 +68,26 @@ public class SecurityFilter implements Filter {
     }
     
     public void destroy() {
+    }
+    
+    private Boolean checkAccessRight(String path, AccessRightEnum accessRight) {
+        if (accessRight.equals(AccessRightEnum.CASHIER)) {
+            if (path.equals("/customerOperation/reservationManagement.xhtml") ||
+                    path.equals("/customerOperation/settlePayment.xhtml") ||
+                    path.equals("/operationManagement/roomManagement.xhtml")) {
+                return true;
+            }
+        } else if (accessRight.equals(AccessRightEnum.MANAGER)) {
+            if (path.equals("/operationManagement/foodItemManagement.xhtml") ||
+                    path.equals("/operationManagement/outletManagement.xhtml") ||
+                    path.equals("/operationManagement/promotionManagement.xhtml") ||
+                    path.equals("/operationManagement/roomManagement.xhtml") ||
+                    path.equals("/operationManagement/roomRateManagement.xhtml") ||
+                    path.equals("/operationManagement/roomTypeManagement.xhtml")) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private Boolean excludeLoginCheck(String path)
