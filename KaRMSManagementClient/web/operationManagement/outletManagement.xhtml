@@ -113,10 +113,47 @@
                             
                         <p:column colspan="2">
                             <p:commandButton type="reset" value="Clear" />&nbsp;
-                            <p:commandButton value="Create New Outlet" update="@form formAllOutlet:dataTableAllOutlet"
-                                             actionListener="#{outletManagedBean.createNewOutlet}" oncomplete="PF('dialogCreateNewOutlet').hide();" />    
+                            <p:commandButton value="Next" oncomplete="PF('dialogCreateNewOutlet').hide(); PF('dialogCreateNewEmployee').show()" />    
                         </p:column>
                             
+                    </p:row>
+                    
+                </p:panelGrid>
+                
+            </p:dialog>
+            
+        </h:form>
+        
+        <h:form id="createNewEmployee">
+            
+            <p:dialog id="dialogCreateNewEmployee" widgetVar="dialogCreateNewEmployee" header="Create New Employee for Outlet" closable="true">
+                
+                <p:panelGrid>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="username" value="Username: " style="font-weight: bold;" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="username" value="#{outletManagedBean.newEmployee.username}" required="true" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="password" value="Password: " style="font-weight: bold;" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="password" type="password" value="#{outletManagedBean.newEmployee.password}" required="true" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:commandButton value="Back"  oncomplete="PF('dialogCreateNewOutlet').show(); PF('dialogCreateNewEmployee').hide()"/>&nbsp;
+                            <p:commandButton value="Create" update="@form formAllOutlet:dataTableAllOutlet"
+                                             actionListener="#{outletManagedBean.createNewOutlet}" oncomplete="PF('dialogCreateNewEmployee).hide()" />    
+                        </p:column>
                     </p:row>
                     
                 </p:panelGrid>
