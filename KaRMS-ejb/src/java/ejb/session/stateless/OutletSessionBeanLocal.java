@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.Employee;
 import entity.Outlet;
 import java.util.List;
 import javax.ejb.Local;
@@ -16,7 +17,7 @@ import javax.ejb.Local;
 @Local
 public interface OutletSessionBeanLocal {
 
-    public Long createNewOutlet(Outlet newOutlet);
+    public Long createNewOutlet(Outlet newOutlet, Employee employee);
 
     public List<Outlet> retrieveAllOutlets();
 
