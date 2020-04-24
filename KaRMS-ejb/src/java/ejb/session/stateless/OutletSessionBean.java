@@ -5,8 +5,8 @@
  */
 package ejb.session.stateless;
 
+import entity.Employee;
 import entity.Outlet;
-import entity.Review;
 import entity.Room;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -26,10 +26,16 @@ public class OutletSessionBean implements OutletSessionBeanLocal {
 
     
     @Override
-    public Long createNewOutlet(Outlet newOutlet)
+    public Long createNewOutlet(Outlet newOutlet, Employee employee)
     {
         em.persist(newOutlet);
         em.flush();
+        
+        em.persist(employee);
+        em.flush();
+        
+        newOutlet.setEmployee(employee);
+        employee.setOutlet(newOutlet);
         
         return newOutlet.getOutletId();
     }

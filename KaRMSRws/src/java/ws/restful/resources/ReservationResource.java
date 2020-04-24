@@ -8,7 +8,6 @@ package ws.restful.resources;
 import ejb.session.stateless.ReservationSessionBeanLocal;
 import ejb.session.stateless.RoomTypeSessionBeanLocal;
 import entity.Reservation;
-import entity.RoomType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -25,7 +24,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import util.exception.RoomTypeNotFoundException;
 import ws.restful.model.ErrorRsp;
 import ws.restful.model.RetrieveReservationRsp;
 

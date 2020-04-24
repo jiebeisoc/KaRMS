@@ -6,6 +6,7 @@
 package jsf.managedbean;
 
 import ejb.session.stateless.OutletSessionBeanLocal;
+import entity.Employee;
 import entity.Outlet;
 import java.io.Serializable;
 import java.util.List;
@@ -17,6 +18,7 @@ import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import org.primefaces.event.SelectEvent;
+import util.enumeration.AccessRightEnum;
 
 /**
  *
@@ -34,12 +36,15 @@ public class OutletManagedBean implements Serializable {
     private Outlet newOutlet;
     private Outlet selectedOutlet;
     
+    private Employee newEmployee;
+    
 
     /**
      * Creates a new instance of OutletManagedBean
      */
     public OutletManagedBean() {
         newOutlet = new Outlet();
+        newEmployee = new Employee();
     }
     
     @PostConstruct
@@ -48,10 +53,12 @@ public class OutletManagedBean implements Serializable {
     }
     
     public void createNewOutlet(ActionEvent event) {
-        Long outletId = outletSessionBeanLocal.createNewOutlet(newOutlet);
+        newEmployee.setAccessRightEnum(AccessRightEnum.CASHIER);
+        outletSessionBeanLocal.createNewOutlet(newOutlet, newEmployee);
         outlets.add(newOutlet);
         
         newOutlet = new Outlet();
+        newEmployee = new Employee();
         
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New outlet created successfully", null));
     }
@@ -90,6 +97,14 @@ public class OutletManagedBean implements Serializable {
 
     public void setNewOutlet(Outlet newOutlet) {
         this.newOutlet = newOutlet;
+    }
+
+    public Employee getNewEmployee() {
+        return newEmployee;
+    }
+
+    public void setNewEmployee(Employee newEmployee) {
+        this.newEmployee = newEmployee;
     }
 
     public Outlet getSelectedOutlet() {

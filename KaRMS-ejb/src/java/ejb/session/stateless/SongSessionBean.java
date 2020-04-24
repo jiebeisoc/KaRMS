@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.Reservation;
 import entity.Song;
 import entity.SongCategory;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -42,8 +43,21 @@ public class SongSessionBean implements SongSessionBeanLocal {
     }
 
     @Override
-    public List<Song> viewSongByCategory(List<SongCategory> category) {
-        return null;
+    public List<Song> viewSongByCategory(Long categoryId) {
+        
+        SongCategory songCategory = em.find(SongCategory.class, categoryId);           
+        
+        List<Song> songs = viewAllSongs();
+        
+        List<Song> filteredSongs = new ArrayList<>();
+        
+        for (Song s: songs) {
+            if (s.getSongCategories().contains(songCategory)) {
+                filteredSongs.add(s);            
+            }
+        }
+        
+        return filteredSongs;
     }
 
     @Override
@@ -57,7 +71,7 @@ public class SongSessionBean implements SongSessionBeanLocal {
 
     @Override
     public List<Song> viewSongBySinger(String singer) {
-        Query query = em.createQuery("SELECT s FROM Song s WHERE singer = :inSinger");
+        Query query = em.createQuery("SELECT s FROM Song s WHERE s.singer = :inSinger");
         query.setParameter("inSinger", singer);
         
         return query.getResultList();
@@ -70,6 +84,25 @@ public class SongSessionBean implements SongSessionBeanLocal {
         
         return query.getResultList();
     }
+    
+    @Override
+    public Long createNewSong(Song newSong, List<Long> songCategoryIds) {
+        em.persist(newSong);
+        em.flush();
+        
+        for (Long id: songCategoryIds) {
+            SongCategory songCategory = em.find(SongCategory.class, id);
+            newSong.getSongCategories().add(songCategory);
+            songCategory.getSongs().add(newSong);
+        }      
+        
+        return newSong.getSongId();
+    }
 
-
+    @Override
+    public List<String> retrieveSingers() {
+        Query query = em.createQuery("SELECT DISTINCT s.singer FROM Song s");
+        
+        return query.getResultList();
+    }
 }
