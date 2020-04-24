@@ -31,12 +31,11 @@ public class Customer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
-<<<<<<< HEAD
+
 //    @Column(nullable = false, unique = true, length = 7)
 //    @NotNull
     private Long memberNum;
-=======
->>>>>>> 50687a6b469fba40ce957ed71f8dfc036ca9028c
+
     @NotNull
     @Column(nullable = false)
     private String name;

@@ -22,7 +22,8 @@
                                      style="margin-left: 20px" update="formUpdateQuantity" oncomplete="PF('dialogUpdateQuantity').show()">
                         <f:attribute name="foodItemId" value="#{foodOrderTransactionLineItem.foodItem.foodItemId}"/>
                     </p:commandButton>
-                    <p:commandButton icon="ui-icon-trash" actionListener="#{foodOrderShoppingCartManagedBean.deleteFoodTransactionLineItem}" update="formMain:dataTableMain" immediate="true">
+                   
+                    <p:commandButton icon="ui-icon-trash" actionListener="#{foodOrderShoppingCartManagedBean.deleteFoodTransactionLineItem}" update="formMain:dataTableMain formMain:totalAmount" immediate="true">
                         <f:attribute name="foodItemId" value="#{foodOrderTransactionLineItem.foodItem.foodItemId}"/>
                         <p:confirm header="Confirmation" message="Are you sure you wan to delete #{foodOrderTransactionLineItem.foodItem.name} ?" icon="ui-icon-alert" />
                     </p:commandButton>
@@ -40,7 +41,7 @@
                     <h:outputText value="#{foodOrderShoppingCartManagedBean.totalAmount}" /> &nbsp;
                     <p:commandButton actionListener="#{foodOrderShoppingCartManagedBean.checkoutPage}" title="Checkout"
                     style="margin-right:20px; height:30px; m" styleClass="ui-priority-primary" />
-                </p:outputLabel>>
+                </p:outputLabel>
                 
             </center>  
             
@@ -50,6 +51,8 @@
             </p:confirmDialog>
         
         </h:form>
+        
+     
         
         <h:form id="formUpdateQuantity">
                 

@@ -161,6 +161,9 @@ public class FoodItemManagedBean implements Serializable
         try
         {
             FoodItem foodItemTodelete = (FoodItem)event.getComponent().getAttributes().get("foodItemToDelete");
+            
+            System.err.println("foodItemToDeleteID: "+foodItemTodelete.getFoodItemId());
+            
             foodSessionBeanLocal.deleteFoodItem(foodItemTodelete.getFoodItemId());
             
             foodItems.remove(foodItemTodelete);

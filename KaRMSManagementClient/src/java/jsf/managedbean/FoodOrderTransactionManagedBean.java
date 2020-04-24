@@ -49,35 +49,17 @@ public class FoodOrderTransactionManagedBean implements Serializable{
     }
     
     public void viewTransactionDetails(ActionEvent event){
-        Long transactionIdToView = (Long)event.getComponent().getAttributes().get("transactionId");
-        FacesContext.getCurrentInstance().getExternalContext().getFlash().put("transactionIdToView", transactionIdToView);
+
+        selectedFoodOrderTransaction = (FoodOrderTransaction)event.getComponent().getAttributes().get("transactionToView");
+        FacesContext.getCurrentInstance().getExternalContext().getFlash().put("transactionToView", selectedFoodOrderTransaction);
         try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("viewTransactionDetails.xhtml");
+            FacesContext.getCurrentInstance().getExternalContext().redirect("viewFoodOrderTransactionDetails.xhtml");
         } catch (IOException ex) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error while checking transaction "+transactionIdToView+": " + ex.getMessage(), null));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error while checking transaction "+selectedFoodOrderTransaction.getFoodOrderTransactionId()+": " + ex.getMessage(), null));
         }
     }
     
-    public void confirmTransaction(ActionEvent event){
-        Long transactionIdToConfirm = (Long)event.getComponent().getAttributes().get("transactionId");
-        try {
-            foodOrderSessionBeanLocal.confirmFoodOrderTransaction(transactionIdToConfirm);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Confirm Transaction successfully!", null));
-        } catch (FoodOrderTransactionNotFoundException ex) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error while confirm transaction: " + ex.getMessage(), null));
-        }
-    }
-    
-    public void servedFoodOrder(ActionEvent event){
-        Long transactionId = (Long)event.getComponent().getAttributes().get("transactionId");
-        try {
-            foodOrderSessionBeanLocal.servedFoodOrder(transactionId);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Food Order Served successfully!", null));
-        } catch (FoodOrderTransactionNotFoundException ex) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error While Serve Food Order: " + ex.getMessage(), null));
-        }
-        
-    }
+   
     
     public void viewFoodOrderTransactionDetails(ActionEvent event){
      
@@ -90,5 +72,21 @@ public class FoodOrderTransactionManagedBean implements Serializable{
         
     
     
+    }
+
+    public List<FoodOrderTransaction> getFoodOrderTransactionList() {
+        return foodOrderTransactionList;
+    }
+
+    public void setFoodOrderTransactionList(List<FoodOrderTransaction> foodOrderTransactionList) {
+        this.foodOrderTransactionList = foodOrderTransactionList;
+    }
+
+    public FoodOrderTransaction getSelectedFoodOrderTransaction() {
+        return selectedFoodOrderTransaction;
+    }
+
+    public void setSelectedFoodOrderTransaction(FoodOrderTransaction selectedFoodOrderTransaction) {
+        this.selectedFoodOrderTransaction = selectedFoodOrderTransaction;
     }
 }

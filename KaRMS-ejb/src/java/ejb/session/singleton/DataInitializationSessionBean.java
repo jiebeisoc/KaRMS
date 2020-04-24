@@ -104,7 +104,7 @@ public class DataInitializationSessionBean {
         
         // Add manager
         employeeSessionBeanLocal.createNewEmployee(new Employee("manager", "password", AccessRightEnum.MANAGER));
-        
+         employeeSessionBeanLocal.createNewEmployee(new Employee("cashier", "password", AccessRightEnum.CASHIER));
         // Add outlets
         try {
             Date openingHour = timeFormat.parse("12:00");
@@ -304,14 +304,11 @@ public class DataInitializationSessionBean {
             foodSessionBeanLocal.createNewFoodItem(e, 2L);
             foodSessionBeanLocal.createNewFoodItem(f, 3L);
             foodSessionBeanLocal.createNewFoodItem(g, 2L);
-<<<<<<< HEAD
             foodSessionBeanLocal.createNewFoodItem(h, 4L);
             
             
              em.flush();
-=======
-            foodSessionBeanLocal.createNewFoodItem(h, 4L);                   
->>>>>>> 50687a6b469fba40ce957ed71f8dfc036ca9028c
+
             
         } catch (InputDataValidationException ex) {
             Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
