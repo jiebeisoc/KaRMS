@@ -254,12 +254,22 @@ public class DataInitializationSessionBean {
         roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 7l);
         roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 8l);
         
+        em.flush();
         //Add FoodItem Categories
         try{
             FoodItemCategory foodItemCategory1 = new FoodItemCategory("Snacks","All snacks that you are craving");
             FoodItemCategory foodItemCategory2 = new FoodItemCategory("Potato Chips","All time favorites");
             FoodItemCategory foodItemCategory3 = new FoodItemCategory("Instant Noodle","Kids Favorites");
+            FoodItemCategory foodItemCategory4 = new FoodItemCategory("Main Course","Our experienced chef provides authentic dishes");
             
+            em.persist(foodItemCategory1);
+            em.persist(foodItemCategory2);
+            em.persist(foodItemCategory3);
+            em.persist(foodItemCategory4);
+            
+            
+            
+           
             List<FoodItemCategory> subCategoryEntities = new LinkedList<FoodItemCategory>();
             subCategoryEntities.add(foodItemCategory2);
             subCategoryEntities.add(foodItemCategory3);
@@ -269,12 +279,8 @@ public class DataInitializationSessionBean {
             foodItemCategory3.setParentCategoryEntity(foodItemCategory1);
             
             
-            FoodItemCategory foodItemCategory4 = new FoodItemCategory("Main Course","Our experienced chef provides authentic dishes");
             
-            em.persist(foodItemCategory1);
-            em.persist(foodItemCategory2);
-            em.persist(foodItemCategory3);
-            em.persist(foodItemCategory4);
+         
             em.flush();
             
             FoodItem a = new FoodItem("FOOD001", "FoodItemA", "description for food item A", 10 ,BigDecimal.valueOf(3.4), 2);
@@ -287,8 +293,8 @@ public class DataInitializationSessionBean {
             FoodItem h = new FoodItem("FOOD008", "FoodItemhz", "description for food item H", 30 ,BigDecimal.valueOf(4.4), 4);
             
             
-            foodSessionBeanLocal.createNewFoodItem(a, 2L);
-            foodSessionBeanLocal.createNewFoodItem(b, 2L);
+            foodSessionBeanLocal.createNewFoodItem(a, 4L);
+            foodSessionBeanLocal.createNewFoodItem(b, 3L);
             foodSessionBeanLocal.createNewFoodItem(c, 3L);
             foodSessionBeanLocal.createNewFoodItem(d, 4L);
             foodSessionBeanLocal.createNewFoodItem(e, 2L);
@@ -297,11 +303,7 @@ public class DataInitializationSessionBean {
             foodSessionBeanLocal.createNewFoodItem(h, 4L);
             
             
-            
-            
-            
-            
-            
+             em.flush();
             
         } catch (InputDataValidationException ex) {
             Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);

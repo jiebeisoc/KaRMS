@@ -4,6 +4,10 @@ import entity.Customer;
 import entity.FoodItem;
 import entity.FoodOrderTransaction;
 import entity.FoodOrderTransactionLineItem;
+import entity.Outlet;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Local;
@@ -11,6 +15,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.enumeration.FoodOrderStatus;
 import util.exception.CreateNewFoodOrderTransactionException;
 import util.exception.FoodItemInsufficientQuantityOnHandException;
 import util.exception.FoodItemNotFoundException;
@@ -59,10 +64,23 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
         {
             try
             {
-                Customer customerEntity = customerSessionBeanLocal.retrieveCustomerById(customerId);
-                newFoodOrderTransactionEntity.setCustomerEntity(customerEntity);
-                customerEntity.getFoodOrderTransactionEntities().add(newFoodOrderTransactionEntity);
-
+                if(customerId!=null){
+                    Customer customerEntity = customerSessionBeanLocal.retrieveCustomerById(customerId);
+                    newFoodOrderTransactionEntity.setCustomerEntity(customerEntity);
+                    customerEntity.getFoodOrderTransactionEntities().add(newFoodOrderTransactionEntity);
+               
+                }  
+                Long outletId = newFoodOrderTransactionEntity.getOutlet().getOutletId();
+                Outlet outlet = entityManager.find(Outlet.class, outletId);
+                newFoodOrderTransactionEntity.setOutlet(outlet);
+                newFoodOrderTransactionEntity.setFoodOrderStatus(FoodOrderStatus.BOOKED);
+                
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                Date date = new Date();
+                String dateAsString = dateFormat.format(date);
+                System.err.println("date"+dateAsString);
+                newFoodOrderTransactionEntity.setTransactionDateTime(dateAsString);
+                   
                 entityManager.persist(newFoodOrderTransactionEntity);
 
                 for(FoodOrderTransactionLineItem foodOrderTransactionLineItemEntity:newFoodOrderTransactionEntity.getFoodOrderTransactionLineItemEntities())
@@ -99,6 +117,19 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
         Query query = entityManager.createQuery("SELECT ft FROM FoodOrderTransaction ft");
         
         return query.getResultList();
+    }
+    
+    @Override
+    public List<FoodOrderTransaction> retrieveAllFoodOrderTransactionsByOutletId(Long outletId)
+    {
+        Query query = entityManager.createQuery("SELECT ft FROM FoodOrderTransaction ft where ft.outlet.outletId = :outletId");
+        query.setParameter("outletId", outletId);
+    
+        List<FoodOrderTransaction> list = query.getResultList();
+        for(FoodOrderTransaction se: list){
+           se.getFoodOrderTransactionLineItemEntities().size();    
+        }
+        return list;
     }
     
     @Override
@@ -159,7 +190,7 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
     
     
     
-    // Updated in v4.1
+
     
     @Override
     public void voidRefundFoodOrderTransaction(Long foodOrderTransactionId) throws FoodOrderTransactionNotFoundException, FoodOrderTransactionAlreadyVoidedRefundedException
@@ -181,6 +212,7 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
             }
             
             foodOrderTransactionEntity.setVoidRefund(true);
+            foodOrderTransactionEntity.setFoodOrderStatus(FoodOrderStatus.CANCELLED);
         }
         else
         {
@@ -193,6 +225,18 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
     public void deleteFoodOrderTransaction(FoodOrderTransaction foodOrderTransactionEntity)
     {
         throw new UnsupportedOperationException();
+    }
+    
+    public void confirmFoodOrderTransaction(Long foodOrderTransactionId) throws FoodOrderTransactionNotFoundException{
+        
+         FoodOrderTransaction foodOrderTransactionEntity = retrieveFoodOrderTransactionByFoodOrderTransactionId(foodOrderTransactionId);
+         foodOrderTransactionEntity.setFoodOrderStatus(FoodOrderStatus.CONFIRMED); 
+    }
+
+    public void servedFoodOrder(Long foodOrderTransactionId) throws FoodOrderTransactionNotFoundException{
+        
+         FoodOrderTransaction foodOrderTransactionEntity = retrieveFoodOrderTransactionByFoodOrderTransactionId(foodOrderTransactionId);
+         foodOrderTransactionEntity.setFoodOrderStatus(FoodOrderStatus.SERVED); 
     }
 
  

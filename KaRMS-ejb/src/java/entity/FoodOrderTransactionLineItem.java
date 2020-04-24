@@ -38,7 +38,6 @@ public class FoodOrderTransactionLineItem implements Serializable
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     @NotNull
-    @Min(1)
     private FoodItem foodItem;
     
     @Column(nullable = false)

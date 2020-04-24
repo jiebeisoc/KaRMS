@@ -8,8 +8,10 @@ package jsf.managedbean;
 import entity.FoodItem;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
+import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 
 /**
  *
@@ -19,6 +21,9 @@ import javax.faces.view.ViewScoped;
 @ViewScoped
 public class ViewFoodItemManagedBean implements Serializable{
 private FoodItem foodItemToView;
+
+
+
     /**
      * Creates a new instance of viewFoodItemManagedBean
      */
@@ -29,6 +34,13 @@ private FoodItem foodItemToView;
     @PostConstruct
     public void postConstruct(){
         
+    }
+    
+    public void viewFoodItemDetails(ActionEvent event){
+        
+        
+
+       
     }
 
     public FoodItem getFoodItemToView() {
