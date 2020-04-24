@@ -13,21 +13,25 @@ import entity.FoodOrderTransaction;
  */
 public class CreateFoodOrderTransactionReq {
     
+     
+     private FoodOrderTransaction newFoodOrderTransaction;
+     
      private Long customerId;
      private String username;
      private String password;
-     private FoodOrderTransaction newFoodOrderTransaction;
-
+ 
     public CreateFoodOrderTransactionReq() {
         
     }
 
-    public CreateFoodOrderTransactionReq(Long customerId, String username, String password, FoodOrderTransaction newFoodOrderTransaction) {
+    public CreateFoodOrderTransactionReq(FoodOrderTransaction newFoodOrderTransaction, Long customerId, String username, String password) {
+        this.newFoodOrderTransaction = newFoodOrderTransaction;
         this.customerId = customerId;
         this.username = username;
         this.password = password;
-        this.newFoodOrderTransaction = newFoodOrderTransaction;
     }
+
+   
 
   
 
@@ -42,22 +46,6 @@ public class CreateFoodOrderTransactionReq {
         this.newFoodOrderTransaction = newFoodOrderTransaction;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Long getCustomerId() {
         return customerId;
     }
@@ -65,7 +53,23 @@ public class CreateFoodOrderTransactionReq {
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
     }
-    
-    
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+   
     
 }

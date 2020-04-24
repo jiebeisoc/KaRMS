@@ -71,7 +71,7 @@
                         <p:commandButton actionListener="#{foodItemManagedBean.doUpdateFoodItem}" update="formUpdateFoodItem" oncomplete="PF('dialogUpdateFoodItem').show()" icon="ui-icon-pencil" title="Update">
                             <f:attribute name="foodItemToUpdate" value="#{foodItem}" />
                         </p:commandButton>
-                        <p:commandButton icon="ui-icon-trash" actionListener="#{foodItemManagedBean.deleteFoodItem(event)}" update="formAllFoodItems:dataTableAllFoodItems formAllFoodItems:messages">
+                        <p:commandButton icon="ui-icon-trash" actionListener="#{foodItemManagedBean.deleteFoodItem}" update="formAllFoodItems:dataTableAllFoodItems formAllFoodItems:messages">
                             <f:attribute name="foodItemToDelete" value="#{foodItem}" />
                             <p:confirm header="Confirmation" message="Are you sure you want to delete #{foodItem.name} (SKU Code: #{foodItem.skuCode})?" icon="ui-icon-alert" />
                         </p:commandButton>
@@ -160,7 +160,7 @@
                                 <p:outputLabel for="Rating" value=" Rating " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:rating id="Rating" value="#{foodItemManagedBean.newFoodItem.productRating}" stars="5" required="true" requiredMessage="Food Item Rating is required" cancel="false">
+                                <p:rating id="Rating" value="#{foodItemManagedBean.newFoodItem.foodItemRating}" stars="5" required="true" requiredMessage="Food Item Rating is required" cancel="false">
                                     <f:validateLongRange minimum="1" maximum="5" />
                                 </p:rating>
                             </p:column>
@@ -289,7 +289,7 @@
                                 <p:outputLabel for="Rating" value=" Rating " />
                             </p:column>
                             <p:column>
-                                <p:rating id="Rating" value="#{foodItemManagedBean.selectedFoodItemToUpdate.productRating}" stars="5" required="true" requiredMessage="Rating is required" cancel="false">
+                                <p:rating id="Rating" value="#{foodItemManagedBean.selectedFoodItemToUpdate.foodItemRating}" stars="5" required="true" requiredMessage="Rating is required" cancel="false">
                                     <f:validateLongRange minimum="1" maximum="5" />
                                 </p:rating>
                             </p:column>

@@ -63,6 +63,8 @@ public class Outlet implements Serializable {
     
     @OneToOne (mappedBy = "outlet")
     private Employee employee;
+    
+ 
 
     public Outlet() {
         this.isDisabled = Boolean.FALSE;

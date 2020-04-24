@@ -49,7 +49,7 @@ public class Promotion implements Serializable {
     private String description;
 
     public Promotion() {
-        this.enabled = Boolean.FALSE;
+        this.enabled = Boolean.TRUE;
     }
 
     public Promotion(String promotionName, double discountRate, Date validFrom, Date validUntil, String description) {
