@@ -21,7 +21,7 @@ public interface SongSessionBeanLocal {
     
     public List<Song> viewAllSongs();
 
-    public List<Song> viewSongByCategory(List<SongCategory> category);
+    public List<Song> viewSongByCategory(Long categoryId);
 
     public void addSongToQueue(Long songId, Long reservationId);
 
@@ -29,7 +29,8 @@ public interface SongSessionBeanLocal {
 
     public List<Song> viewSongBySongTitle(String songTitle);
 
+    public Long createNewSong(Song newSong, List<Long> songCategoryIds);
 
-
+    public List<String> retrieveSingers();
 
 }

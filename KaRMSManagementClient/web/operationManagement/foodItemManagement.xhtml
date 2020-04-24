@@ -160,7 +160,7 @@
                                 <p:outputLabel for="Rating" value=" Rating " style="font-weight: bold;" />
                             </p:column>
                             <p:column>
-                                <p:rating id="Rating" value="#{foodItemManagedBean.newFoodItem.productRating}" stars="5" required="true" requiredMessage="Food Item Rating is required" cancel="false">
+                                <p:rating id="Rating" value="#{foodItemManagedBean.newFoodItem.foodItemRating}" stars="5" required="true" requiredMessage="Food Item Rating is required" cancel="false">
                                     <f:validateLongRange minimum="1" maximum="5" />
                                 </p:rating>
                             </p:column>
@@ -289,7 +289,7 @@
                                 <p:outputLabel for="Rating" value=" Rating " />
                             </p:column>
                             <p:column>
-                                <p:rating id="Rating" value="#{foodItemManagedBean.selectedFoodItemToUpdate.productRating}" stars="5" required="true" requiredMessage="Rating is required" cancel="false">
+                                <p:rating id="Rating" value="#{foodItemManagedBean.selectedFoodItemToUpdate.foodItemRating}" stars="5" required="true" requiredMessage="Rating is required" cancel="false">
                                     <f:validateLongRange minimum="1" maximum="5" />
                                 </p:rating>
                             </p:column>

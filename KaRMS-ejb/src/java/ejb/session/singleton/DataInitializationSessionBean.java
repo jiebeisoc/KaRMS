@@ -12,6 +12,7 @@ import ejb.session.stateless.OutletSessionBeanLocal;
 import ejb.session.stateless.RoomRateSessionBeanLocal;
 import ejb.session.stateless.RoomSessionBeanLocal;
 import ejb.session.stateless.RoomTypeSessionBeanLocal;
+import ejb.session.stateless.SongSessionBeanLocal;
 import entity.Employee;
 import entity.FoodItem;
 import entity.FoodItemCategory;
@@ -19,6 +20,8 @@ import entity.Outlet;
 import entity.Room;
 import entity.RoomRate;
 import entity.RoomType;
+import entity.Song;
+import entity.SongCategory;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -52,6 +55,10 @@ import util.exception.InputDataValidationException;
 @Startup
 public class DataInitializationSessionBean {
 
+
+    @EJB(name = "SongSessionBeanLocal")
+    private SongSessionBeanLocal songSessionBeanLocal;
+    
     @EJB(name = "FoodSessionBeanLocal")
     private FoodSessionBeanLocal foodSessionBeanLocal;
 
@@ -95,32 +102,27 @@ public class DataInitializationSessionBean {
     private void initializeData() {
         System.err.println("********Reach Initialization Data*******************");
         
+        // Add manager
+        employeeSessionBeanLocal.createNewEmployee(new Employee("manager", "password", AccessRightEnum.MANAGER));
+        
+        // Add outlets
         try {
             Date openingHour = timeFormat.parse("12:00");
             Date closingHour = timeFormat.parse("00:00");
             
-            outletSessionBeanLocal.createNewOutlet(new Outlet("AMK Hub", "Ang Mo Kio", "+65001234", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("Bedok Point", "Bedok", "+65001235", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("Causeway Point", "Woodlands", "+65001236", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("JCube", "Jurong East", "+65001237", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("Junction 8", "Bishan", "+65001238", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("Tampines Hub", "Tampines", "+65001239", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("Sembawang Shopping Centre", "Sembawang", "+65001240", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("Star Vista", "Buona Vista", "+65001241", openingHour, closingHour));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("AMK Hub", "Ang Mo Kio", "+65001234", openingHour, closingHour), new Employee("angmokio", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("Bedok Point", "Bedok", "+65001235", openingHour, closingHour), new Employee("bedok", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("Causeway Point", "Woodlands", "+65001236", openingHour, closingHour), new Employee("woodlands", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("JCube", "Jurong East", "+65001237", openingHour, closingHour), new Employee("jurongeast", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("Junction 8", "Bishan", "+65001238", openingHour, closingHour), new Employee("bishan", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("Tampines Hub", "Tampines", "+65001239", openingHour, closingHour), new Employee("tampines", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("Sembawang Shopping Centre", "Sembawang", "+65001240", openingHour, closingHour), new Employee("sembawang", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("Star Vista", "Buona Vista", "+65001241", openingHour, closingHour), new Employee("buonavista", "password", AccessRightEnum.CASHIER));
         } catch (ParseException ex) {
             System.out.println("Wrong Format");
-        }
+        }  
         
-        employeeSessionBeanLocal.createNewEmployee(new Employee("manager", "password", AccessRightEnum.MANAGER), null);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("angmokio", "password", AccessRightEnum.CASHIER), 1l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("bedok", "password", AccessRightEnum.CASHIER), 2l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("woodlands", "password", AccessRightEnum.CASHIER), 3l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("jurongeast", "password", AccessRightEnum.CASHIER), 4l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("bishan", "password", AccessRightEnum.CASHIER), 5l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("tampines", "password", AccessRightEnum.CASHIER), 6l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("sembawang", "password", AccessRightEnum.CASHIER), 7l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("buonavista", "password", AccessRightEnum.CASHIER), 8l);
-                    
+        // Add room rate
         try {
             Date nonPeakStart = timeFormat.parse("12:00");
             Date nonPeakEnd = timeFormat.parse("17:59");
@@ -149,6 +151,7 @@ public class DataInitializationSessionBean {
             System.out.println("Wrong Format");
         }
         
+        // Add room type
         List<Long> roomRateIds = new ArrayList<>();
         roomRateIds.add(1l);
         roomRateIds.add(2l);
@@ -173,6 +176,7 @@ public class DataInitializationSessionBean {
         
         roomTypeSessionBeanLocal.createNewRoomType(new RoomType("Large", 8, "Large"), roomRateIds);
     
+        // Add room
         roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 1l);
         roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 2l);
         roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 3l);
@@ -254,12 +258,22 @@ public class DataInitializationSessionBean {
         roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 7l);
         roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 8l);
         
+        em.flush();
         //Add FoodItem Categories
         try{
             FoodItemCategory foodItemCategory1 = new FoodItemCategory("Snacks","All snacks that you are craving");
             FoodItemCategory foodItemCategory2 = new FoodItemCategory("Potato Chips","All time favorites");
             FoodItemCategory foodItemCategory3 = new FoodItemCategory("Instant Noodle","Kids Favorites");
+            FoodItemCategory foodItemCategory4 = new FoodItemCategory("Main Course","Our experienced chef provides authentic dishes");
             
+            em.persist(foodItemCategory1);
+            em.persist(foodItemCategory2);
+            em.persist(foodItemCategory3);
+            em.persist(foodItemCategory4);
+            
+            
+            
+           
             List<FoodItemCategory> subCategoryEntities = new LinkedList<FoodItemCategory>();
             subCategoryEntities.add(foodItemCategory2);
             subCategoryEntities.add(foodItemCategory3);
@@ -269,12 +283,8 @@ public class DataInitializationSessionBean {
             foodItemCategory3.setParentCategoryEntity(foodItemCategory1);
             
             
-            FoodItemCategory foodItemCategory4 = new FoodItemCategory("Main Course","Our experienced chef provides authentic dishes");
             
-            em.persist(foodItemCategory1);
-            em.persist(foodItemCategory2);
-            em.persist(foodItemCategory3);
-            em.persist(foodItemCategory4);
+         
             em.flush();
             
             FoodItem a = new FoodItem("FOOD001", "FoodItemA", "description for food item A", 10 ,BigDecimal.valueOf(3.4), 2);
@@ -287,21 +297,21 @@ public class DataInitializationSessionBean {
             FoodItem h = new FoodItem("FOOD008", "FoodItemhz", "description for food item H", 30 ,BigDecimal.valueOf(4.4), 4);
             
             
-            foodSessionBeanLocal.createNewFoodItem(a, 2L);
-            foodSessionBeanLocal.createNewFoodItem(b, 2L);
+            foodSessionBeanLocal.createNewFoodItem(a, 4L);
+            foodSessionBeanLocal.createNewFoodItem(b, 3L);
             foodSessionBeanLocal.createNewFoodItem(c, 3L);
             foodSessionBeanLocal.createNewFoodItem(d, 4L);
             foodSessionBeanLocal.createNewFoodItem(e, 2L);
             foodSessionBeanLocal.createNewFoodItem(f, 3L);
             foodSessionBeanLocal.createNewFoodItem(g, 2L);
+<<<<<<< HEAD
             foodSessionBeanLocal.createNewFoodItem(h, 4L);
             
             
-            
-            
-            
-            
-            
+             em.flush();
+=======
+            foodSessionBeanLocal.createNewFoodItem(h, 4L);                   
+>>>>>>> 50687a6b469fba40ce957ed71f8dfc036ca9028c
             
         } catch (InputDataValidationException ex) {
             Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -309,9 +319,105 @@ public class DataInitializationSessionBean {
             Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
         } catch (CategoryNotFoundException ex) {
             Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }         
         
+        SongCategory songCategory1 = new SongCategory("Male Singer");       
+        SongCategory songCategory2 = new SongCategory("Female Singer");
+        SongCategory songCategory3 = new SongCategory("Chinese Song");
+        SongCategory songCategory4 = new SongCategory("English Song");
+        SongCategory songCategory5 = new SongCategory("Rock Music");
+        SongCategory songCategory6 = new SongCategory("Jazz Music");
+        SongCategory songCategory7 = new SongCategory("Pop Music");
+        SongCategory songCategory8 = new SongCategory("Country Music");
+               
+        em.persist(songCategory1);
+        em.flush();
+        em.persist(songCategory2);
+        em.flush();
+        em.persist(songCategory3);
+        em.flush();
+        em.persist(songCategory4);
+        em.flush();
+        em.persist(songCategory5);
+        em.flush();
+        em.persist(songCategory6);
+        em.flush();
+        em.persist(songCategory7);
+        em.flush();
+        em.persist(songCategory8);
+        em.flush();
         
+        List<Long> songCategoryIds = new ArrayList<>();
+        songCategoryIds.add(1l);
+        songCategoryIds.add(4l);
+        songCategoryIds.add(7l);
+        songSessionBeanLocal.createNewSong(new Song("Perfect", "Ed Sheeran"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Shape of You", "Ed Sheeran"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Thinking out Loud", "Ed Sheeran"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Just the Way You Are", "Bruno Mars"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Marry Me", "Bruno Mars"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Count on Me", "Bruno Mars"), songCategoryIds);
+        
+        songCategoryIds.clear();
+        songCategoryIds.add(2l);
+        songCategoryIds.add(4l);
+        songCategoryIds.add(7l);
+        songSessionBeanLocal.createNewSong(new Song("Love Story", "Taylor Swift"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Blank Space", "Taylor Swift"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Shake it Off", "Taylor Swift"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Shallow", "Lady Gaga"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Bad Romance", "Lady Gaga"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Poker Face", "Lady Gaga"), songCategoryIds);
+        
+        songCategoryIds.clear();
+        songCategoryIds.add(1l);
+        songCategoryIds.add(3l);
+        songCategoryIds.add(7l);
+        songSessionBeanLocal.createNewSong(new Song("Love Confession", "Jay Chou"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("All the Way North", "Jay Chou"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Listen to Mother's Words", "Jay Chou"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Those Were The Days", "JJ Lin"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Practice Love", "JJ Lin"), songCategoryIds);   
+        songSessionBeanLocal.createNewSong(new Song("If Only", "JJ Lin"), songCategoryIds);
+        
+        songCategoryIds.clear();
+        songCategoryIds.add(2l);
+        songCategoryIds.add(3l);
+        songCategoryIds.add(7l);
+        songSessionBeanLocal.createNewSong(new Song("A Little Happiness", "Hebe Tien"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Angel Devil", "Hebe Tien"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Leave Me Alone", "Hebe Tien"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Miss Similar", "G.E.M."), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Long After", "G.E.M."), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Away", "G.E.M."), songCategoryIds);
+        
+        songCategoryIds.clear();
+        songCategoryIds.add(1l);
+        songCategoryIds.add(4l);
+        songCategoryIds.add(5l);
+        songSessionBeanLocal.createNewSong(new Song("Stairway to Heaven", "Led Zepplin"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Livin' On A Prayer", "Bon Jovi"), songCategoryIds);
+        
+        songCategoryIds.clear();
+        songCategoryIds.add(2l);
+        songCategoryIds.add(4l);
+        songCategoryIds.add(5l);
+        songSessionBeanLocal.createNewSong(new Song("Miss Independent", "Kelly Clarkson"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Lady Marmalade", "Christina Aguilera"), songCategoryIds);
+        
+        songCategoryIds.clear();
+        songCategoryIds.add(1l);
+        songCategoryIds.add(4l);
+        songCategoryIds.add(6l);
+        songSessionBeanLocal.createNewSong(new Song("So What", "Miles Davis"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("All Blues", "Miles Davis"), songCategoryIds);
+        
+        songCategoryIds.clear();
+        songCategoryIds.add(1l);
+        songCategoryIds.add(4l);
+        songCategoryIds.add(8l);
+        songSessionBeanLocal.createNewSong(new Song("Body Like a Back Road", "Sam Hunt"), songCategoryIds);
+        songSessionBeanLocal.createNewSong(new Song("Die a Happy Man", "Thomas Rhett"), songCategoryIds);
         
     }
 }

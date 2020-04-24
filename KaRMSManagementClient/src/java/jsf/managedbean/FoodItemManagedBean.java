@@ -35,15 +35,7 @@ public class FoodItemManagedBean implements Serializable
 
     @EJB
     private FoodSessionBeanLocal foodSessionBeanLocal;
-    
-  
-    
-    
-  
-    @Inject
-    private ViewFoodItemManagedBean viewFoodItemManagedBean;
-    
-    
+     
     private List<FoodItem> foodItems;
     private List<FoodItem> filteredFoodItems;
     
@@ -53,6 +45,11 @@ public class FoodItemManagedBean implements Serializable
     
     private FoodItem selectedFoodItemToUpdate;
     private Long categoryIdUpdate;
+    
+  
+    
+    @Inject
+    private ViewFoodItemManagedBean viewFoodItemManagedBean;
 
     
     
@@ -77,9 +74,9 @@ public class FoodItemManagedBean implements Serializable
     
     public void viewFoodItemDetails(ActionEvent event) throws IOException
     {
-        Long productIdToView = (Long)event.getComponent().getAttributes().get("productId");
-        FacesContext.getCurrentInstance().getExternalContext().getFlash().put("productIdToView", productIdToView);
-        FacesContext.getCurrentInstance().getExternalContext().redirect("viewProductDetails.xhtml");
+        FoodItem selectedFoodItemToView = (FoodItem)event.getComponent().getAttributes().get("selectedFoodItemToView");
+        FacesContext.getCurrentInstance().getExternalContext().getFlash().put("selectedFoodItemToView", selectedFoodItemToView);
+        FacesContext.getCurrentInstance().getExternalContext().redirect("viewFoodItemDetailsFoodOrder.xhtml");
     }
     
     
@@ -251,9 +248,17 @@ public class FoodItemManagedBean implements Serializable
         return categoryEntities;
     }
 
+  
+
     public ViewFoodItemManagedBean getViewFoodItemManagedBean() {
         return viewFoodItemManagedBean;
     }
+
+    public void setViewFoodItemManagedBean(ViewFoodItemManagedBean viewFoodItemManagedBean) {
+        this.viewFoodItemManagedBean = viewFoodItemManagedBean;
+    }
+
+  
 
 
  
