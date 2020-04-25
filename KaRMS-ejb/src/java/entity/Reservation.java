@@ -50,6 +50,7 @@ public class Reservation implements Serializable {
     @Column(nullable = false)
     private int numOfPeople;
     private String note;
+    private int pointsRedeemed;
     @Column(nullable = false, precision = 11, scale = 2)
     @NotNull
     @DecimalMin("0.00")
@@ -220,7 +221,13 @@ public class Reservation implements Serializable {
         this.customer = customer;
     }
 
+    public int getPointsRedeemed() {
+        return pointsRedeemed;
+    }
 
+    public void setPointsRedeemed(int pointsRedeemed) {
+        this.pointsRedeemed = pointsRedeemed;
+    }
 
     public BigDecimal getTotalPrice() {
         return totalPrice;

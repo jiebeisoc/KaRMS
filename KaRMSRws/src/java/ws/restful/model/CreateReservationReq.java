@@ -18,18 +18,20 @@ public class CreateReservationReq {
     private Long roomId;
     private Long outletId;
     private Long promotionId;
+    private String status;
     private Reservation newReservation;
 
     public CreateReservationReq() {
     }
 
-    public CreateReservationReq(String username, String password, Long roomId, Long outletId, Long promotionId) {
+    public CreateReservationReq(String username, String password, Long roomId, Long outletId, Long promotionId, int pointsRedeemed, String status) {
         
         this.username = username;
         this.password = password;
         this.roomId = roomId;
         this.outletId = outletId;
         this.promotionId = promotionId;
+        this.status = status;
     }
 
     public String getUsername() {
@@ -70,6 +72,14 @@ public class CreateReservationReq {
 
     public void setPromotionId(Long promotionId) {
         this.promotionId = promotionId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Reservation getNewReservation() {

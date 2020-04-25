@@ -2,14 +2,10 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-<<<<<<< HEAD
-        <group/>
-=======
         <group>
-            <file>file:/Users/longluqian/Desktop/Notes/2019sem2/IS3106/Project/KaRMS/KaRMSRws/src/java/ws/restful/model/CreateFoodOrderTransactionReq.java</file>
-            <file>file:/Users/longluqian/Desktop/Notes/2019sem2/IS3106/Project/KaRMS/KaRMSRws/nbproject/build-impl.xml</file>
-            <file>file:/Users/longluqian/Desktop/Notes/2019sem2/IS3106/Project/KaRMS/KaRMSRws/src/java/ws/restful/resources/ApplicationConfig.java</file>
+            <file>file:/Users/zihua/Desktop/NUS/Files/2.2/IS3106/Project/KaRMS/KaRMSRws/src/java/ws/restful/resources/ReservationResource.java</file>
+            <file>file:/Users/zihua/Desktop/NUS/Files/2.2/IS3106/Project/KaRMS/KaRMSRws/src/java/ws/restful/resources/PromotionResource.java</file>
+            <file>file:/Users/zihua/Desktop/NUS/Files/2.2/IS3106/Project/KaRMS/KaRMSRws/src/java/ws/restful/resources/RoomResource.java</file>
         </group>
->>>>>>> master
     </open-files>
 </project-private>

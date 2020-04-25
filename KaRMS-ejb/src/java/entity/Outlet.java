@@ -120,10 +120,6 @@ public class Outlet implements Serializable {
     public void setOutletName(String outletName) {
         this.outletName = outletName;
     }
-    
-    public String getOutletNameTrim() {
-        return outletName.replaceAll("\\s","");
-    }
 
     public String getOutletAddress() {
         return outletAddress;

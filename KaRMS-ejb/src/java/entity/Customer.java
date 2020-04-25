@@ -18,7 +18,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import util.security.CryptographicHelper;
 
 /**
@@ -57,7 +56,7 @@ public class Customer implements Serializable {
     private int points;
     private String salt;
     
-    @OneToMany
+    @OneToMany(mappedBy = "customer")
     private List<Reservation> reservations;
     //Added by Luqian
     @OneToMany(mappedBy = "customerEntity")

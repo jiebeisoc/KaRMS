@@ -69,6 +69,17 @@ public class PromotionSessionBean implements PromotionSessionBeanLocal {
     }
     
     @Override
+    public List<Promotion> retrievePromotionsByTime(Long time) {
+        
+        Date date = new Date(time.longValue());
+        
+        Query query = em.createQuery("SELECT p FROM Promotion p WHERE p.validFrom <= :inDate AND p.validUntil >= :inDate");
+        query.setParameter("inDate", date);
+        
+        return query.getResultList();
+    }
+    
+    @Override
     public void updatePromotion(Promotion promotionToUpdate) {
         em.merge(promotionToUpdate);
         em.flush();

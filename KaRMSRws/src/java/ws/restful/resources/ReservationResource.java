@@ -10,6 +10,8 @@ import ejb.session.stateless.ReservationSessionBeanLocal;
 import ejb.session.stateless.RoomTypeSessionBeanLocal;
 import entity.Customer;
 import entity.Reservation;
+import entity.Song;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,6 +23,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -31,6 +34,7 @@ import javax.ws.rs.core.UriInfo;
 import util.exception.CustomerNotFoundException;
 import util.exception.DeleteReservationException;
 import util.exception.InvalidLoginCredentialException;
+import ws.restful.model.CalculateTotalPriceRsp;
 import ws.restful.model.CreateReservationReq;
 import ws.restful.model.CreateReservationRsp;
 import ws.restful.model.ErrorRsp;
@@ -95,20 +99,32 @@ public class ReservationResource {
 
             for (Reservation r : reservations) {
                 
-                r.setCustomer(null);            
-                r.setRoom(null);
-                r.setOutlet(null);
-            
+                r.getCustomer().getFoodOrderTransactionEntities().clear();
+                r.getCustomer().getReservations().clear();
+                
+                r.getRoom().getReservations().clear();
+                r.getRoom().setOutlet(null);
+                r.getRoom().getRoomType().getRooms().clear();
+                r.getRoom().getRoomType().getRoomRates().clear();
+                
+                r.getOutlet().getRooms().clear();
+                r.getOutlet().getReservations().clear();
+                r.getOutlet().getReviews().clear();
+                r.getOutlet().setEmployee(null);
+                
                 if (r.getReview() != null) {
+                    r.getReview().setReservation(null);
+                    r.getReview().setOutlet(null);
+                } else {
                     r.setReview(null);
                 }
 
                 if (!r.getSongQueue().isEmpty()) {
-                    r.getSongQueue().clear();
-                }
-
-                if (r.getPromotion() != null) {
-                    r.setPromotion(null);
+                    for (Song song: r.getSongQueue()) {
+                        song.getSongCategories().clear();
+                    }
+                } else {
+                    r.setSongQueue(null);
                 }
                 
                 System.out.println(r.getReservationId());
@@ -143,20 +159,32 @@ public class ReservationResource {
             
             for (Reservation r : reservations) {
                 
-                r.setCustomer(null);            
-                r.setRoom(null);
-                r.setOutlet(null);
-            
+                r.getCustomer().getFoodOrderTransactionEntities().clear();
+                r.getCustomer().getReservations().clear(); 
+                
+                r.getRoom().getReservations().clear();
+                r.getRoom().setOutlet(null);
+                r.getRoom().getRoomType().getRooms().clear();
+                r.getRoom().getRoomType().getRoomRates().clear();
+                
+                r.getOutlet().getRooms().clear();
+                r.getOutlet().getReservations().clear();
+                r.getOutlet().getReviews().clear();
+                r.getOutlet().setEmployee(null);
+                
                 if (r.getReview() != null) {
+                    r.getReview().setReservation(null);
+                    r.getReview().setOutlet(null);
+                } else {
                     r.setReview(null);
                 }
 
                 if (!r.getSongQueue().isEmpty()) {
-                    r.getSongQueue().clear();
-                }
-
-                if (r.getPromotion() != null) {
-                    r.setPromotion(null);
+                    for (Song song: r.getSongQueue()) {
+                        song.getSongCategories().clear();
+                    }
+                } else {
+                    r.setSongQueue(null);
                 }
                 
                 System.out.println(r.getReservationId());
@@ -184,21 +212,34 @@ public class ReservationResource {
             
             for (Reservation r : reservations) {
                 
-                r.setCustomer(null);            
-                r.setRoom(null);
-                r.setOutlet(null);
-            
+                r.getCustomer().getFoodOrderTransactionEntities().clear();
+                r.getCustomer().getReservations().clear();
+                
+                r.getRoom().getReservations().clear();
+                r.getRoom().setOutlet(null);
+                r.getRoom().getRoomType().getRooms().clear();
+                r.getRoom().getRoomType().getRoomRates().clear();
+                
+                r.getOutlet().getRooms().clear();
+                r.getOutlet().getReservations().clear();
+                r.getOutlet().getReviews().clear();
+                r.getOutlet().setEmployee(null);
+                
                 if (r.getReview() != null) {
+                    r.getReview().setReservation(null);
+                    r.getReview().setOutlet(null);
+                } else {
                     r.setReview(null);
                 }
 
                 if (!r.getSongQueue().isEmpty()) {
-                    r.getSongQueue().clear();
+                    for (Song song: r.getSongQueue()) {
+                        song.getSongCategories().clear();
+                    }
+                } else {
+                    r.setSongQueue(null);
                 }
-
-                if (r.getPromotion() != null) {
-                    r.setPromotion(null);
-                }
+                
             }
             
             return Response.status(Status.OK).entity(new RetrieveReservationListRsp(reservations)).build();
@@ -227,21 +268,34 @@ public class ReservationResource {
             
             for (Reservation r : reservations) {
                 
-                r.setCustomer(null);            
-                r.setRoom(null);
-                r.setOutlet(null);
-            
+                r.getCustomer().getFoodOrderTransactionEntities().clear();
+                r.getCustomer().getReservations().clear();
+                
+                r.getRoom().getReservations().clear();
+                r.getRoom().setOutlet(null);
+                r.getRoom().getRoomType().getRooms().clear();
+                r.getRoom().getRoomType().getRoomRates().clear();
+                
+                r.getOutlet().getRooms().clear();
+                r.getOutlet().getReservations().clear();
+                r.getOutlet().getReviews().clear();
+                r.getOutlet().setEmployee(null);
+                
                 if (r.getReview() != null) {
+                    r.getReview().setReservation(null);
+                    r.getReview().setOutlet(null);
+                } else {
                     r.setReview(null);
                 }
 
                 if (!r.getSongQueue().isEmpty()) {
-                    r.getSongQueue().clear();
+                    for (Song song: r.getSongQueue()) {
+                        song.getSongCategories().clear();
+                    }
+                } else {
+                    r.setSongQueue(null);
                 }
-
-                if (r.getPromotion() != null) {
-                    r.setPromotion(null);
-                }
+                
             }
             
             return Response.status(Status.OK).entity(new RetrieveReservationListRsp(reservations)).build();
@@ -261,27 +315,39 @@ public class ReservationResource {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public Response retrieveReservation(@QueryParam("username") String username, @QueryParam("password") String password,
-                                            @QueryParam("reservationId") Long reservationId) {
+                                            @PathParam("reservationId") Long reservationId) {
         try {
             Customer customer = customerSessionBeanLocal.customerLogin(username, password);
             System.out.println("********** ReservationResource.retrieveReservation()");
             
             Reservation reservation = reservationSessionBeanLocal.retrieveReservationById(reservationId);
             
-            reservation.setCustomer(null);            
-            reservation.setRoom(null);
-            reservation.setOutlet(null);
-            
+            reservation.getCustomer().getFoodOrderTransactionEntities().clear();
+            reservation.getCustomer().getReservations().clear();
+                
+            reservation.getRoom().getReservations().clear();
+            reservation.getRoom().setOutlet(null);
+            reservation.getRoom().getRoomType().getRooms().clear();
+            reservation.getRoom().getRoomType().getRoomRates().clear();
+
+            reservation.getOutlet().getRooms().clear();
+            reservation.getOutlet().getReservations().clear();
+            reservation.getOutlet().getReviews().clear();
+            reservation.getOutlet().setEmployee(null);
+
             if (reservation.getReview() != null) {
+                reservation.getReview().setReservation(null);
+                reservation.getReview().setOutlet(null);
+            } else {
                 reservation.setReview(null);
             }
-            
+
             if (!reservation.getSongQueue().isEmpty()) {
-                reservation.getSongQueue().clear();
-            }
-            
-            if (reservation.getPromotion() != null) {
-                reservation.setPromotion(null);
+                for (Song song: reservation.getSongQueue()) {
+                    song.getSongCategories().clear();
+                }
+            } else {
+                reservation.setSongQueue(null);
             }
             
             return Response.status(Status.OK).entity(new RetrieveReservationRsp(reservation)).build();
@@ -291,11 +357,30 @@ public class ReservationResource {
             return Response.status(Status.UNAUTHORIZED).entity(errorRsp).build();
    
         } catch (Exception ex) {
-                ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }  
     }
-
+    
+    @Path("calculateTotalPrice")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response calculateTotalPrice(@QueryParam("time") Long time, @QueryParam("duration") int duration,
+                                            @QueryParam("roomTypeId") Long roomTypeId, @QueryParam("promotionId") Long promotionId) {
+        try {
+            System.out.println("********** ReservationResource.calculateTotalPrice()");
+            
+            BigDecimal totalPrice = reservationSessionBeanLocal.calculateTotalPrice(time, duration, roomTypeId, promotionId);
+            
+            return Response.status(Status.OK).entity(new CalculateTotalPriceRsp(totalPrice)).build();
+            
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        } 
+    }
+    
     /**
      * PUT method for updating or creating an instance of ReservationResource
      * @param content representation for the resource
@@ -311,7 +396,8 @@ public class ReservationResource {
                 System.out.println("******** Reservation created");
                 
                 Long reservationId = reservationSessionBeanLocal.createNewReservation(createReservationReq.getNewReservation(), customer.getCustomerId(), 
-                        createReservationReq.getRoomId(), createReservationReq.getOutletId(), createReservationReq.getPromotionId());
+                        createReservationReq.getRoomId(), createReservationReq.getOutletId(), createReservationReq.getPromotionId(), 
+                        createReservationReq.getStatus());
                 
                 CreateReservationRsp createReservationRsp = new CreateReservationRsp(reservationId);
                 return Response.status(Status.OK).entity(createReservationRsp).build();
@@ -337,6 +423,7 @@ public class ReservationResource {
         
     }
     
+    @Path("updateReservation")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -347,9 +434,10 @@ public class ReservationResource {
             try {
                 Customer customer = customerSessionBeanLocal.customerLogin(updateReservationReq.getUsername(), updateReservationReq.getPassword());
                 System.out.println("********** ReservationResource.updateReservation()");
-                
+
                 reservationSessionBeanLocal.updateReservation(updateReservationReq.getReservation(), updateReservationReq.getRoomId(), 
                         updateReservationReq.getOutletId(), updateReservationReq.getPromotionId());
+                
                 return Response.status(Response.Status.OK).build();
             
             } catch (InvalidLoginCredentialException ex) {
@@ -363,7 +451,7 @@ public class ReservationResource {
             }
             
         } else {
-            ErrorRsp errorRsp = new ErrorRsp("Invalid create new reservation request");
+            ErrorRsp errorRsp = new ErrorRsp("Invalid update reservation request");
             return Response.status(Status.BAD_REQUEST).entity(errorRsp).build();
         }
     }
@@ -373,7 +461,7 @@ public class ReservationResource {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteReservation(@QueryParam("username") String username, @QueryParam("password") String password, 
-                                        @QueryParam("reservationId") Long reservationId) {
+                                        @PathParam("reservationId") Long reservationId) {
         try {
             Customer customer = customerSessionBeanLocal.customerLogin(username, password);
             System.out.println("********** ReservationResource.deleteReservation");

@@ -294,9 +294,9 @@ public class DataInitializationSessionBean {
         roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 8l);
         
         //Add Promotions
-        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 1", 0.1, new GregorianCalendar(2020, Calendar.APRIL, 1).getTime(), new GregorianCalendar(2020, Calendar.APRIL, 30).getTime(), "Promotion 1"));
-        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 2", 0.2, new GregorianCalendar(2020, Calendar.APRIL, 15).getTime(), new GregorianCalendar(2020, Calendar.MAY, 15).getTime(), "Promotion 2"));
-        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 3", 0.3, new GregorianCalendar(2020, Calendar.MAY, 20).getTime(), new GregorianCalendar(2020, Calendar.JUNE, 20).getTime(), "Promotion 3"));
+        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 1", 0.1, new GregorianCalendar(2020, Calendar.APRIL, 1, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.APRIL, 30, 23, 59).getTime(), "Promotion 1"));
+        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 2", 0.2, new GregorianCalendar(2020, Calendar.APRIL, 15, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.MAY, 15, 23, 59).getTime(), "Promotion 2"));
+        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 3", 0.3, new GregorianCalendar(2020, Calendar.MAY, 20, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.JUNE, 20, 23, 59).getTime(), "Promotion 3"));
         
         //Add FoodItem Categories
         try{
@@ -446,11 +446,13 @@ public class DataInitializationSessionBean {
         songSessionBeanLocal.createNewSong(new Song("Body Like a Back Road", "Sam Hunt"), songCategoryIds);
         songSessionBeanLocal.createNewSong(new Song("Die a Happy Man", "Thomas Rhett"), songCategoryIds);
         
+        //Add temporary dummy reservations
         try {
             Reservation newReservation = new Reservation(new GregorianCalendar(2020, Calendar.APRIL, 2, 15, 0).getTime(), 1, 3, ReservationStatus.COMPLETED);
             newReservation.setTotalPrice(BigDecimal.valueOf(7.2));
             newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.APRIL, 1, 12, 34).getTime());
-            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 1l, 1l, 1l);
+            newReservation.setWalkInPhoneNo("90006789");
+            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 1l, 1l);
             
             newReservation = new Reservation(new GregorianCalendar(2020, Calendar.APRIL, 13, 18, 0).getTime(), 2, 6, ReservationStatus.COMPLETED);
             newReservation.setTotalPrice(BigDecimal.valueOf(28.8));
@@ -461,23 +463,23 @@ public class DataInitializationSessionBean {
             newReservation = new Reservation(new GregorianCalendar(2020, Calendar.APRIL, 25, 20, 0).getTime(), 3, 8, ReservationStatus.PAID);
             newReservation.setTotalPrice(BigDecimal.valueOf(48));
             newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.APRIL, 18, 13, 32).getTime());
-            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 51l, 3l, 2l);
+            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 51l, 3l, 2l, "PAID");
             
             newReservation = new Reservation(new GregorianCalendar(2020, Calendar.MAY, 1, 13, 0).getTime(), 1, 3, ReservationStatus.PAID);
             newReservation.setTotalPrice(BigDecimal.valueOf(8));
             newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.APRIL, 28, 16, 16).getTime());
-            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 4l, 4l, 2l);
+            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 4l, 4l, 2l, "PAID");
             
             newReservation = new Reservation(new GregorianCalendar(2020, Calendar.MAY, 18, 18, 0).getTime(), 2, 2, ReservationStatus.NOTPAID);
             newReservation.setTotalPrice(BigDecimal.valueOf(28));
             newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.MAY, 18, 17, 45).getTime());
-            newReservation.setWalkInPhoneNo("90006789");
+            newReservation.setWalkInPhoneNo("91233456");
             reservationSessionBeanLocal.createNewReservation(newReservation, 5l, 5l, null);
             
             newReservation = new Reservation(new GregorianCalendar(2020, Calendar.JUNE, 1, 22, 0).getTime(), 2, 5, ReservationStatus.NOTPAID);
             newReservation.setTotalPrice(BigDecimal.valueOf(22.4));
             newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.MAY, 15, 21, 51).getTime());
-            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 27l, 3l, 3l);
+            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 27l, 3l, 3l, "NOTPAID");
             
         } catch (CustomerNotFoundException ex) {
             System.out.println(ex.getMessage());
