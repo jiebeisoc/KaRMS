@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -36,8 +38,10 @@ public class Promotion implements Serializable {
     @Column(nullable = false)
     private double discountRate;
     @Column(nullable = true)
+    @Temporal(TemporalType.DATE)
     private Date validFrom;
     @Column(nullable = true)
+    @Temporal(TemporalType.DATE)
     private Date validUntil;
     @NotNull
     @Column(nullable = false)
@@ -45,7 +49,7 @@ public class Promotion implements Serializable {
     private String description;
 
     public Promotion() {
-        this.enabled = Boolean.FALSE;
+        this.enabled = Boolean.TRUE;
     }
 
     public Promotion(String promotionName, double discountRate, Date validFrom, Date validUntil, String description) {

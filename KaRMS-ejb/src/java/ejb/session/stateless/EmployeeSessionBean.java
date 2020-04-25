@@ -44,6 +44,12 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
             throw new EmployeeNotFoundException("Employee username " + username + " does not exist!");
         }
     }
+    
+    public Employee retrieveEmployeeById(Long id) {
+        Employee employee = em.find(Employee.class, id);
+
+        return employee;
+    }
 
     @Override
     public Employee employeeLogin(String username, String password) throws InvalidLoginCredentialException {
@@ -67,14 +73,8 @@ public class EmployeeSessionBean implements EmployeeSessionBeanLocal {
     }
     
     @Override
-    public Long createNewEmployee(Employee newEmployee, Long outletId) {
+    public Long createNewEmployee(Employee newEmployee) {
         em.persist(newEmployee);
-        
-        if (outletId != null) {
-            Outlet outlet = outletSessionBeanLocal.retrieveOutletById(outletId);
-            newEmployee.setOutlet(outlet);
-            outlet.setEmployee(newEmployee);
-        }
         em.flush();
         
         return newEmployee.getEmployeeId();

@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../template/defaultTemplate.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp">
+
+    <ui:define name="content">
+        <h3>Checkout</h3>
+        
+        <h:form>
+                
+            <p>Total amount: $
+                <h:outputText value="#{foodOrderShoppingCartManagedBean.totalAmount}"/>&nbsp;
+            </p>             
+            
+            <p:panelGrid columns="2">
+                
+                <p:outputLabel style="font-weight: bold;" value="Card Number"/>
+                <p:inputText value="#{foodOrderShoppingCartManagedBean.creditCardNo}" placeholder="0000 0000 0000 0000"/>
+                
+                <p:outputLabel style="font-weight: bold;" value="Card Holder Name"/>
+                <p:inputText placeholder="Name on credit card"/>
+                
+                <p:outputLabel style="font-weight: bold;" value="Expiry date"/>
+                <p:inputText placeholder="MM/YY"/>
+                
+                <p:outputLabel style="font-weight: bold;" value="CVV"/>
+                <p:inputText />
+                
+            </p:panelGrid>
+            
+            <p:commandButton type="submit" value="Place Order" actionListener="#{foodOrderShoppingCartManagedBean.doCheckout}" onclick="return alert('Checkout successfully!');" >
+            </p:commandButton>
+                                  
+        </h:form>
+    </ui:define>
+
+</ui:composition>

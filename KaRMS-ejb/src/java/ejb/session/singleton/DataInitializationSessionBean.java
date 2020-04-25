@@ -124,38 +124,31 @@ public class DataInitializationSessionBean {
         
         // Add temporary dummy customer
         try {
-            customerSessionBeanLocal.createNewCustomer(new Customer(1l, "Customer", "90001234", "1234567812345678", "customer1", "password", new Date(), "customer1@gmail.com"));
+            customerSessionBeanLocal.createNewCustomer(new Customer("Customer", "90001234", "1234567812345678", "customer1", "password", new Date(), "customer1@gmail.com"));
         } catch (CustomerUsernameExistException | CreateCustomerException ex) {
             System.out.println(ex.getMessage());
         }
+
+        // Add manager
+        employeeSessionBeanLocal.createNewEmployee(new Employee("manager", "password", AccessRightEnum.MANAGER));
+        employeeSessionBeanLocal.createNewEmployee(new Employee("cashier", "password", AccessRightEnum.CASHIER));
 
         // Add outlets
         try {
             Date openingHour = timeFormat.parse("12:00");
             Date closingHour = timeFormat.parse("00:00");
             
-            outletSessionBeanLocal.createNewOutlet(new Outlet("AMK Hub", "Ang Mo Kio", "+65001234", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("Bedok Point", "Bedok", "+65001235", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("Causeway Point", "Woodlands", "+65001236", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("JCube", "Jurong East", "+65001237", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("Junction 8", "Bishan", "+65001238", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("Tampines Hub", "Tampines", "+65001239", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("Sembawang Shopping Centre", "Sembawang", "+65001240", openingHour, closingHour));
-            outletSessionBeanLocal.createNewOutlet(new Outlet("Star Vista", "Buona Vista", "+65001241", openingHour, closingHour));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("AMK Hub", "Ang Mo Kio", "+65001234", openingHour, closingHour), new Employee("angmokio", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("Bedok Point", "Bedok", "+65001235", openingHour, closingHour), new Employee("bedok", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("Causeway Point", "Woodlands", "+65001236", openingHour, closingHour), new Employee("woodlands", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("JCube", "Jurong East", "+65001237", openingHour, closingHour), new Employee("jurongeast", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("Junction 8", "Bishan", "+65001238", openingHour, closingHour), new Employee("bishan", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("Tampines Hub", "Tampines", "+65001239", openingHour, closingHour), new Employee("tampines", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("Sembawang Shopping Centre", "Sembawang", "+65001240", openingHour, closingHour), new Employee("sembawang", "password", AccessRightEnum.CASHIER));
+            outletSessionBeanLocal.createNewOutlet(new Outlet("Star Vista", "Buona Vista", "+65001241", openingHour, closingHour), new Employee("buonavista", "password", AccessRightEnum.CASHIER));
         } catch (ParseException ex) {
             System.out.println("Wrong Format");
-        }
-        
-        // Add employee for each outlet
-        employeeSessionBeanLocal.createNewEmployee(new Employee("manager", "password", AccessRightEnum.MANAGER), null);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("angmokio", "password", AccessRightEnum.CASHIER), 1l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("bedok", "password", AccessRightEnum.CASHIER), 2l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("woodlands", "password", AccessRightEnum.CASHIER), 3l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("jurongeast", "password", AccessRightEnum.CASHIER), 4l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("bishan", "password", AccessRightEnum.CASHIER), 5l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("tampines", "password", AccessRightEnum.CASHIER), 6l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("sembawang", "password", AccessRightEnum.CASHIER), 7l);
-        employeeSessionBeanLocal.createNewEmployee(new Employee("buonavista", "password", AccessRightEnum.CASHIER), 8l);
+        }  
         
         // Add room rate
         try {
@@ -292,18 +285,20 @@ public class DataInitializationSessionBean {
         roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 6l);
         roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 7l);
         roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 8l);
-        
-        //Add Promotions
-        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 1", 0.1, new GregorianCalendar(2020, Calendar.APRIL, 1, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.APRIL, 30, 23, 59).getTime(), "Promotion 1"));
-        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 2", 0.2, new GregorianCalendar(2020, Calendar.APRIL, 15, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.MAY, 15, 23, 59).getTime(), "Promotion 2"));
-        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 3", 0.3, new GregorianCalendar(2020, Calendar.MAY, 20, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.JUNE, 20, 23, 59).getTime(), "Promotion 3"));
-        
+
+        em.flush();
         //Add FoodItem Categories
         try{
             FoodItemCategory foodItemCategory1 = new FoodItemCategory("Snacks","All snacks that you are craving");
             FoodItemCategory foodItemCategory2 = new FoodItemCategory("Potato Chips","All time favorites");
             FoodItemCategory foodItemCategory3 = new FoodItemCategory("Instant Noodle","Kids Favorites");
+            FoodItemCategory foodItemCategory4 = new FoodItemCategory("Main Course","Our experienced chef provides authentic dishes");
             
+            em.persist(foodItemCategory1);
+            em.persist(foodItemCategory2);
+            em.persist(foodItemCategory3);
+            em.persist(foodItemCategory4);
+
             List<FoodItemCategory> subCategoryEntities = new LinkedList<FoodItemCategory>();
             subCategoryEntities.add(foodItemCategory2);
             subCategoryEntities.add(foodItemCategory3);
@@ -311,14 +306,7 @@ public class DataInitializationSessionBean {
             
             foodItemCategory2.setParentCategoryEntity(foodItemCategory1);
             foodItemCategory3.setParentCategoryEntity(foodItemCategory1);
-            
-            
-            FoodItemCategory foodItemCategory4 = new FoodItemCategory("Main Course","Our experienced chef provides authentic dishes");
-            
-            em.persist(foodItemCategory1);
-            em.persist(foodItemCategory2);
-            em.persist(foodItemCategory3);
-            em.persist(foodItemCategory4);
+
             em.flush();
             
             FoodItem a = new FoodItem("FOOD001", "FoodItemA", "description for food item A", 10 ,BigDecimal.valueOf(3.4), 2);
@@ -331,14 +319,17 @@ public class DataInitializationSessionBean {
             FoodItem h = new FoodItem("FOOD008", "FoodItemhz", "description for food item H", 30 ,BigDecimal.valueOf(4.4), 4);
             
             
-            foodSessionBeanLocal.createNewFoodItem(a, 2L);
-            foodSessionBeanLocal.createNewFoodItem(b, 2L);
+            foodSessionBeanLocal.createNewFoodItem(a, 4L);
+            foodSessionBeanLocal.createNewFoodItem(b, 3L);
             foodSessionBeanLocal.createNewFoodItem(c, 3L);
             foodSessionBeanLocal.createNewFoodItem(d, 4L);
             foodSessionBeanLocal.createNewFoodItem(e, 2L);
             foodSessionBeanLocal.createNewFoodItem(f, 3L);
             foodSessionBeanLocal.createNewFoodItem(g, 2L);
-            foodSessionBeanLocal.createNewFoodItem(h, 4L);                   
+            foodSessionBeanLocal.createNewFoodItem(h, 4L);
+            
+             em.flush();
+
             
         } catch (InputDataValidationException ex) {
             Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -445,6 +436,11 @@ public class DataInitializationSessionBean {
         songCategoryIds.add(8l);
         songSessionBeanLocal.createNewSong(new Song("Body Like a Back Road", "Sam Hunt"), songCategoryIds);
         songSessionBeanLocal.createNewSong(new Song("Die a Happy Man", "Thomas Rhett"), songCategoryIds);
+        
+        //Add Promotions
+        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 1", 0.1, new GregorianCalendar(2020, Calendar.APRIL, 1, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.APRIL, 30, 23, 59).getTime(), "Promotion 1"));
+        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 2", 0.2, new GregorianCalendar(2020, Calendar.APRIL, 15, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.MAY, 15, 23, 59).getTime(), "Promotion 2"));
+        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 3", 0.3, new GregorianCalendar(2020, Calendar.MAY, 20, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.JUNE, 20, 23, 59).getTime(), "Promotion 3"));
         
         //Add temporary dummy reservations
         try {

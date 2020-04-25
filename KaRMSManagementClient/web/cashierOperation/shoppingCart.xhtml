@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../template/defaultTemplate.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp">
+
+    <ui:define name="content">
+        <h3>Shopping Cart</h3>
+        <h:form id="formMain">
+            <p:dataTable id="dataTableMain" widgetVar="dataTableMain" value="#{foodOrderShoppingCartManagedBean.foodOrderTransactionLineItemList}" var="foodOrderTransactionLineItem">
+
+                <p:column headerText="Food Item Name">
+                    <h:outputText value="#{foodOrderTransactionLineItem.foodItem.name}"/>
+                </p:column>
+
+                <p:column headerText="Quantity">
+                    <h:outputText value="#{foodOrderTransactionLineItem.quantity}" />
+                    <p:commandButton actionListener="#{foodOrderShoppingCartManagedBean.doUpdateQuantity}" icon="ui-icon-pencil" title="Update"
+                                     style="margin-left: 20px" update="formUpdateQuantity" oncomplete="PF('dialogUpdateQuantity').show()">
+                        <f:attribute name="foodItemId" value="#{foodOrderTransactionLineItem.foodItem.foodItemId}"/>
+                    </p:commandButton>
+                   
+                    <p:commandButton icon="ui-icon-trash" actionListener="#{foodOrderShoppingCartManagedBean.deleteFoodTransactionLineItem}" update="formMain:dataTableMain formMain:totalAmount" immediate="true">
+                        <f:attribute name="foodItemId" value="#{foodOrderTransactionLineItem.foodItem.foodItemId}"/>
+                        <p:confirm header="Confirmation" message="Are you sure you wan to delete #{foodOrderTransactionLineItem.foodItem.name} ?" icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+
+                <p:column headerText="Subtotal">
+                    <h:outputText value="#{foodOrderTransactionLineItem.subTotal}"/>
+                </p:column>
+
+            </p:dataTable>
+
+            <center>
+                <p:outputLabel id="totalAmount">
+                    <b> Total amount: $</b>
+                    <h:outputText value="#{foodOrderShoppingCartManagedBean.totalAmount}" /> &nbsp;
+                    <p:commandButton actionListener="#{foodOrderShoppingCartManagedBean.checkoutPage}" title="Checkout"
+                    style="margin-right:20px; height:30px; m" styleClass="ui-priority-primary" />
+                </p:outputLabel>
+                
+            </center>  
+            
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+        
+        </h:form>
+        
+     
+        
+        <h:form id="formUpdateQuantity">
+                
+            <p:dialog id="dialogUpdateQuantity" widgetVar="dialogUpdateQuantity" header="Update Quantity" closable="true">
+                
+                <p:panelGrid>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Food Item: "/>
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{foodOrderShoppingCartManagedBean.selectedLineItemToUpdate.foodItem.name}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="Quantity: "/>
+                        </p:column>
+                        <p:column>
+                            <p:spinner id="quantity" value="#{foodOrderShoppingCartManagedBean.selectedLineItemToUpdate.quantity}" 
+                                       min="1" max="#{foodOrderShoppingCartManagedBean.selectedLineItemToUpdate.foodItem.quantityOnHand}" required="true" requiredMessage="Minimum quantity is 1" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:commandButton value="Update Quantity" update="@form formMain:dataTableMain formMain:totalAmount" actionListener="#{foodOrderShoppingCartManagedBean.updateQuantity}" oncomplete="PF('dialogUpdateQuantity').show();"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                
+            </p:dialog>
+            
+        </h:form>
+        
+    </ui:define>
+
+</ui:composition>

@@ -21,6 +21,8 @@ public interface EmployeeSessionBeanLocal {
 
     public Employee employeeLogin(String username, String password) throws InvalidLoginCredentialException;
 
-    public Long createNewEmployee(Employee newEmployee, Long outletId);
+    public Long createNewEmployee(Employee newEmployee);
+
+    public Employee retrieveEmployeeById(Long id);
     
 }

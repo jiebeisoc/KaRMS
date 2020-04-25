@@ -37,8 +37,8 @@
         
             <h:form id="logoutForm">
                 
-                <h:outputText value="You are login as #{sessionScope.currentEmployee.username}" />&nbsp;
-                <p:commandButton value="Logout" actionListener="#{employeeLoginManagedBean.logout}" />
+                <h:outputText value="You are login as #{sessionScope.currentEmployee.username} (Access Right: #{sessionScope.currentEmployee.accessRightEnum})" />&nbsp;
+                <p:commandButton value="Logout" actionListener="#{employeeLoginManagedBean.logout}" icon="fa fa-sign-out"/>
 
             </h:form>
             

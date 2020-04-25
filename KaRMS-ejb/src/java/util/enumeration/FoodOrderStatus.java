@@ -13,5 +13,5 @@ public enum FoodOrderStatus {
     BOOKED,
     CONFIRMED,
     SERVED,
-    UNSUCCESSFUL
+    CANCELLED
 }
