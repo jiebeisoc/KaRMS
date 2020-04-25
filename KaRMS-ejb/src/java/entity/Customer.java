@@ -59,7 +59,7 @@ public class Customer implements Serializable {
     private int points;
     private String salt;
     
-    @OneToMany
+    @OneToMany(mappedBy = "customer")
     private List<Reservation> reservations;
     //Added by Luqian
     @OneToMany(mappedBy = "customerEntity")

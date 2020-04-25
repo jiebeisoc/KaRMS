@@ -9,6 +9,8 @@ import entity.Room;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.ExceedClosingHoursException;
+import util.exception.NoAvailableRoomException;
 
 /**
  *
@@ -28,9 +30,11 @@ public interface RoomSessionBeanLocal {
     public void updateRoom(Room roomToUpdate);
 
     public void deleteRoom(Long roomId);
-
-    public boolean isRoomAvailable(Room room, Date startDateTime, Date endDateTime);
-
-    public List<Room> retrieveRoomByOutletAndRoomType(Long outletId, Long roomTypeId);
     
+    public boolean isRoomAvailable(Room room, Date startDateTime, Date endDateTime);
+    
+    public List<Room> retrieveAvailableRooms(Long time, int duration, Long outletId, Long roomTypeId) throws NoAvailableRoomException, ExceedClosingHoursException;
+    
+    public List<Room> retrieveRoomByOutletAndRoomType(Long outletId, Long roomTypeId);
+ 
 }

@@ -31,5 +31,7 @@ public interface PromotionSessionBeanLocal {
     public void deletePromotion(Long promotionId);
 
     public List<Promotion> retrievePromotionByDate(Date date);
+
+    public List<Promotion> retrievePromotionsByTime(Long time);
     
 }
