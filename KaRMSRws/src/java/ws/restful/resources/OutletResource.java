@@ -51,7 +51,7 @@ public class OutletResource {
     @Path("retrieveAllOutlets")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response retrieveAllProducts() {
+    public Response retrieveAllOutlets() {
         System.out.println("******** OutletResource.retrieveOutlets()");
         List<Outlet> outlets = outletSessionBeanLocal.retrieveAllOutlets();
         

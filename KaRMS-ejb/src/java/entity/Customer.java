@@ -32,10 +32,6 @@ public class Customer implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
 
-//    @Column(nullable = false, unique = true, length = 7)
-//    @NotNull
-    private Long memberNum;
-
     @NotNull
     @Column(nullable = false)
     private String name;
