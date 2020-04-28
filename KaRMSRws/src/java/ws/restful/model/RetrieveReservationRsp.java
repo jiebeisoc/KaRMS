@@ -6,29 +6,28 @@
 package ws.restful.model;
 
 import entity.Reservation;
-import java.util.List;
 
 /**
  *
- * @author chai
+ * @author zihua
  */
 public class RetrieveReservationRsp {
     
-    private List<Reservation> reservations;
+    private Reservation reservation;
 
     public RetrieveReservationRsp() {
     }
 
-    public RetrieveReservationRsp(List<Reservation> reservations) {
-        this.reservations = reservations;
+    public RetrieveReservationRsp(Reservation reservation) {
+        this.reservation = reservation;
     }
 
-    public List<Reservation> getReservations() {
-        return reservations;
+    public Reservation getReservation() {
+        return reservation;
     }
 
-    public void setReservations(List<Reservation> reservations) {
-        this.reservations = reservations;
+    public void setReservation(Reservation reservation) {
+        this.reservation = reservation;
     }
-
+    
 }

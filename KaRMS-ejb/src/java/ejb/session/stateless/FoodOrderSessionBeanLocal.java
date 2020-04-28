@@ -26,5 +26,11 @@ public interface FoodOrderSessionBeanLocal
     public void updateFoodOrderTransaction(FoodOrderTransaction foodOrderTransactionEntity);
 
     public void voidRefundFoodOrderTransaction(Long foodOrderTransactionId) throws FoodOrderTransactionNotFoundException, FoodOrderTransactionAlreadyVoidedRefundedException;
+
+    public List<FoodOrderTransaction> retrieveAllFoodOrderTransactionsByOutletId(Long outletId);
+
+    public void confirmFoodOrderTransaction(Long foodOrderTransactionId) throws FoodOrderTransactionNotFoundException;
+
+    public void servedFoodOrder(Long foodOrderTransactionId) throws FoodOrderTransactionNotFoundException;
    
 }

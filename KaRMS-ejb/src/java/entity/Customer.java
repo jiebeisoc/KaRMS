@@ -31,6 +31,11 @@ public class Customer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
+
+//    @Column(nullable = false, unique = true, length = 7)
+//    @NotNull
+    private Long memberNum;
+
     @NotNull
     @Column(nullable = false)
     private String name;
@@ -54,7 +59,7 @@ public class Customer implements Serializable {
     private int points;
     private String salt;
     
-    @OneToMany
+    @OneToMany(mappedBy = "customer")
     private List<Reservation> reservations;
     //Added by Luqian
     @OneToMany(mappedBy = "customerEntity")

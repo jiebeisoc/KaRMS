@@ -9,6 +9,7 @@ import entity.Outlet;
 import entity.Reservation;
 import entity.Room;
 import entity.RoomType;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,8 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.ExceedClosingHoursException;
+import util.exception.NoAvailableRoomException;
 
 /**
  *
@@ -73,6 +76,7 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
         }
     }
     
+    @Override
     public List<Room> retrieveRoomByOutletAndRoomType(Long outletId, Long roomTypeId) {
         Query query = em.createQuery("SELECT r FROM Room r WHERE r.outlet.outletId = :inOutletId AND r.roomType.roomTypeId = :inRoomTypeId");
         query.setParameter("inOutletId", outletId);
@@ -116,6 +120,39 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
             }
         }
         return isAvailable;
+    }    
+    
+    //Retrieve available rooms for new reservation (using duration and date)    
+    @Override
+    public List<Room> retrieveAvailableRooms(Long time, int duration, Long outletId, Long roomTypeId) throws NoAvailableRoomException, ExceedClosingHoursException {
+
+        Date startDateTime = new Date(time.longValue());
+        System.out.println("startDateTime: " + startDateTime);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(startDateTime);
+        
+        if ((cal.get(Calendar.HOUR_OF_DAY) + duration - 1) > 23) {
+            throw new ExceedClosingHoursException("Time exceeded closing hours!");
+        }
+
+        cal.add(Calendar.HOUR, +duration);
+        Date endDateTime = cal.getTime();
+        
+        List<Room> rooms = retrieveRoomByOutletAndRoomType(outletId, roomTypeId);
+        List<Room> availableRooms = new ArrayList<>();
+        
+        for (Room r: rooms) {
+            Boolean isAvailable = isRoomAvailable(r, startDateTime, endDateTime);
+            if (isAvailable == true) {
+                availableRooms.add(r);
+            }
+        }
+        
+        if (availableRooms.isEmpty()) {
+            throw new NoAvailableRoomException("No rooms are available at this timing!");
+        }
+        
+        return availableRooms;
     }
     
     @Override

@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../template/defaultTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="content">
+        
+
+        <div>
+            <h3>View Food Item Details</h3>
+            
+            <br/>
+            
+            <p:panelGrid columnClasses="dataTable1, dataTableValue" columns="2" style="width: 100%;" rendered="#{viewFoodItemForFoodOrderManagedBean.foodItemToView != null}">
+                
+                <p:outputLabel style="font-weight: bold;" value="SKU Code"/>
+                <p:outputLabel value="#{viewFoodItemForFoodOrderManagedBean.foodItemToView.skuCode}"/>
+                
+                <p:outputLabel style="font-weight: bold;" value="Name"/>
+                <p:outputLabel value="#{viewFoodItemForFoodOrderManagedBean.foodItemToView.name}"/>
+                
+                <p:outputLabel style="font-weight: bold;" value="Description"/>
+                <p:outputLabel value="#{viewFoodItemForFoodOrderManagedBean.foodItemToView.description}"/>
+                
+                <p:outputLabel style="font-weight: bold;" value="Unit Price"/>
+                <p:outputLabel value="#{viewFoodItemForFoodOrderManagedBean.foodItemToView.unitPrice}"/>
+            
+                <p:outputLabel style="font-weight: bold;" value="Food Item Rating"/>
+                <p:outputLabel value="#{viewFoodItemForFoodOrderManagedBean.foodItemToView.foodItemRating}"/>
+                
+                <p:outputLabel style="font-weight: bold;" value="Category"/>
+                <p:outputLabel value="#{viewFoodItemForFoodOrderManagedBean.foodItemToView.categoryEntity.name}"/>
+                
+                
+        
+            </p:panelGrid>
+            
+            <h:form id="formMain">
+            
+                <p:panelGrid>
+                    <h:panelGrid columns="3" cellpadding="5">
+                        <h:outputLabel for="@next" value="Quantity: "/>
+                        <p:spinner id="quantity" min="0" max="#{viewFoodItemForFoodOrderManagedBean.foodItemToView.quantityOnHand}" value="#{foodOrderShoppingCartManagedBean.selectedQuantity}" />
+
+                        <p:commandButton type="submit" process="@form" icon="fa fa-cart-plus" value="Add to Cart" actionListener="#{foodOrderShoppingCartManagedBean.addToCart}"
+                                         onclick="return alert('Added to cart!');">
+                            <f:attribute name="foodItemId" value="#{viewFoodItemForFoodOrderManagedBean.foodItemToView.foodItemId}" />
+                        </p:commandButton>
+
+                    </h:panelGrid>
+                </p:panelGrid>
+                
+            </h:form>
+
+        </div>
+    </ui:define>
+
+</ui:composition>

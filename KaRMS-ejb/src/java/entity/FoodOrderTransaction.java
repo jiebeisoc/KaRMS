@@ -51,10 +51,11 @@ public class FoodOrderTransaction implements Serializable
     @DecimalMin("0.00")
     @Digits(integer = 9, fraction = 2) // 11 - 2 digits to the left of the decimal point
     private BigDecimal totalAmount;
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false)
-    @NotNull
-    private Date transactionDateTime;    
+//    @Temporal(TemporalType.TIMESTAMP)
+//    @Column(nullable = false)
+//    @NotNull
+//    private Date transactionDateTime;   
+    private String transactionDateTime;
     @OneToMany
     private List<FoodOrderTransactionLineItem> foodOrderTransactionLineItemEntities;    
     @Column(nullable = false)
@@ -70,7 +71,11 @@ public class FoodOrderTransaction implements Serializable
     @JoinColumn(nullable = true)
     private Customer customerEntity;
     
+    @ManyToOne(optional = true)
+    @JoinColumn(nullable = true)
     private Outlet outlet;
+    
+   
 
     
     
@@ -82,7 +87,7 @@ public class FoodOrderTransaction implements Serializable
     
     
     
-    public FoodOrderTransaction(Integer totalLineItem, Integer totalQuantity, BigDecimal totalAmount, Date transactionDateTime, Boolean voidRefund)
+    public FoodOrderTransaction(Integer totalLineItem, Integer totalQuantity, BigDecimal totalAmount, String transactionDateTime, Boolean voidRefund)
     {
         this();
         this.totalLineItem = totalLineItem;
@@ -94,7 +99,7 @@ public class FoodOrderTransaction implements Serializable
 
     
     
-    public FoodOrderTransaction(Integer totalLineItem, Integer totalQuantity, BigDecimal totalAmount, Date transactionDateTime, List<FoodOrderTransactionLineItem> saleTransactionLineItemEntities, Boolean voidRefund)
+    public FoodOrderTransaction(Integer totalLineItem, Integer totalQuantity, BigDecimal totalAmount, String transactionDateTime, List<FoodOrderTransactionLineItem> saleTransactionLineItemEntities, Boolean voidRefund)
     {
         this();
         this.totalLineItem = totalLineItem;
@@ -206,11 +211,11 @@ public class FoodOrderTransaction implements Serializable
         this.totalAmount = totalAmount;
     }
 
-    public Date getTransactionDateTime() {
+    public String getTransactionDateTime() {
         return transactionDateTime;
     }
 
-    public void setTransactionDateTime(Date transactionDateTime) {
+    public void setTransactionDateTime(String transactionDateTime) {
         this.transactionDateTime = transactionDateTime;
     }
 
