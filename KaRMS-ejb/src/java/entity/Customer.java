@@ -67,7 +67,7 @@ public class Customer implements Serializable {
 
     public Customer() {
         this.points = 0;
-         this.salt = CryptographicHelper.getInstance().generateRandomString(32);
+        this.salt = CryptographicHelper.getInstance().generateRandomString(32);
         this.points = 0;
         this.reservations = new ArrayList<>();
         this.foodOrderTransactionEntities = new ArrayList<>();
