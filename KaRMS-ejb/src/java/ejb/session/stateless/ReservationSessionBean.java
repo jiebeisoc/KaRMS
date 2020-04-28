@@ -438,8 +438,10 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
     @Override
     public void deleteReservation(Long reservationId) throws DeleteReservationException {
         Reservation reservationToDelete = retrieveReservationById(reservationId);
+        Date currentDate = new Date();
+        Date reservationDate = reservationToDelete.getDate();
         
-        if (reservationToDelete.getStatus() != ReservationStatus.COMPLETED) {
+        if (currentDate.before(reservationDate)) {
         
             Customer customer = reservationToDelete.getCustomer();
             reservationToDelete.setCustomer(null);
@@ -465,7 +467,7 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
 
             em.remove(reservationToDelete);
         } else {
-            throw new DeleteReservationException("Reservation cannot be deleted!");
+            throw new DeleteReservationException("Reservation cannot be deleted as it has started!");
         }
     }
     
