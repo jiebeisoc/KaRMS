@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
@@ -38,7 +39,7 @@ public class RoomType implements Serializable {
     @OneToMany(mappedBy = "roomType")
     private List<Room> rooms;
     
-    @OneToMany
+    @OneToMany(mappedBy = "roomType")
     private List<RoomRate> roomRates;   
 
     public RoomType() {

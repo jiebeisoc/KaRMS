@@ -41,6 +41,10 @@
                     <h:outputText value="#{room.roomType.name}" />
                 </p:column>
                 
+                <p:column headerText="Disabled" sortBy="#{room.isDisabled}">
+                    <h:outputText value="#{room.isDisabled}" />
+                </p:column>
+                
             </p:dataTable>     
             
         </h:form>
