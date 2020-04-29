@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.Customer;
 import entity.Reservation;
 import entity.Song;
 import entity.SongCategory;
@@ -21,7 +22,7 @@ import javax.persistence.Query;
  */
 @Stateless
 public class SongSessionBean implements SongSessionBeanLocal {
-
+    
     @PersistenceContext(unitName = "KaRMS-ejbPU")
     private EntityManager em;
 
@@ -59,16 +60,45 @@ public class SongSessionBean implements SongSessionBeanLocal {
         
         return filteredSongs;
     }
-
+    
     @Override
-    public void addSongToQueue(Long songId, Long reservationId) {
-        Reservation reservation = em.find(Reservation.class, reservationId);
-        List<Song> songQueue = reservation.getSongQueue();
+    public List<Song> viewFavouritePlaylistByCategory(Long customerId, Long categoryId) {
         
-        Song songToAdd = em.find(Song.class, songId);
-        songQueue.add(songToAdd);
+        Customer customer = em.find(Customer.class, customerId);
+        SongCategory songCategory = em.find(SongCategory.class, categoryId);           
+        
+        List<Song> songs = customer.getFavouritePlaylist();
+        
+        List<Song> filteredSongs = new ArrayList<>();
+        
+        for (Song s: songs) {
+            if (s.getSongCategories().contains(songCategory)) {
+                filteredSongs.add(s);            
+            }
+        }
+        
+        return filteredSongs;
     }
-
+    
+    @Override
+    public List<Song> viewSongQueueByCategory(Long reservationId, Long categoryId) {
+        
+        Reservation reservation = em.find(Reservation.class, reservationId);
+        SongCategory songCategory = em.find(SongCategory.class, categoryId);           
+        
+        List<Song> songs = reservation.getSongQueue();
+        
+        List<Song> filteredSongs = new ArrayList<>();
+        
+        for (Song s: songs) {
+            if (s.getSongCategories().contains(songCategory)) {
+                filteredSongs.add(s);            
+            }
+        }
+        
+        return filteredSongs;
+    }
+    
     @Override
     public List<Song> viewSongBySinger(String singer) {
         Query query = em.createQuery("SELECT s FROM Song s WHERE s.singer = :inSinger");

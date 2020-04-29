@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -57,6 +58,10 @@ public class Customer implements Serializable {
     
     @OneToMany(mappedBy = "customer")
     private List<Reservation> reservations;
+    
+    @ManyToMany
+    private List<Song> favouritePlaylist;
+    
     //Added by Luqian
     @OneToMany(mappedBy = "customerEntity")
     private List<FoodOrderTransaction> foodOrderTransactionEntities;
@@ -67,6 +72,7 @@ public class Customer implements Serializable {
         this.points = 0;
         this.reservations = new ArrayList<>();
         this.foodOrderTransactionEntities = new ArrayList<>();
+        this.favouritePlaylist = new ArrayList<>();
     }
 
     public Customer(String name, String phoneNo, String creditCardNo, String username, String password, Date birthday, String email) {
@@ -230,12 +236,20 @@ public class Customer implements Serializable {
         this.foodOrderTransactionEntities = foodOrderTransactionEntities;
     }
     
-        public String getSalt() {
+    public String getSalt() {
         return salt;
     }
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public List<Song> getFavouritePlaylist() {
+        return favouritePlaylist;
+    }
+
+    public void setFavouritePlaylist(List<Song> favouritePlaylist) {
+        this.favouritePlaylist = favouritePlaylist;
     }
     
 }

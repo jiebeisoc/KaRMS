@@ -12,6 +12,7 @@ import entity.Reservation;
 import entity.Room;
 import entity.RoomRate;
 import entity.RoomType;
+import entity.Song;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,6 +23,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.enumeration.ReservationStatus;
+import util.exception.AddSongException;
 import util.exception.CustomerNotFoundException;
 import util.exception.DeleteReservationException;
 import util.exception.NoAvailableRoomException;
@@ -279,6 +281,15 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
             return query.getResultList();
         }
     }
+    
+    @Override
+    public List<Reservation> retrieveUpcomingReservations(Date date) {
+        
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.date >= :inDate");
+        query.setParameter("inDate", date);
+        
+        return query.getResultList();
+    }
 
     //View reservation details
     @Override
@@ -388,6 +399,78 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         return query.getResultList();
     }
     
+    @Override
+    public List<Song> retrieveSongQueue(Long reservationId) {
+        Reservation reservation = retrieveReservationById(reservationId);
+        
+        return reservation.getSongQueue();
+    }
+    
+    @Override
+    public void addSongToQueue(Song songToAdd, Reservation reservation) throws AddSongException {
+
+        List<Song> songQueue = reservation.getSongQueue();
+        songQueue.add(songToAdd);
+        
+        if (songQueue.contains(songToAdd)) {
+            
+            throw new AddSongException("Song is already in the song queue!");
+                    
+        } else {
+            songQueue.add(songToAdd);    
+        }
+        
+        reservation.setSongQueue(songQueue);
+        em.merge(reservation);
+        em.flush();
+        
+    }
+    
+    @Override
+    public void deleteSongFromQueue(Song songToDelete, Reservation reservation) {
+        
+        List<Song> songQueue = reservation.getSongQueue();
+        
+        songQueue.remove(songToDelete);
+        reservation.setSongQueue(songQueue);
+        em.merge(reservation);
+        em.flush();        
+    }
+    
+    @Override
+    public void addQueueToFavouritePlaylist(Long customerId, Long reservationId) {
+        
+        Reservation reservation = retrieveReservationById(reservationId);
+        Customer customer = em.find(Customer.class, customerId);
+        
+        List<Song> songQueue = reservation.getSongQueue();
+        List<Song> favouritePlaylist = customer.getFavouritePlaylist();
+        
+        for (Song song: songQueue) {
+            if (!favouritePlaylist.contains(song)) {
+                favouritePlaylist.add(song);
+            }
+        }
+        
+        customer.setFavouritePlaylist(favouritePlaylist);
+        em.merge(customer);
+        em.flush();
+    }
+    
+    @Override
+    public void saveQueueAsFavouritePlaylist(Long customerId, Long reservationId) {
+        
+        Reservation reservation = retrieveReservationById(reservationId);
+        Customer customer = em.find(Customer.class, customerId);
+        
+        List<Song> songQueue = reservation.getSongQueue();
+        List<Song> favouritePlaylist = customer.getFavouritePlaylist();
+        
+        customer.setFavouritePlaylist(songQueue);
+        em.merge(customer);
+        em.flush();
+    }
+    
     //Settle reservation payment
     @Override
     public void payReservation(Long reservationId) {
@@ -438,8 +521,10 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
     @Override
     public void deleteReservation(Long reservationId) throws DeleteReservationException {
         Reservation reservationToDelete = retrieveReservationById(reservationId);
+        Date currentDate = new Date();
+        Date reservationDate = reservationToDelete.getDate();
         
-        if (reservationToDelete.getStatus() != ReservationStatus.COMPLETED) {
+        if (currentDate.before(reservationDate)) {
         
             Customer customer = reservationToDelete.getCustomer();
             reservationToDelete.setCustomer(null);
@@ -465,7 +550,7 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
 
             em.remove(reservationToDelete);
         } else {
-            throw new DeleteReservationException("Reservation cannot be deleted!");
+            throw new DeleteReservationException("Reservation cannot be deleted as it has started!");
         }
     }
     

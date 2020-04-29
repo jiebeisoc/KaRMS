@@ -2,10 +2,12 @@
 package ejb.session.stateless;
 
 import entity.Reservation;
+import entity.Song;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import util.enumeration.ReservationStatus;
+import util.exception.AddSongException;
 import util.exception.CustomerNotFoundException;
 import util.exception.DeleteReservationException;
 import util.exception.NoAvailableRoomException;
@@ -23,6 +25,8 @@ public interface ReservationSessionBeanLocal {
     public BigDecimal calculateTotalPrice(Long time, int duration, Long roomTypeId, Long promotionId);
     
     public List<Reservation> retrieveAllReservations(Long outletId);
+    
+    public List<Reservation> retrieveUpcomingReservations(Date date);
 
     public Reservation retrieveReservationById(Long reservationId);
     
@@ -36,6 +40,16 @@ public interface ReservationSessionBeanLocal {
     
     public List<Reservation> retrieveReservationByPhoneNo(String phoneNo);
     
+    public List<Song> retrieveSongQueue(Long reservationId);
+    
+    public void addSongToQueue(Song songToAdd, Reservation reservation) throws AddSongException;
+    
+    public void deleteSongFromQueue(Song songToDelete, Reservation reservation);
+    
+    public void addQueueToFavouritePlaylist(Long customerId, Long reservationId);
+    
+    public void saveQueueAsFavouritePlaylist(Long customerId, Long reservationId);
+    
     public void updateReservation(Reservation reservationToUpdate, Long roomIdUpdate, Long outletIdUpdate, Long promotionIdUpdate);
 
     public void deleteReservation(Long reservationId) throws DeleteReservationException;
@@ -47,5 +61,5 @@ public interface ReservationSessionBeanLocal {
     public List<Reservation> retrieveReservationByDateOutletAndRoomType(Date dateFrom, Date dateTo, Long outletId, Long roomTypeId);
 
     public List<Reservation> retrieveReservationByRoomAndDate(Date dateFrom, Date dateTo, Long roomId);
-    
+
 }

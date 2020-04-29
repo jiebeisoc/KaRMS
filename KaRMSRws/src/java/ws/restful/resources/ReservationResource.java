@@ -31,6 +31,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+import util.exception.AddSongException;
 import util.exception.CustomerNotFoundException;
 import util.exception.DeleteReservationException;
 import util.exception.InvalidLoginCredentialException;
@@ -38,9 +39,12 @@ import ws.restful.model.CalculateTotalPriceRsp;
 import ws.restful.model.CreateReservationReq;
 import ws.restful.model.CreateReservationRsp;
 import ws.restful.model.ErrorRsp;
+import ws.restful.model.FavouritePlaylistSongQueueReq;
 import ws.restful.model.RetrieveReservationListRsp;
 import ws.restful.model.RetrieveReservationRsp;
+import ws.restful.model.RetrieveSongsRsp;
 import ws.restful.model.UpdateReservationReq;
+import ws.restful.model.UpdateSongQueueReq;
 
 /**
  * REST Web Service
@@ -101,6 +105,7 @@ public class ReservationResource {
                 
                 r.getCustomer().getFoodOrderTransactionEntities().clear();
                 r.getCustomer().getReservations().clear();
+                r.getCustomer().getFavouritePlaylist().clear();
                 
                 r.getRoom().getReservations().clear();
                 r.getRoom().setOutlet(null);
@@ -161,6 +166,7 @@ public class ReservationResource {
                 
                 r.getCustomer().getFoodOrderTransactionEntities().clear();
                 r.getCustomer().getReservations().clear(); 
+                r.getCustomer().getFavouritePlaylist().clear();
                 
                 r.getRoom().getReservations().clear();
                 r.getRoom().setOutlet(null);
@@ -214,6 +220,7 @@ public class ReservationResource {
                 
                 r.getCustomer().getFoodOrderTransactionEntities().clear();
                 r.getCustomer().getReservations().clear();
+                r.getCustomer().getFavouritePlaylist().clear();
                 
                 r.getRoom().getReservations().clear();
                 r.getRoom().setOutlet(null);
@@ -270,6 +277,7 @@ public class ReservationResource {
                 
                 r.getCustomer().getFoodOrderTransactionEntities().clear();
                 r.getCustomer().getReservations().clear();
+                r.getCustomer().getFavouritePlaylist().clear();
                 
                 r.getRoom().getReservations().clear();
                 r.getRoom().setOutlet(null);
@@ -324,6 +332,7 @@ public class ReservationResource {
             
             reservation.getCustomer().getFoodOrderTransactionEntities().clear();
             reservation.getCustomer().getReservations().clear();
+            reservation.getCustomer().getFavouritePlaylist().clear();
                 
             reservation.getRoom().getReservations().clear();
             reservation.getRoom().setOutlet(null);
@@ -360,6 +369,108 @@ public class ReservationResource {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }  
+    }
+    
+    @Path("retrieveSongQueue")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveSongQueue(@QueryParam("reservationId") Long reservationId) {
+        
+        System.out.println("******** ReservationResource.retrieveSongQueue()");
+        
+        List<Song> songs = reservationSessionBeanLocal.retrieveSongQueue(reservationId);
+        
+        for (Song song: songs) {
+            song.getSongCategories().clear();
+        }
+        
+        return Response.status(Status.OK).entity(new RetrieveSongsRsp(songs)).build();
+    }
+    
+    @Path("addSongToQueue")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addSongToQueue(UpdateSongQueueReq updateSongQueueReq) {
+        
+        try { 
+        
+            System.out.println("******** ReservationResource.addSongToQueue()");
+
+            reservationSessionBeanLocal.addSongToQueue(updateSongQueueReq.getSong(), updateSongQueueReq.getReservation());
+
+            return Response.status(Response.Status.OK).build();
+ 
+        } catch (AddSongException ex) {
+            
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Status.BAD_REQUEST).entity(errorRsp).build();
+            
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("deleteSongFromQueue")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteSongFromQueue(UpdateSongQueueReq updateSongQueueReq) {
+        
+        try { 
+        
+            System.out.println("******** ReservationResource.deleteSongFromQueue()");
+
+            reservationSessionBeanLocal.deleteSongFromQueue(updateSongQueueReq.getSong(), updateSongQueueReq.getReservation());
+
+            return Response.status(Response.Status.OK).build();
+ 
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("addQueueToFavouritePlaylist")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addQueueToFavouritePlaylist(FavouritePlaylistSongQueueReq favouritePlaylistSongQueueReq) {
+        
+        try { 
+        
+            System.out.println("******** ReservationResource.addQueueToFavouritePlaylist()");
+
+            reservationSessionBeanLocal.addQueueToFavouritePlaylist(favouritePlaylistSongQueueReq.getCustomerId(), favouritePlaylistSongQueueReq.getReservationId());
+
+            return Response.status(Response.Status.OK).build();
+ 
+        }  catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("saveQueueAsFavouritePlaylist")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response saveQueueAsFavouritePlaylist(FavouritePlaylistSongQueueReq favouritePlaylistSongQueueReq) {
+        
+        try { 
+        
+            System.out.println("******** ReservationResource.saveQueueAsFavouritePlaylist()");
+
+            reservationSessionBeanLocal.saveQueueAsFavouritePlaylist(favouritePlaylistSongQueueReq.getCustomerId(), favouritePlaylistSongQueueReq.getReservationId());
+
+            return Response.status(Response.Status.OK).build();
+ 
+        }  catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
     }
     
     @Path("calculateTotalPrice")
