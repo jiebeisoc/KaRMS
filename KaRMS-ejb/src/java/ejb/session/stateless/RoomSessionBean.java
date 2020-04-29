@@ -18,6 +18,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.CreateNewRoomException;
 import util.exception.ExceedClosingHoursException;
 import util.exception.NoAvailableRoomException;
 
@@ -42,19 +43,23 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
     // "Insert Code > Add Business Method")
     
     @Override
-    public Long createNewRoom(Room newRoom, Long roomTypeId, Long outletId) {
+    public Long createNewRoom(Room newRoom, Long roomTypeId, Long outletId) throws CreateNewRoomException {
         em.persist(newRoom);
         
         if (roomTypeId != null) {
             RoomType roomType = roomTypeSessionBeanLocal.retrieveRoomTypeById(roomTypeId);
             newRoom.setRoomType(roomType);
             roomType.getRooms().add(newRoom);
+        } else {
+            throw new CreateNewRoomException("Room Type is required");
         }
         
         if (outletId != null) {
             Outlet outlet = outletSessionBeanLocal.retrieveOutletById(outletId);
             newRoom.setOutlet(outlet);
             outlet.getRooms().add(newRoom);
+        } else {
+            throw new CreateNewRoomException("Outlet is required");
         }
         
         em.flush();
@@ -66,7 +71,7 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
     public List<Room> retrieveAllRoom(Long outletId) {
         if (outletId == null) {
             Query query = em.createQuery("SELECT r FROM Room r");
-        
+            
             return query.getResultList();
         } else {
             Query query = em.createQuery("Select r FROM Room r WHERE r.outlet.outletId = :inOutletId");
@@ -78,9 +83,10 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
     
     @Override
     public List<Room> retrieveRoomByOutletAndRoomType(Long outletId, Long roomTypeId) {
-        Query query = em.createQuery("SELECT r FROM Room r WHERE r.outlet.outletId = :inOutletId AND r.roomType.roomTypeId = :inRoomTypeId");
+        Query query = em.createQuery("SELECT r FROM Room r WHERE r.outlet.outletId = :inOutletId AND r.roomType.roomTypeId = :inRoomTypeId AND r.isDisabled = :inIsDisabled");
         query.setParameter("inOutletId", outletId);
         query.setParameter("inRoomTypeId", roomTypeId);
+        query.setParameter("inIsDisabled", Boolean.FALSE);
         
         return query.getResultList();
     }
@@ -166,8 +172,8 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
         Room roomToDelete = retrieveRoomById(roomId);
         
         roomToDelete.setIsDisabled(Boolean.TRUE);
-        roomToDelete.setOutlet(null);
-        roomToDelete.setRoomType(null);
+        
+        roomToDelete.getRoomType().getRooms().remove(roomToDelete);
 
     }
      

@@ -23,7 +23,7 @@
         <h:form id="formAllRoomRate">
             
             <p:dataTable id="dataTableAllRoomRate" widgetVar="dataTableAllRoomRate" value="#{roomRateManagementManagedBean.roomRates}" var="roomRate" 
-                         selectionMode="single" selection="#{roomRateManagementManagedBean.selectedRoomRate}" rowKey="#{roomRate.roomRateId}" tableStyle="width:50%">
+                         selectionMode="single" selection="#{roomRateManagementManagedBean.selectedRoomRate}" rowKey="#{roomRate.roomRateId}">
             
                 <p:ajax event='rowSelect' listener='#{roomRateManagementManagedBean.onRowSelect}' oncomplete="PF('dialogUpdateRoomRate').show()" update='@form formUpdateRoomRate' />
                 <p:ajax event='rowUnselect' listener='#{roomRateManagementManagedBean.onRowUnselect}' update='@form formUpdateRoomRate' />
@@ -67,7 +67,7 @@
                             <p:outputLabel for="rateType" value="Rate Type: " />
                         </p:column>
                         <p:column>
-                            <p:selectOneRadio id="rateType" value="#{roomRateManagementManagedBean.rateType}" layout="grid" columns="2">
+                            <p:selectOneRadio id="rateType" value="#{roomRateManagementManagedBean.rateType}" layout="grid" columns="2" required="true" requiredMessage="Rate type is required">
                                 <f:selectItem itemLabel="WKDAYPEAK" itemValue="WKDAYPEAK" />
                                 <f:selectItem itemLabel="WKDAYNONPEAK" itemValue="WKDAYNONPEAK" />
                                 <f:selectItem itemLabel="WKENDPEAK" itemValue="WKENDPEAK" />
@@ -81,7 +81,7 @@
                             <p:outputLabel for="rate" value="Rate: $" style="font-weight: bold" />
                         </p:column>
                         <p:column>
-                            <p:spinner id="rate" value="#{roomRateManagementManagedBean.newRoomRate.rate}" stepFactor="0.50" min="0" />
+                            <p:spinner id="rate" value="#{roomRateManagementManagedBean.newRoomRate.rate}" stepFactor="0.50" min="0" required="true" requiredMessage="Rate is required"/>
                         </p:column>
                     </p:row>
                     
