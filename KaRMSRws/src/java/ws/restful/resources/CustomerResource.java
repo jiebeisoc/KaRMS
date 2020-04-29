@@ -68,7 +68,10 @@ public class CustomerResource {
         try {
             System.out.println("******** Customer login");
             Customer customer = customerSessionBeanLocal.customerLogin(username, password);
-
+            
+            customer.getFoodOrderTransactionEntities().clear();
+            customer.getReservations().clear();
+            
             return Response.status(Status.OK).entity(new CustomerLoginRsp(customer)).build();
             
         } catch (InvalidLoginCredentialException ex) {
