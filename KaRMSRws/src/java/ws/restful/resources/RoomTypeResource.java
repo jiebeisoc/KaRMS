@@ -50,7 +50,7 @@ public class RoomTypeResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response retrieveAllRoomType() {
-        
+        System.out.println("******** RoomTyepResource.retrieveAllRoomType()");
         List<RoomType> roomTypes = roomTypeSessionBeanLocal.retrieveAllRoomTypes();
         
         for (RoomType rt: roomTypes) {

@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.RoomRate;
 import entity.RoomType;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -15,6 +16,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.CreateNewRoomTypeException;
 import util.exception.DeleteRoomTypeException;
 import util.exception.RoomTypeNotFoundException;
 
@@ -35,19 +37,22 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
     // "Insert Code > Add Business Method")
 
     @Override
-    public Long createNewRoomType(RoomType newRoomType, List<Long> roomRateIds) {
+    public Long createNewRoomType(RoomType newRoomType, List<Long> roomRateIds) throws CreateNewRoomTypeException {
         em.persist(newRoomType);
-        
+        em.flush();
         if (roomRateIds != null && (!roomRateIds.isEmpty())) {
             for (Long id : roomRateIds) {
                 RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
                 newRoomType.getRoomRates().add(roomRate);
                 roomRate.setRoomType(newRoomType);
             }
+            
+            return newRoomType.getRoomTypeId();
+        } else {
+            throw new CreateNewRoomTypeException("Room rates are required");
         }
-        em.flush();
+
         
-        return newRoomType.getRoomTypeId();
     }
 
     @Override
@@ -88,14 +93,19 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
     @Override
     public void updateRoomType(RoomType roomTypeToUpdate, List<Long> roomRateIds) {
         em.merge(roomTypeToUpdate);
+        em.flush();
         
-        roomTypeToUpdate.getRoomRates().clear();
+        for (RoomRate rr: roomTypeToUpdate.getRoomRates()) {
+            roomTypeToUpdate.getRoomRates().remove(rr);
+            rr.setRoomType(null);
+        }
+        roomTypeToUpdate.setRoomRates(new ArrayList<>());
         
         for (Long id : roomRateIds) {
             RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
             roomTypeToUpdate.getRoomRates().add(roomRate);
-        }
-        em.flush();
+            roomRate.setRoomType(roomTypeToUpdate);
+        }   
     }
 
     @Override
@@ -104,7 +114,7 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
         
         if (roomTypeToDelete.getRooms().isEmpty()) {
             for (RoomRate rr: roomTypeToDelete.getRoomRates()) {
-            rr.setRoomType(null);
+                rr.setRoomType(null);
             }
 
             em.remove(roomTypeToDelete);

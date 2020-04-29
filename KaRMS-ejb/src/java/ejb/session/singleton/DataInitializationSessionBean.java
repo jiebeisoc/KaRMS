@@ -53,6 +53,8 @@ import util.enumeration.RoomRateType;
 import util.exception.CategoryNotFoundException;
 import util.exception.CreateCustomerException;
 import util.exception.CreateNewFoodItemException;
+import util.exception.CreateNewRoomException;
+import util.exception.CreateNewRoomTypeException;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerUsernameExistException;
 import util.exception.EmployeeNotFoundException;
@@ -180,113 +182,120 @@ public class DataInitializationSessionBean {
         }
         
         // Add room type
-        List<Long> roomRateIds = new ArrayList<>();
-        roomRateIds.add(1l);
-        roomRateIds.add(2l);
-        roomRateIds.add(3l);
-        roomRateIds.add(4l);
-        
-        roomTypeSessionBeanLocal.createNewRoomType(new RoomType("Small", 4, "Small"), roomRateIds);
-        
-        roomRateIds.clear();
-        roomRateIds.add(5l);
-        roomRateIds.add(6l);
-        roomRateIds.add(7l);
-        roomRateIds.add(8l);
-        
-        roomTypeSessionBeanLocal.createNewRoomType(new RoomType("Medium", 6, "Medium"), roomRateIds);
-        
-        roomRateIds.clear();
-        roomRateIds.add(9l);
-        roomRateIds.add(10l);
-        roomRateIds.add(11l);
-        roomRateIds.add(12l);
-        
-        roomTypeSessionBeanLocal.createNewRoomType(new RoomType("Large", 8, "Large"), roomRateIds);
+        try {
+            List<Long> roomRateIds = new ArrayList<>();
+            roomRateIds.add(1l);
+            roomRateIds.add(2l);
+            roomRateIds.add(3l);
+            roomRateIds.add(4l);
+
+            roomTypeSessionBeanLocal.createNewRoomType(new RoomType("Small", 4, "Small"), roomRateIds);
+
+            roomRateIds.clear();
+            roomRateIds.add(5l);
+            roomRateIds.add(6l);
+            roomRateIds.add(7l);
+            roomRateIds.add(8l);
+
+            roomTypeSessionBeanLocal.createNewRoomType(new RoomType("Medium", 6, "Medium"), roomRateIds);
+
+            roomRateIds.clear();
+            roomRateIds.add(9l);
+            roomRateIds.add(10l);
+            roomRateIds.add(11l);
+            roomRateIds.add(12l);
+
+            roomTypeSessionBeanLocal.createNewRoomType(new RoomType("Large", 8, "Large"), roomRateIds);
+        } catch (CreateNewRoomTypeException ex) {
+            System.out.println(ex.getMessage());
+        }
     
         // Add room
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 8l);
+        try {
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 8l);
 
-        em.flush();
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 8l);
+        } catch (CreateNewRoomException ex) {
+            System.out.println(ex.getMessage());
+        }
+
         //Add FoodItem Categories
         try{
             FoodItemCategory foodItemCategory1 = new FoodItemCategory("Snacks","All snacks that you are craving");

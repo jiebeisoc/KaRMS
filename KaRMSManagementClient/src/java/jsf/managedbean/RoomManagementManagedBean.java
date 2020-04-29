@@ -22,6 +22,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import org.primefaces.event.SelectEvent;
+import util.exception.CreateNewRoomException;
 
 /**
  *
@@ -68,20 +69,31 @@ public class RoomManagementManagedBean implements Serializable {
     }
     
     public void createNewRoom(ActionEvent event) {
-        Long roomId = roomSessionBeanLocal.createNewRoom(newRoom, roomTypeId, outletId);
-        rooms.add(newRoom);
-        roomTypeId = null;
-        outletId = null;
-        newRoom = new Room();
-        
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New room created successfully", null));
+        try {
+            Long roomId = roomSessionBeanLocal.createNewRoom(newRoom, roomTypeId, outletId);
+            rooms.add(newRoom);
+            roomTypeId = null;
+            outletId = null;
+            newRoom = new Room();
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New room created successfully", null));
+        } catch (CreateNewRoomException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while creating new room: " + ex.getMessage(), null));
+        }
     }
     
     public void deleteRoom(ActionEvent event) {
         Room roomToDelete = (Room)event.getComponent().getAttributes().get("roomToDelete");
         
         roomSessionBeanLocal.deleteRoom(roomToDelete.getRoomId());
-        rooms.remove(roomToDelete);
+        
+        for (Room r: rooms) {
+            if (r.getRoomId() == roomToDelete.getRoomId()) {
+                r.setIsDisabled(Boolean.TRUE);
+            }
+        }
+        
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Room " + roomToDelete.getRoomNum() + " is disabled", null));
     }
 
     public List<Room> getRooms() {

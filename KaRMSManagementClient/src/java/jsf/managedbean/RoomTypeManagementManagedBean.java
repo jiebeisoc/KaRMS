@@ -19,6 +19,7 @@ import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import org.primefaces.event.SelectEvent;
+import util.exception.CreateNewRoomTypeException;
 import util.exception.DeleteRoomTypeException;
 
 /**
@@ -58,15 +59,18 @@ public class RoomTypeManagementManagedBean implements Serializable {
     }
     
     public void createNewRoomType(ActionEvent event) {
-        
-        Long roomTypeId = roomTypeSessionBeanLocal.createNewRoomType(newRoomType, roomRateIdsNew);
-        roomTypes.add(newRoomType);
-        
-        newRoomType = new RoomType();
-        roomRateIdsNew = null;
-        roomRates = roomRateSessionBeanLocal.retrieveAllRoomRates();
-        
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New room type created successfully", null));
+        try {
+            Long roomTypeId = roomTypeSessionBeanLocal.createNewRoomType(newRoomType, roomRateIdsNew);
+            roomTypes.add(newRoomType);
+
+            newRoomType = new RoomType();
+            roomRateIdsNew = null;
+            roomRates = roomRateSessionBeanLocal.retrieveAllRoomRates();
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New room type created successfully", null));
+        } catch (CreateNewRoomTypeException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An error has occurred while creating new room type: " + ex.getMessage(), null));
+        }
     }    
     
     public void updateRoomType() {
@@ -76,7 +80,7 @@ public class RoomTypeManagementManagedBean implements Serializable {
         for (RoomRate rr: selectedRoomType.getRoomRates()) {
             roomRates.add(rr);
         }
-        roomRateIdsUpdate.clear();
+
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Room Type updated successfully", null));
     }
     

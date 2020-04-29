@@ -9,6 +9,7 @@ import entity.Room;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.CreateNewRoomException;
 import util.exception.ExceedClosingHoursException;
 import util.exception.NoAvailableRoomException;
 
@@ -19,7 +20,7 @@ import util.exception.NoAvailableRoomException;
 @Local
 public interface RoomSessionBeanLocal {
 
-    public Long createNewRoom(Room newRoom, Long roomTypeId, Long outletId);
+    public Long createNewRoom(Room newRoom, Long roomTypeId, Long outletId) throws CreateNewRoomException;
 
     public List<Room> retrieveAllRoom(Long outletId);
 
