@@ -34,7 +34,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
 
     @PersistenceContext(unitName = "KaRMS-ejbPU")
     private EntityManager em;
-
+    
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     
@@ -176,7 +176,7 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
             } catch (CustomerNotFoundException ex) {
                 throw new InvalidLoginCredentialException(ex.getMessage());
             }
-        }
+        } 
     }
     
     @Override

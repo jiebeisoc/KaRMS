@@ -281,6 +281,15 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
             return query.getResultList();
         }
     }
+    
+    @Override
+    public List<Reservation> retrieveUpcomingReservations(Date date) {
+        
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.date >= :inDate");
+        query.setParameter("inDate", date);
+        
+        return query.getResultList();
+    }
 
     //View reservation details
     @Override

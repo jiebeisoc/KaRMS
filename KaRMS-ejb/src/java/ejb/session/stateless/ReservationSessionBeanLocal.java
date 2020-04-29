@@ -25,6 +25,8 @@ public interface ReservationSessionBeanLocal {
     public BigDecimal calculateTotalPrice(Long time, int duration, Long roomTypeId, Long promotionId);
     
     public List<Reservation> retrieveAllReservations(Long outletId);
+    
+    public List<Reservation> retrieveUpcomingReservations(Date date);
 
     public Reservation retrieveReservationById(Long reservationId);
     

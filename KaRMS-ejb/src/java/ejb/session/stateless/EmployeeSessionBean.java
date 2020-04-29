@@ -6,7 +6,6 @@
 package ejb.session.stateless;
 
 import entity.Employee;
-import entity.Outlet;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
