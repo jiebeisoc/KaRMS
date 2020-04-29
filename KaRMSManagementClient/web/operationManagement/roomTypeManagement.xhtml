@@ -25,7 +25,7 @@
             <h:form id="formAllRoomType">                
                 
                 <p:dataTable id="dataTableAllRoomType" widgetVar="dataTableAllRoomType" value="#{roomTypeManagementManagedBean.roomTypes}" var="roomType"
-                             selectionMode="single" selection="#{roomTypeManagementManagedBean.selectedRoomType}" rowKey="#{roomType.roomTypeId}" tableStyle="width:80%">
+                             selectionMode="single" selection="#{roomTypeManagementManagedBean.selectedRoomType}" rowKey="#{roomType.roomTypeId}" >
                 
                     <p:ajax event='rowSelect' listener="#{roomTypeManagementManagedBean.onRowSelect}" oncomplete="PF('dialogUpdateRoomType').show()" update="@form formUpdateRoomType"/>
                     <p:ajax event="rowUnselect" listener="#{roomTypeManagementManagedBean.onRowUnselect}" update="@form formUpdateRoomType" />
