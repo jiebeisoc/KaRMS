@@ -9,15 +9,15 @@ import ejb.session.stateless.SongSessionBeanLocal;
 import entity.Song;
 import java.util.List;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 import ws.restful.model.RetrieveSongsRsp;
 
 /**
@@ -69,6 +69,38 @@ public class SongResource {
         
         System.out.println("******** SongResource.viewSongByCategory()");
         List<Song> songs = songSessionBeanLocal.viewSongByCategory(songCategoryId);
+        
+        for (Song s: songs) {
+            s.getSongCategories().clear();
+        }
+        
+        return Response.status(Status.OK).entity(new RetrieveSongsRsp(songs)).build();
+    }
+    
+    @Path("viewFavouritePlaylistByCategory")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response viewFavouritePlaylistByCategory(@QueryParam("customerId") Long customerId, @QueryParam("songCategoryId") Long songCategoryId) {
+        
+        System.out.println("******** SongResource.viewFavouritePlaylistByCategory()");
+        List<Song> songs = songSessionBeanLocal.viewFavouritePlaylistByCategory(customerId, songCategoryId);
+        
+        for (Song s: songs) {
+            s.getSongCategories().clear();
+        }
+        
+        return Response.status(Status.OK).entity(new RetrieveSongsRsp(songs)).build();
+    }
+    
+    @Path("viewSongQueueByCategory")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response viewSongQueueByCategory(@QueryParam("reservationId") Long reservationId, @QueryParam("songCategoryId") Long songCategoryId) {
+        
+        System.out.println("******** SongResource.viewSongQueueByCategory()");
+        List<Song> songs = songSessionBeanLocal.viewSongQueueByCategory(reservationId, songCategoryId);
         
         for (Song s: songs) {
             s.getSongCategories().clear();

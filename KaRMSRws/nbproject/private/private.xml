@@ -4,7 +4,8 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/Users/zihua/Desktop/NUS/Files/2.2/IS3106/Project/KaRMS/KaRMSRws/src/java/ws/restful/resources/ReservationResource.java</file>
-            <file>file:/Users/zihua/Desktop/NUS/Files/2.2/IS3106/Project/KaRMS/KaRMSRws/src/java/ws/restful/resources/PromotionResource.java</file>
+            <file>file:/Users/zihua/Desktop/NUS/Files/2.2/IS3106/Project/KaRMS/KaRMSRws/src/java/ws/restful/resources/SongResource.java</file>
+            <file>file:/Users/zihua/Desktop/NUS/Files/2.2/IS3106/Project/KaRMS/KaRMSRws/src/java/ws/restful/resources/CustomerResource.java</file>
             <file>file:/Users/zihua/Desktop/NUS/Files/2.2/IS3106/Project/KaRMS/KaRMSRws/src/java/ws/restful/resources/RoomResource.java</file>
         </group>
     </open-files>

@@ -6,7 +6,6 @@
 package ejb.session.stateless;
 
 import entity.Song;
-import entity.SongCategory;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -22,9 +21,11 @@ public interface SongSessionBeanLocal {
     public List<Song> viewAllSongs();
 
     public List<Song> viewSongByCategory(Long categoryId);
-
-    public void addSongToQueue(Long songId, Long reservationId);
-
+    
+    public List<Song> viewFavouritePlaylistByCategory(Long customerId, Long categoryId);
+    
+    public List<Song> viewSongQueueByCategory(Long reservationId, Long categoryId);
+    
     public List<Song> viewSongBySinger(String singer);
 
     public List<Song> viewSongBySongTitle(String songTitle);

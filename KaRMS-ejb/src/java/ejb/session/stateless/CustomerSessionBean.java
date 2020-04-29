@@ -6,6 +6,8 @@
 package ejb.session.stateless;
 
 import entity.Customer;
+import entity.Reservation;
+import entity.Song;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -15,6 +17,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import util.exception.AddSongException;
 import util.exception.ChangePasswordException;
 import util.exception.CreateCustomerException;
 import util.exception.CustomerNotFoundException;
@@ -78,15 +81,62 @@ public class CustomerSessionBean implements CustomerSessionBeanLocal {
     }
     
     @Override
-    public Customer retrieveCustomerByMemberNum(Long memberNum) throws CustomerNotFoundException {
-        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.memberNum = :inMemberNum");
-        query.setParameter("inMemberNum", memberNum);
+    public List<Song> retrieveFavouritePlaylist(Long customerId) {
+        Customer customer = retrieveCustomerById(customerId);
         
-        try {
-            return (Customer)query.getSingleResult();
-        } catch (NoResultException | NonUniqueResultException ex) {
-            throw new CustomerNotFoundException("Customer member number " + memberNum + " does not exist!");
+        return customer.getFavouritePlaylist();
+    }
+    
+    @Override
+    public void addSongToFavouritePlaylist(Song songToAdd, Long customerId) throws AddSongException {
+        
+        Customer customer = retrieveCustomerById(customerId);
+        List<Song> favouritePlaylist = customer.getFavouritePlaylist();
+        
+        if (favouritePlaylist.contains(songToAdd)) {
+            
+            throw new AddSongException("Song is already in the playlist!");
+                    
+        } else {
+            favouritePlaylist.add(songToAdd);    
         }
+        
+        customer.setFavouritePlaylist(favouritePlaylist);
+        em.merge(customer);
+        em.flush();
+                
+    }
+    
+    @Override
+    public void deleteSongFromFavouritePlaylist(Song songToDelete, Long customerId) {
+        
+        Customer customer = retrieveCustomerById(customerId);
+        List<Song> favouritePlaylist = customer.getFavouritePlaylist();
+        
+        favouritePlaylist.remove(songToDelete);
+        customer.setFavouritePlaylist(favouritePlaylist);
+        em.merge(customer);
+        em.flush();        
+    }
+    
+    @Override
+    public void addFavouritePlaylistToQueue(Long customerId, Long reservationId) {
+        
+        Customer customer = retrieveCustomerById(customerId);
+        Reservation reservation = em.find(Reservation.class, reservationId);
+        
+        List<Song> favouritePlaylist = customer.getFavouritePlaylist();
+        List<Song> songQueue = reservation.getSongQueue();
+        
+        for (Song song: favouritePlaylist) {
+            if (!songQueue.contains(song)) {
+                songQueue.add(song);
+            }
+        }
+        
+        reservation.setSongQueue(songQueue);
+        em.merge(reservation);
+        em.flush();
     }
     
     @Override
