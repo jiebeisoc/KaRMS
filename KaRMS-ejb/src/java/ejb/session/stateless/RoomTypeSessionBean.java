@@ -19,6 +19,7 @@ import javax.persistence.Query;
 import util.exception.CreateNewRoomTypeException;
 import util.exception.DeleteRoomTypeException;
 import util.exception.RoomTypeNotFoundException;
+import util.exception.UpdateRoomTypeException;
 
 /**
  *
@@ -43,6 +44,9 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
         if (roomRateIds != null && (!roomRateIds.isEmpty())) {
             for (Long id : roomRateIds) {
                 RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
+                if (roomRate.getRoomType() != null) {
+                    throw new CreateNewRoomTypeException("This room rate is already used");
+                }
                 newRoomType.getRoomRates().add(roomRate);
                 roomRate.setRoomType(newRoomType);
             }
@@ -91,17 +95,36 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
     }
     
     @Override
-    public void updateRoomType(RoomType roomTypeToUpdate, List<Long> roomRateIds) {
+    public void updateRoomType(RoomType roomTypeToUpdate, List<Long> roomRateIds) throws UpdateRoomTypeException {
         em.merge(roomTypeToUpdate);
         em.flush();
         
-        for (RoomRate rr: roomTypeToUpdate.getRoomRates()) {
-            roomTypeToUpdate.getRoomRates().remove(rr);
-            rr.setRoomType(null);
-        }
-        roomTypeToUpdate.setRoomRates(new ArrayList<>());
+        List<Long> roomRateIdsOld = retrieveRoomRateIds(roomTypeToUpdate.getRoomTypeId());
         
-        for (Long id : roomRateIds) {
+        List<Long> newIds = new ArrayList<>();
+        
+        for (Long id: roomRateIds) { // get new rate
+            if (!roomRateIdsOld.contains(id)) {
+                newIds.add(id);
+            }
+        }
+        
+        for (Long id : newIds) { // check for used room type
+            RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
+            if (roomRate.getRoomType() != null) { // Room rate is used by another room type
+                throw new UpdateRoomTypeException("This room rate is already used");
+            }
+        }
+        
+        for (Long id: roomRateIdsOld) {
+            if (!roomRateIds.contains(id)) { // if new ids does not contain old id
+                RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
+                roomTypeToUpdate.getRoomRates().remove(roomRate);
+                roomRate.setRoomType(null);
+            }
+        }           
+
+        for (Long id : newIds) {
             RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
             roomTypeToUpdate.getRoomRates().add(roomRate);
             roomRate.setRoomType(roomTypeToUpdate);

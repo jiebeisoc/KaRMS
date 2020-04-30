@@ -11,6 +11,7 @@ import javax.ejb.Local;
 import util.exception.CreateNewRoomTypeException;
 import util.exception.DeleteRoomTypeException;
 import util.exception.RoomTypeNotFoundException;
+import util.exception.UpdateRoomTypeException;
 
 /**
  *
@@ -25,7 +26,7 @@ public interface RoomTypeSessionBeanLocal {
 
     public RoomType retrieveRoomTypeById(Long roomTypeId);
 
-    public void updateRoomType(RoomType roomTypeToUpdate, List<Long> roomRateIds);
+    public void updateRoomType(RoomType roomTypeToUpdate, List<Long> roomRateIds) throws UpdateRoomTypeException;
 
     public void deleteRoomType(Long roomTypeId) throws DeleteRoomTypeException;
 
