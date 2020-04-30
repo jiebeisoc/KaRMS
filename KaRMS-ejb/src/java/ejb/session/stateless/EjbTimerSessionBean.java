@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.Customer;
 import entity.Reservation;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -33,7 +34,7 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanLocal {
     @Schedule(hour = "*", info = "completeReservationTimer")
     public void completeReservationTimer()
     {
-        String timeStamp = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss").format(new Date());
+        String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
         System.out.println("********** EjbTimerSession.completeReservationTimer(): Timeout at " + timeStamp);
         
         Calendar cal = Calendar.getInstance();
@@ -52,6 +53,11 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanLocal {
             if (completedHour == currentHour) {
                 reservation.setStatus(ReservationStatus.COMPLETED);
                 
+                int pointsAwarded = reservation.getTotalPrice().intValue();
+                Customer customer = reservation.getCustomer();
+                customer.setPoints(customer.getPoints() + pointsAwarded);
+                
+                em.merge(customer);
                 em.merge(reservation);
                 em.flush();
             }

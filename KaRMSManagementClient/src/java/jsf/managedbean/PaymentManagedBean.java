@@ -32,6 +32,7 @@ public class PaymentManagedBean implements Serializable {
     private ReservationSessionBeanLocal reservationSessionBeanLocal;
     
     private List<Reservation> unpaidReservations;
+    private List<Reservation> filteredReservations;
     
     private Reservation selectedReservation;
     
@@ -63,6 +64,12 @@ public class PaymentManagedBean implements Serializable {
         }
     }
     
+    public String formatDate(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+
+        return formatter.format(date);
+    }
+    
     public void payReservation(ActionEvent event) {
         
         Reservation reservationToPay = (Reservation)event.getComponent().getAttributes().get("reservationToPay");
@@ -86,6 +93,14 @@ public class PaymentManagedBean implements Serializable {
 
     public void setSelectedReservation(Reservation selectedReservation) {
         this.selectedReservation = selectedReservation;
+    }
+
+    public List<Reservation> getFilteredReservations() {
+        return filteredReservations;
+    }
+
+    public void setFilteredReservations(List<Reservation> filteredReservations) {
+        this.filteredReservations = filteredReservations;
     }
 
     public String getPayment() {

@@ -204,12 +204,13 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
                     break;
                 }
             }
-
+            
             if (promotionId == null || promotionId == 0) {
                 totalPrice = roomRate.multiply(new BigDecimal(duration));
             } else {
                 double promotionDiscount = promotionSessionBeanLocal.retrievePromotionById(promotionId).getDiscountRate();
                 totalPrice = roomRate.multiply(new BigDecimal(duration)).multiply(new BigDecimal(1 - promotionDiscount));
+                System.out.println("totalPrice: " + totalPrice);
             }
         }
         
@@ -221,7 +222,6 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
     public BigDecimal calculateTotalPrice(Long time, int duration, Long roomTypeId, Long promotionId) {
         
         Date date = new Date(time.longValue()); 
-        System.out.println("date: " + date);
         BigDecimal totalPrice = new BigDecimal("0.00");
         
         if (date != null && duration != 0 && roomTypeId != null) {

@@ -133,7 +133,6 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
     public List<Room> retrieveAvailableRooms(Long time, int duration, Long outletId, Long roomTypeId) throws NoAvailableRoomException, ExceedClosingHoursException {
 
         Date startDateTime = new Date(time.longValue());
-        System.out.println("startDateTime: " + startDateTime);
         Calendar cal = Calendar.getInstance();
         cal.setTime(startDateTime);
         
