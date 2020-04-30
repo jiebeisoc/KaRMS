@@ -26,7 +26,7 @@ public interface ReservationSessionBeanLocal {
     
     public List<Reservation> retrieveAllReservations(Long outletId);
     
-    public List<Reservation> retrieveUpcomingReservations(Date date);
+    public List<Reservation> retrieveReservationsToBeCompleted(Date dateBefore, Date currentDate);
 
     public Reservation retrieveReservationById(Long reservationId);
     

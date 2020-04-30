@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.Customer;
 import entity.Reservation;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -33,25 +34,30 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanLocal {
     @Schedule(hour = "*", info = "completeReservationTimer")
     public void completeReservationTimer()
     {
-        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+        String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
         System.out.println("********** EjbTimerSession.completeReservationTimer(): Timeout at " + timeStamp);
         
         Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.set(Calendar.DATE, cal.get(Calendar.DATE) - 1);
-        System.out.println("date: " + cal.get(Calendar.DATE));
-        Date date = cal.getTime();
-        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        Date currentDate = cal.getTime();
+        int currentHour = cal.get(Calendar.HOUR_OF_DAY);
         
-        List<Reservation> reservations = reservationSessionBeanLocal.retrieveUpcomingReservations(date);
+        cal.add(Calendar.HOUR_OF_DAY, -12);
+        Date dateBefore = cal.getTime();
+        
+        List<Reservation> reservations = reservationSessionBeanLocal.retrieveReservationsToBeCompleted(dateBefore, currentDate);
         
         for(Reservation reservation: reservations)
         {
             cal.setTime(reservation.getDate());
             int completedHour = cal.get(Calendar.HOUR_OF_DAY) + reservation.getDuration();
-            if (completedHour == hour) {
+            if (completedHour == currentHour) {
                 reservation.setStatus(ReservationStatus.COMPLETED);
                 
+                int pointsAwarded = reservation.getTotalPrice().intValue();
+                Customer customer = reservation.getCustomer();
+                customer.setPoints(customer.getPoints() + pointsAwarded);
+                
+                em.merge(customer);
                 em.merge(reservation);
                 em.flush();
             }

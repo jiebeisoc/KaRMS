@@ -465,13 +465,13 @@ public class DataInitializationSessionBean {
             newReservation.setWalkInPhoneNo("90001234");
             reservationSessionBeanLocal.createNewReservation(newReservation, 26l, 2l, 1l);
             
-            newReservation = new Reservation(new GregorianCalendar(2020, Calendar.APRIL, 25, 20, 0).getTime(), 3, 8, ReservationStatus.PAID);
+            newReservation = new Reservation(new GregorianCalendar(2020, Calendar.APRIL, 25, 20, 0).getTime(), 3, 8, ReservationStatus.COMPLETED);
             newReservation.setTotalPrice(BigDecimal.valueOf(48));
             newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.APRIL, 18, 13, 32).getTime());
-            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 51l, 3l, 2l, "PAID");
+            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 51l, 3l, 2l, "COMPLETED");
             
             newReservation = new Reservation(new GregorianCalendar(2020, Calendar.MAY, 1, 13, 0).getTime(), 1, 3, ReservationStatus.PAID);
-            newReservation.setTotalPrice(BigDecimal.valueOf(8));
+            newReservation.setTotalPrice(BigDecimal.valueOf(6.4));
             newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.APRIL, 28, 16, 16).getTime());
             reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 4l, 4l, 2l, "PAID");
             
