@@ -283,10 +283,11 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
     }
     
     @Override
-    public List<Reservation> retrieveUpcomingReservations(Date date) {
+    public List<Reservation> retrieveReservationsToBeCompleted(Date dateBefore, Date currentDate) {
         
-        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.date >= :inDate");
-        query.setParameter("inDate", date);
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.date BETWEEN :inDateFrom AND :inDateTo");
+        query.setParameter("inDateFrom", dateBefore);
+        query.setParameter("inDateTo", currentDate);
         
         return query.getResultList();
     }
