@@ -25,7 +25,7 @@
             <h:form id="formAllRoomType">                
                 
                 <p:dataTable id="dataTableAllRoomType" widgetVar="dataTableAllRoomType" value="#{roomTypeManagementManagedBean.roomTypes}" var="roomType"
-                             selectionMode="single" selection="#{roomTypeManagementManagedBean.selectedRoomType}" rowKey="#{roomType.roomTypeId}" tableStyle="width:80%">
+                             selectionMode="single" selection="#{roomTypeManagementManagedBean.selectedRoomType}" rowKey="#{roomType.roomTypeId}" >
                 
                     <p:ajax event='rowSelect' listener="#{roomTypeManagementManagedBean.onRowSelect}" oncomplete="PF('dialogUpdateRoomType').show()" update="@form formUpdateRoomType"/>
                     <p:ajax event="rowUnselect" listener="#{roomTypeManagementManagedBean.onRowUnselect}" update="@form formUpdateRoomType" />
@@ -93,18 +93,60 @@
                                 <p:inputText id="roomDetails" value="#{roomTypeManagementManagedBean.newRoomType.roomDetails}" />
                             </p:column>
                             
+                        </p:row>                        
+                        
+                        <p:row>
+                            
+                            <p:column>
+                                <p:outputLabel for="wkDayNonPeak" value="Room Rate(Weekday Non Peak): " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="wkDayNonPeak" value="#{roomTypeManagementManagedBean.wkDayNonPeakIdNew}" dynamic="true" required="true" requiredMessage="Room Rate(Weekday Non Peak) is required">
+                                    <f:selectItem itemLabel="Select One" itemValue="" />
+                                    <f:selectItems value="#{roomTypeManagementManagedBean.wkDayNonPeakRate}" var="roomRate" itemValue="#{roomRate.roomRateId}" itemLabel="#{roomRate.name}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            
                         </p:row>
                         
                         <p:row>
                             
                             <p:column>
-                                <p:outputLabel for="roomRates" value="Room Rates: " style="font-weight: bold" />
+                                <p:outputLabel for="wkDayPeak" value="Room Rate(Weekday Peak): " style="font-weight: bold" />
                             </p:column>
                             <p:column>
-                                <p:selectCheckboxMenu id="roomRates" value="#{roomTypeManagementManagedBean.roomRateIdsNew}" multiple="true"
-                                                      filter="true" filterMatchMode="startsWith" >
-                                    <f:selectItems value="#{roomTypeManagementManagedBean.roomRates}" var="roomRate" itemValue="#{roomRate.roomRateId}" itemLabel="#{roomRate.name}"/>
-                                </p:selectCheckboxMenu>
+                                <p:selectOneMenu id="wkDayPeak" value="#{roomTypeManagementManagedBean.wkDayPeakIdNew}" dynamic="true" required="true" requiredMessage="Room Rate(Weekday Peak) is required">
+                                    <f:selectItem itemLabel="Select One" itemValue="" />
+                                    <f:selectItems value="#{roomTypeManagementManagedBean.wkDayPeakRate}" var="roomRate" itemValue="#{roomRate.roomRateId}" itemLabel="#{roomRate.name}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            
+                        </p:row>
+                        
+                        <p:row>
+                            
+                            <p:column>
+                                <p:outputLabel for="wkEndNonPeak" value="Room Rate(Weekend Non Peak): " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="wkEndNonPeak" value="#{roomTypeManagementManagedBean.wkEndNonPeakIdNew}" dynamic="true" required="true" requiredMessage="Room Rate(Weekend Non Peak) is required">
+                                    <f:selectItem itemLabel="Select One" itemValue="" />
+                                    <f:selectItems value="#{roomTypeManagementManagedBean.wkEndNonPeakRate}" var="roomRate" itemValue="#{roomRate.roomRateId}" itemLabel="#{roomRate.name}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            
+                        </p:row>
+                        
+                        <p:row>
+                            
+                            <p:column>
+                                <p:outputLabel for="wkEndPeak" value="Room Rate(Weekend Peak): " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="wkEndPeak" value="#{roomTypeManagementManagedBean.wkEndPeakIdNew}" dynamic="true" required="true" requiredMessage="Room Rate(Weekend Peak) is required">
+                                    <f:selectItem itemLabel="Select One" itemValue="" />
+                                    <f:selectItems value="#{roomTypeManagementManagedBean.wkEndPeakRate}" var="roomRate" itemValue="#{roomRate.roomRateId}" itemLabel="#{roomRate.name}"/>
+                                </p:selectOneMenu>
                             </p:column>
                             
                         </p:row>
@@ -156,18 +198,62 @@
                             <p:column>
                                 <p:inputText id="roomDetails" value="#{roomTypeManagementManagedBean.selectedRoomType.roomDetails}" />
                             </p:column>
+                        </p:row>                        
+                        
+                        <p:row>
+                            
+                            <p:column>
+                                <p:outputLabel for="wkDayNonPeak" value="Room Rate(Weekday Non Peak): " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="wkDayNonPeak" value="#{roomTypeManagementManagedBean.wkDayNonPeakId}" dynamic="true" required="true" requiredMessage="Room Rate(Weekday Non Peak) is required">
+                                    <f:selectItem itemLabel="Select One" itemValue="" />
+                                    <f:selectItems value="#{roomTypeManagementManagedBean.wkDayNonPeakRate}" var="roomRate" itemValue="#{roomRate.roomRateId}" itemLabel="#{roomRate.name}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            
                         </p:row>
                         
                         <p:row>
+                            
                             <p:column>
-                                <p:outputLabel value="RoomRates: " style="font-weight: bold" />
+                                <p:outputLabel for="wkDayPeak" value="Room Rate(Weekday Peak): " style="font-weight: bold" />
                             </p:column>
                             <p:column>
-                                <p:selectCheckboxMenu id="roomRates" value="#{roomTypeManagementManagedBean.roomRateIdsUpdate}" multiple="true"
-                                                      filter="true" filterMatchMode="startsWith" >
-                                    <f:selectItems value="#{roomTypeManagementManagedBean.roomRates}" var="roomRate" itemValue="#{roomRate.roomRateId}" itemLabel="#{roomRate.name}"/>
-                                </p:selectCheckboxMenu>
+                                <p:selectOneMenu id="wkDayPeak" value="#{roomTypeManagementManagedBean.wkDayPeakId}" dynamic="true" required="true" requiredMessage="Room Rate(Weekday Peak) is required">
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{roomTypeManagementManagedBean.wkDayPeakRate}" var="roomRate" itemValue="#{roomRate.roomRateId}" itemLabel="#{roomRate.name}"/>
+                                </p:selectOneMenu>
                             </p:column>
+                            
+                        </p:row>
+                        
+                        <p:row>
+                            
+                            <p:column>
+                                <p:outputLabel for="wkEndNonPeak" value="Room Rate(Weekend Non Peak): " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="wkEndNonPeak" value="#{roomTypeManagementManagedBean.wkEndNonPeakId}" dynamic="true" required="true" requiredMessage="Room Rate(Weekend Non Peak) is required">
+                                    <f:selectItem itemLabel="Select One" itemValue="" />
+                                    <f:selectItems value="#{roomTypeManagementManagedBean.wkEndNonPeakRate}" var="roomRate" itemValue="#{roomRate.roomRateId}" itemLabel="#{roomRate.name}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            
+                        </p:row>
+                        
+                        <p:row>
+                            
+                            <p:column>
+                                <p:outputLabel for="wkEndPeak" value="Room Rate(Weekend Peak): " style="font-weight: bold" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="wkEndPeak" value="#{roomTypeManagementManagedBean.wkEndPeakId}" dynamic="true" required="true" requiredMessage="Room Rate(Weekday Peak) is required">
+                                    <f:selectItem itemLabel="Select One" itemValue="" />
+                                    <f:selectItems value="#{roomTypeManagementManagedBean.wkEndPeakRate}" var="roomRate" itemValue="#{roomRate.roomRateId}" itemLabel="#{roomRate.name}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            
                         </p:row>
                         
                         <p:row>

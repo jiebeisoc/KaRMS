@@ -10,9 +10,9 @@ package util.enumeration;
  * @author zihua
  */
 public enum ReservationStatus {
-    PAID("Paid"),
-    NOTPAID("NotPaid"),
-    COMPLETED("Completed");
+    PAID("PAID"),
+    NOTPAID("NOTPAID"),
+    COMPLETED("COMPLETED");
     
     private final String name;
 

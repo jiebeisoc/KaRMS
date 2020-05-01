@@ -7,19 +7,22 @@ package ws.restful.resources;
 
 import ejb.session.stateless.CustomerSessionBeanLocal;
 import entity.Customer;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.Produces;
+import entity.Song;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+import util.exception.AddSongException;
 import util.exception.ChangePasswordException;
 import util.exception.CreateCustomerException;
 import util.exception.CustomerUsernameExistException;
@@ -29,7 +32,10 @@ import ws.restful.model.CreateCustomerReq;
 import ws.restful.model.CreateCustomerRsp;
 import ws.restful.model.CustomerLoginRsp;
 import ws.restful.model.ErrorRsp;
+import ws.restful.model.FavouritePlaylistSongQueueReq;
+import ws.restful.model.RetrieveSongsRsp;
 import ws.restful.model.UpdateCustomerReq;
+import ws.restful.model.UpdateFavouritePlayListReq;
 
 /**
  * REST Web Service
@@ -68,6 +74,10 @@ public class CustomerResource {
         try {
             System.out.println("******** Customer login");
             Customer customer = customerSessionBeanLocal.customerLogin(username, password);
+            
+            customer.getFavouritePlaylist().clear();
+            customer.getFoodOrderTransactionEntities().clear();
+            customer.getReservations().clear();
 
             return Response.status(Status.OK).entity(new CustomerLoginRsp(customer)).build();
             
@@ -79,6 +89,88 @@ public class CustomerResource {
             ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
             
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("retrieveFavouritePlaylist")
+    @GET
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response retrieveFavouritePlaylist(@QueryParam("customerId") Long customerId) {
+        
+        System.out.println("******** CustomerResource.retrieveFavouritePlaylist()");
+        
+        List<Song> songs = customerSessionBeanLocal.retrieveFavouritePlaylist(customerId);
+        
+        for (Song song: songs) {
+            song.getSongCategories().clear();
+        }
+        
+        return Response.status(Status.OK).entity(new RetrieveSongsRsp(songs)).build();
+    }
+    
+    @Path("addSongToFavouritePlaylist")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addSongToFavouritePlaylist(UpdateFavouritePlayListReq updateFavouritePlayListReq) {
+        
+        try { 
+        
+            System.out.println("******** CustomerResource.addSongToFavouritePlaylist()");
+
+            customerSessionBeanLocal.addSongToFavouritePlaylist(updateFavouritePlayListReq.getSong(), updateFavouritePlayListReq.getCustomerId());
+
+            return Response.status(Response.Status.OK).build();
+            
+        } catch (AddSongException ex) {
+            
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Status.BAD_REQUEST).entity(errorRsp).build();
+            
+        } catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("deleteSongFromFavouritePlaylist")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteSongFromFavouritePlaylist(UpdateFavouritePlayListReq updateFavouritePlayListReq) {
+        
+        try { 
+        
+            System.out.println("******** CustomerResource.deleteSongFromFavouritePlaylist()");
+
+            customerSessionBeanLocal.deleteSongFromFavouritePlaylist(updateFavouritePlayListReq.getSong(), updateFavouritePlayListReq.getCustomerId());
+
+            return Response.status(Response.Status.OK).build();
+            
+        }  catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
+        }
+    }
+    
+    @Path("addFavouritePlaylistToSongQueue")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addFavouritePlaylistToSongQueue(FavouritePlaylistSongQueueReq addFavouritePlaylistToSongQueueReq) {
+        
+        try { 
+        
+            System.out.println("******** CustomerResource.addFavouritePlaylistToSongQueue()");
+
+            customerSessionBeanLocal.addFavouritePlaylistToQueue(addFavouritePlaylistToSongQueueReq.getCustomerId(), addFavouritePlaylistToSongQueueReq.getReservationId());
+
+            return Response.status(Response.Status.OK).build();
+ 
+        }  catch (Exception ex) {
+            ErrorRsp errorRsp = new ErrorRsp(ex.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorRsp).build();
         }
     }
 

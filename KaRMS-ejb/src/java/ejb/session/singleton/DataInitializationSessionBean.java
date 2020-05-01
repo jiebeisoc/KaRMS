@@ -6,17 +6,23 @@
  */
 package ejb.session.singleton;
 
+import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.EmployeeSessionBeanLocal;
 import ejb.session.stateless.FoodSessionBeanLocal;
 import ejb.session.stateless.OutletSessionBeanLocal;
+import ejb.session.stateless.PromotionSessionBeanLocal;
+import ejb.session.stateless.ReservationSessionBeanLocal;
 import ejb.session.stateless.RoomRateSessionBeanLocal;
 import ejb.session.stateless.RoomSessionBeanLocal;
 import ejb.session.stateless.RoomTypeSessionBeanLocal;
 import ejb.session.stateless.SongSessionBeanLocal;
+import entity.Customer;
 import entity.Employee;
 import entity.FoodItem;
 import entity.FoodItemCategory;
 import entity.Outlet;
+import entity.Promotion;
+import entity.Reservation;
 import entity.Room;
 import entity.RoomRate;
 import entity.RoomType;
@@ -27,22 +33,30 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
+import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import util.enumeration.AccessRightEnum;
+import util.enumeration.ReservationStatus;
 import util.enumeration.RoomRateType;
 import util.exception.CategoryNotFoundException;
+import util.exception.CreateCustomerException;
 import util.exception.CreateNewFoodItemException;
+import util.exception.CreateNewRoomException;
+import util.exception.CreateNewRoomTypeException;
+import util.exception.CustomerNotFoundException;
+import util.exception.CustomerUsernameExistException;
 import util.exception.EmployeeNotFoundException;
 import util.exception.InputDataValidationException;
 
@@ -55,6 +69,14 @@ import util.exception.InputDataValidationException;
 @Startup
 public class DataInitializationSessionBean {
 
+    @EJB(name = "ReservationSessionBeanLocal")
+    private ReservationSessionBeanLocal reservationSessionBeanLocal;
+
+    @EJB(name = "PromotionSessionBeanLocal")
+    private PromotionSessionBeanLocal promotionSessionBeanLocal;
+
+    @EJB(name = "CustomerSessionBeanLocal")
+    private CustomerSessionBeanLocal customerSessionBeanLocal;
 
     @EJB(name = "SongSessionBeanLocal")
     private SongSessionBeanLocal songSessionBeanLocal;
@@ -102,9 +124,17 @@ public class DataInitializationSessionBean {
     private void initializeData() {
         System.err.println("********Reach Initialization Data*******************");
         
+        // Add temporary dummy customer
+        try {
+            customerSessionBeanLocal.createNewCustomer(new Customer("Customer", "90001234", "1234567812345678", "customer1", "password", new Date(), "customer1@gmail.com"));
+        } catch (CustomerUsernameExistException | CreateCustomerException ex) {
+            System.out.println(ex.getMessage());
+        }
+
         // Add manager
         employeeSessionBeanLocal.createNewEmployee(new Employee("manager", "password", AccessRightEnum.MANAGER));
-        
+        employeeSessionBeanLocal.createNewEmployee(new Employee("cashier", "password", AccessRightEnum.CASHIER));
+
         // Add outlets
         try {
             Date openingHour = timeFormat.parse("12:00");
@@ -130,135 +160,142 @@ public class DataInitializationSessionBean {
             Date peakEnd = timeFormat.parse("00:00");
             
             //Small
-            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("Weekday Non Peak $8", nonPeakStart, nonPeakEnd, new BigDecimal("8"), RoomRateType.WKDAYNONPEAK));
-            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("Weekend Non Peak $10", nonPeakStart, nonPeakEnd, new BigDecimal("10"), RoomRateType.WKENDNONPEAK));
-            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("Weekday Peak $14", peakStart, peakEnd, new BigDecimal("14"), RoomRateType.WKDAYPEAK));
-            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("Weekend Peak $16", peakStart, peakEnd, new BigDecimal("16"), RoomRateType.WKENDPEAK));
+            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("[S] Weekday Non Peak $8", nonPeakStart, nonPeakEnd, new BigDecimal("8"), RoomRateType.WKDAYNONPEAK));
+            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("[S] Weekend Non Peak $10", nonPeakStart, nonPeakEnd, new BigDecimal("10"), RoomRateType.WKENDNONPEAK));
+            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("[S] Weekday Peak $14", peakStart, peakEnd, new BigDecimal("14"), RoomRateType.WKDAYPEAK));
+            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("[S] Weekend Peak $16", peakStart, peakEnd, new BigDecimal("16"), RoomRateType.WKENDPEAK));
             
             //Medium
-            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("Weekday Non Peak $10", nonPeakStart, nonPeakEnd, new BigDecimal("10"), RoomRateType.WKDAYNONPEAK));
-            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("Weekend Non Peak $12", nonPeakStart, nonPeakEnd, new BigDecimal("12"), RoomRateType.WKENDNONPEAK));
-            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("Weekday Peak $16", peakStart, peakEnd, new BigDecimal("16"), RoomRateType.WKDAYPEAK));
-            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("Weekend Peak $18", peakStart, peakEnd, new BigDecimal("18"), RoomRateType.WKENDPEAK));
+            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("[M] Weekday Non Peak $10", nonPeakStart, nonPeakEnd, new BigDecimal("10"), RoomRateType.WKDAYNONPEAK));
+            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("[M] Weekend Non Peak $12", nonPeakStart, nonPeakEnd, new BigDecimal("12"), RoomRateType.WKENDNONPEAK));
+            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("[M] Weekday Peak $16", peakStart, peakEnd, new BigDecimal("16"), RoomRateType.WKDAYPEAK));
+            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("[M] Weekend Peak $18", peakStart, peakEnd, new BigDecimal("18"), RoomRateType.WKENDPEAK));
             
             //Large
-            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("Weekday Non Peak $12", nonPeakStart, nonPeakEnd, new BigDecimal("12"), RoomRateType.WKDAYNONPEAK));
-            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("Weekend Non Peak $14", nonPeakStart, nonPeakEnd, new BigDecimal("14"), RoomRateType.WKENDNONPEAK));
-            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("Weekday Peak $18", peakStart, peakEnd, new BigDecimal("18"), RoomRateType.WKDAYPEAK));
-            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("Weekend Peak $20", peakStart, peakEnd, new BigDecimal("20"), RoomRateType.WKENDPEAK));         
+            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("[L] Weekday Non Peak $12", nonPeakStart, nonPeakEnd, new BigDecimal("12"), RoomRateType.WKDAYNONPEAK));
+            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("[L] Weekend Non Peak $14", nonPeakStart, nonPeakEnd, new BigDecimal("14"), RoomRateType.WKENDNONPEAK));
+            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("[L] Weekday Peak $18", peakStart, peakEnd, new BigDecimal("18"), RoomRateType.WKDAYPEAK));
+            roomRateSessionBeanLocal.createNewRoomRate(new RoomRate("[L] Weekend Peak $20", peakStart, peakEnd, new BigDecimal("20"), RoomRateType.WKENDPEAK));         
             
         } catch (ParseException ex) {
             System.out.println("Wrong Format");
         }
         
         // Add room type
-        List<Long> roomRateIds = new ArrayList<>();
-        roomRateIds.add(1l);
-        roomRateIds.add(2l);
-        roomRateIds.add(3l);
-        roomRateIds.add(4l);
-        
-        roomTypeSessionBeanLocal.createNewRoomType(new RoomType("Small", 4, "Small"), roomRateIds);
-        
-        roomRateIds.clear();
-        roomRateIds.add(5l);
-        roomRateIds.add(6l);
-        roomRateIds.add(7l);
-        roomRateIds.add(8l);
-        
-        roomTypeSessionBeanLocal.createNewRoomType(new RoomType("Medium", 6, "Medium"), roomRateIds);
-        
-        roomRateIds.clear();
-        roomRateIds.add(9l);
-        roomRateIds.add(10l);
-        roomRateIds.add(11l);
-        roomRateIds.add(12l);
-        
-        roomTypeSessionBeanLocal.createNewRoomType(new RoomType("Large", 8, "Large"), roomRateIds);
+        try {
+            List<Long> roomRateIds = new ArrayList<>();
+            roomRateIds.add(1l);
+            roomRateIds.add(2l);
+            roomRateIds.add(3l);
+            roomRateIds.add(4l);
+
+            roomTypeSessionBeanLocal.createNewRoomType(new RoomType("Small", 4, "Small"), roomRateIds);
+
+            roomRateIds.clear();
+            roomRateIds.add(5l);
+            roomRateIds.add(6l);
+            roomRateIds.add(7l);
+            roomRateIds.add(8l);
+
+            roomTypeSessionBeanLocal.createNewRoomType(new RoomType("Medium", 6, "Medium"), roomRateIds);
+
+            roomRateIds.clear();
+            roomRateIds.add(9l);
+            roomRateIds.add(10l);
+            roomRateIds.add(11l);
+            roomRateIds.add(12l);
+
+            roomTypeSessionBeanLocal.createNewRoomType(new RoomType("Large", 8, "Large"), roomRateIds);
+        } catch (CreateNewRoomTypeException ex) {
+            System.out.println(ex.getMessage());
+        }
     
         // Add room
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 8l);
-        
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 1l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 2l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 3l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 4l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 5l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 6l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 7l);
-        roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 8l);
-        
-        em.flush();
+        try {
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("S01"), 1l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("S02"), 1l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("S03"), 1l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("M04"), 2l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("M05"), 2l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("M06"), 2l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("L07"), 3l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("L08"), 3l, 8l);
+
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 1l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 2l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 3l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 4l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 5l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 6l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 7l);
+            roomSessionBeanLocal.createNewRoom(new Room("L09"), 3l, 8l);
+        } catch (CreateNewRoomException ex) {
+            System.out.println(ex.getMessage());
+        }
+
         //Add FoodItem Categories
         try{
             FoodItemCategory foodItemCategory1 = new FoodItemCategory("Snacks","All snacks that you are craving");
@@ -270,10 +307,7 @@ public class DataInitializationSessionBean {
             em.persist(foodItemCategory2);
             em.persist(foodItemCategory3);
             em.persist(foodItemCategory4);
-            
-            
-            
-           
+
             List<FoodItemCategory> subCategoryEntities = new LinkedList<FoodItemCategory>();
             subCategoryEntities.add(foodItemCategory2);
             subCategoryEntities.add(foodItemCategory3);
@@ -281,10 +315,7 @@ public class DataInitializationSessionBean {
             
             foodItemCategory2.setParentCategoryEntity(foodItemCategory1);
             foodItemCategory3.setParentCategoryEntity(foodItemCategory1);
-            
-            
-            
-         
+
             em.flush();
             
             FoodItem a = new FoodItem("FOOD001", "FoodItemA", "description for food item A", 10 ,BigDecimal.valueOf(3.4), 2);
@@ -304,14 +335,10 @@ public class DataInitializationSessionBean {
             foodSessionBeanLocal.createNewFoodItem(e, 2L);
             foodSessionBeanLocal.createNewFoodItem(f, 3L);
             foodSessionBeanLocal.createNewFoodItem(g, 2L);
-<<<<<<< HEAD
             foodSessionBeanLocal.createNewFoodItem(h, 4L);
             
-            
              em.flush();
-=======
-            foodSessionBeanLocal.createNewFoodItem(h, 4L);                   
->>>>>>> 50687a6b469fba40ce957ed71f8dfc036ca9028c
+
             
         } catch (InputDataValidationException ex) {
             Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -418,6 +445,50 @@ public class DataInitializationSessionBean {
         songCategoryIds.add(8l);
         songSessionBeanLocal.createNewSong(new Song("Body Like a Back Road", "Sam Hunt"), songCategoryIds);
         songSessionBeanLocal.createNewSong(new Song("Die a Happy Man", "Thomas Rhett"), songCategoryIds);
+        
+        //Add Promotions
+        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 1", 0.1, new GregorianCalendar(2020, Calendar.APRIL, 1, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.APRIL, 30, 23, 59).getTime(), "Promotion 1"));
+        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 2", 0.2, new GregorianCalendar(2020, Calendar.APRIL, 15, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.MAY, 15, 23, 59).getTime(), "Promotion 2"));
+        promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 3", 0.3, new GregorianCalendar(2020, Calendar.MAY, 20, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.JUNE, 20, 23, 59).getTime(), "Promotion 3"));
+        
+        //Add temporary dummy reservations
+        try {
+            Reservation newReservation = new Reservation(new GregorianCalendar(2020, Calendar.APRIL, 2, 15, 0).getTime(), 1, 3, ReservationStatus.COMPLETED);
+            newReservation.setTotalPrice(BigDecimal.valueOf(7.2));
+            newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.APRIL, 1, 12, 34).getTime());
+            newReservation.setWalkInPhoneNo("90006789");
+            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 1l, 1l);
+            
+            newReservation = new Reservation(new GregorianCalendar(2020, Calendar.APRIL, 13, 18, 0).getTime(), 2, 6, ReservationStatus.COMPLETED);
+            newReservation.setTotalPrice(BigDecimal.valueOf(28.8));
+            newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.APRIL, 13, 14, 11).getTime());
+            newReservation.setWalkInPhoneNo("90001234");
+            reservationSessionBeanLocal.createNewReservation(newReservation, 26l, 2l, 1l);
+            
+            newReservation = new Reservation(new GregorianCalendar(2020, Calendar.APRIL, 25, 20, 0).getTime(), 3, 8, ReservationStatus.COMPLETED);
+            newReservation.setTotalPrice(BigDecimal.valueOf(48));
+            newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.APRIL, 18, 13, 32).getTime());
+            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 51l, 3l, 2l, "COMPLETED");
+            
+            newReservation = new Reservation(new GregorianCalendar(2020, Calendar.MAY, 1, 13, 0).getTime(), 1, 3, ReservationStatus.PAID);
+            newReservation.setTotalPrice(BigDecimal.valueOf(6.4));
+            newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.APRIL, 28, 16, 16).getTime());
+            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 4l, 4l, 2l, "PAID");
+            
+            newReservation = new Reservation(new GregorianCalendar(2020, Calendar.MAY, 18, 18, 0).getTime(), 2, 2, ReservationStatus.NOTPAID);
+            newReservation.setTotalPrice(BigDecimal.valueOf(28));
+            newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.MAY, 18, 17, 45).getTime());
+            newReservation.setWalkInPhoneNo("91233456");
+            reservationSessionBeanLocal.createNewReservation(newReservation, 5l, 5l, null);
+            
+            newReservation = new Reservation(new GregorianCalendar(2020, Calendar.JUNE, 1, 22, 0).getTime(), 2, 5, ReservationStatus.NOTPAID);
+            newReservation.setTotalPrice(BigDecimal.valueOf(22.4));
+            newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.MAY, 15, 21, 51).getTime());
+            reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 27l, 3l, 3l, "NOTPAID");
+            
+        } catch (CustomerNotFoundException ex) {
+            System.out.println(ex.getMessage());
+        }
         
     }
 }

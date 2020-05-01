@@ -131,8 +131,9 @@ public class FoodOrderShoppingCartManagedBean implements Serializable {
     public void deleteFoodTransactionLineItem(ActionEvent event) {
         Long foodItemId = (Long) event.getComponent().getAttributes().get("foodItemId");
         for (FoodOrderTransactionLineItem f : foodOrderTransactionLineItemList) {
-            if (f.getFoodItem().getFoodItemId() == foodItemId) {
+            if (Objects.equals(f.getFoodItem().getFoodItemId(), foodItemId)) {
                 totalAmount=totalAmount.subtract(f.getSubTotal());
+                
                 totalLineItem--;
                 totalQuantity-=f.getQuantity();
                 this.foodOrderTransactionLineItemList.remove(f);
@@ -146,7 +147,8 @@ public class FoodOrderShoppingCartManagedBean implements Serializable {
     
     public void doCheckout(ActionEvent event){
      Employee currentEmployee=(Employee)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("currentEmployee");
-
+        System.err.println("currentEmployee"+ currentEmployee.getUsername());
+        System.err.println("currentEmployee's outlet"+ currentEmployee.getOutlet().getOutletId());
      FoodOrderTransaction newFoodOrderTransactionEntity = new FoodOrderTransaction();
      
      newFoodOrderTransactionEntity.setTotalAmount(totalAmount);

@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -31,12 +32,7 @@ public class Customer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
-<<<<<<< HEAD
-//    @Column(nullable = false, unique = true, length = 7)
-//    @NotNull
-    private Long memberNum;
-=======
->>>>>>> 50687a6b469fba40ce957ed71f8dfc036ca9028c
+
     @NotNull
     @Column(nullable = false)
     private String name;
@@ -60,18 +56,23 @@ public class Customer implements Serializable {
     private int points;
     private String salt;
     
-    @OneToMany
+    @OneToMany(mappedBy = "customer")
     private List<Reservation> reservations;
+    
+    @ManyToMany
+    private List<Song> favouritePlaylist;
+    
     //Added by Luqian
     @OneToMany(mappedBy = "customerEntity")
     private List<FoodOrderTransaction> foodOrderTransactionEntities;
 
     public Customer() {
         this.points = 0;
-         this.salt = CryptographicHelper.getInstance().generateRandomString(32);
+        this.salt = CryptographicHelper.getInstance().generateRandomString(32);
         this.points = 0;
         this.reservations = new ArrayList<>();
         this.foodOrderTransactionEntities = new ArrayList<>();
+        this.favouritePlaylist = new ArrayList<>();
     }
 
     public Customer(String name, String phoneNo, String creditCardNo, String username, String password, Date birthday, String email) {
@@ -235,12 +236,20 @@ public class Customer implements Serializable {
         this.foodOrderTransactionEntities = foodOrderTransactionEntities;
     }
     
-        public String getSalt() {
+    public String getSalt() {
         return salt;
     }
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public List<Song> getFavouritePlaylist() {
+        return favouritePlaylist;
+    }
+
+    public void setFavouritePlaylist(List<Song> favouritePlaylist) {
+        this.favouritePlaylist = favouritePlaylist;
     }
     
 }

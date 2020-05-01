@@ -49,7 +49,7 @@ public class FoodSessionBean implements FoodSessionBeanLocal
 
    
     @EJB
-    private FoodOrderSessionBeanLocal saleTransactionEntitySessionBeanLocal;
+    private FoodOrderSessionBeanLocal foodOrderTransactionEntitySessionBeanLocal;
     
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
@@ -294,7 +294,7 @@ public class FoodSessionBean implements FoodSessionBeanLocal
     {
         FoodItem foodItemToRemove = retrieveFoodItemById(foodItemId);
         
-        List<FoodOrderTransactionLineItem> foodOrderTransactionLineItemEntities = saleTransactionEntitySessionBeanLocal.retrieveFoodOrderTransactionLineItemsByFoodItemId(foodItemId);
+        List<FoodOrderTransactionLineItem> foodOrderTransactionLineItemEntities = foodOrderTransactionEntitySessionBeanLocal.retrieveFoodOrderTransactionLineItemsByFoodItemId(foodItemId);
         
         if(foodOrderTransactionLineItemEntities.isEmpty())
         {

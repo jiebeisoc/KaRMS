@@ -74,7 +74,14 @@ public class SecurityFilter implements Filter {
         if (accessRight.equals(AccessRightEnum.CASHIER)) {
             if (path.equals("/customerOperation/reservationManagement.xhtml") ||
                     path.equals("/customerOperation/settlePayment.xhtml") ||
-                    path.equals("/operationManagement/roomManagement.xhtml")) {
+                    path.equals("/operationManagement/roomManagement.xhtml") ||
+                    path.equals("/cashierOperation/browseAllFoodItems.xhtml") ||
+                    path.equals("/cashierOperation/shoppingCart.xhtml") ||
+                    path.equals("/cashierOperation/viewFoodOrderTransactions.xhtml")||
+                    path.equals("/cashierOperation/checkout.xhtml") ||
+                    path.equals("/cashierOperation/viewFoodItemDetailsFoodOrder.xhtml") ||
+                    path.equals("/cashierOperation/viewFoodOrderTransactionDetails.xhtml")     
+                            ){
                 return true;
             }
         } else if (accessRight.equals(AccessRightEnum.MANAGER)) {
@@ -83,7 +90,9 @@ public class SecurityFilter implements Filter {
                     path.equals("/operationManagement/promotionManagement.xhtml") ||
                     path.equals("/operationManagement/roomManagement.xhtml") ||
                     path.equals("/operationManagement/roomRateManagement.xhtml") ||
-                    path.equals("/operationManagement/roomTypeManagement.xhtml")) {
+                    path.equals("/operationManagement/roomTypeManagement.xhtml") ||
+                    path.equals("/customerOperation/reservationManagement.xhtml") ||
+                    path.equals("/customerOperation/settlePayment.xhtml")) {
                 return true;
             }
         }

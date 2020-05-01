@@ -23,7 +23,8 @@
         <h:form id="formAllRoom">
             
             <p:dataTable id="dataTableAllRoom" widgetVar="dataTableAllRoom" value="#{roomManagementManagedBean.rooms}" var="room"
-                         selectionMode="single" selection="#{roomManagementManagedBean.selectedRoom}" rowKey="#{room.roomId}">
+                         selectionMode="single" selection="#{roomManagementManagedBean.selectedRoom}" rowKey="#{room.roomId}" rowIndexVar="row"
+                         rows="9" paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="9,18,45">
             
                 <p:ajax event='rowSelect' listener='#{roomManagementManagedBean.onRowSelect}' oncomplete="PF('dialogUpdateRoom').show()" update='@form formUpdateRoom' />
                 <p:ajax event='rowUnselect' listener='#{roomManagementManagedBean.onRowUnselect}' update='@form formUpdateRoom' />
@@ -38,6 +39,10 @@
                 
                 <p:column headerText="Room type" sortBy="#{room.roomType.name}">
                     <h:outputText value="#{room.roomType.name}" />
+                </p:column>
+                
+                <p:column headerText="Disabled" sortBy="#{room.isDisabled}">
+                    <h:outputText value="#{room.isDisabled}" />
                 </p:column>
                 
             </p:dataTable>     
@@ -129,6 +134,15 @@
                         </p:column>
                         <p:column>
                             <h:outputText id="roomType" value="#{roomManagementManagedBean.selectedRoom.roomType.name}" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Is disabled: " style="font-weight: bold" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText id ="isDisabled" value="#{roomManagementManagedBean.selectedRoom.isDisabled}" />
                         </p:column>
                     </p:row>
 

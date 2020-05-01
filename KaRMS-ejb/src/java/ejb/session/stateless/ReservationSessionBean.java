@@ -12,6 +12,7 @@ import entity.Reservation;
 import entity.Room;
 import entity.RoomRate;
 import entity.RoomType;
+import entity.Song;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,6 +23,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.enumeration.ReservationStatus;
+import util.exception.AddSongException;
 import util.exception.CustomerNotFoundException;
 import util.exception.DeleteReservationException;
 import util.exception.NoAvailableRoomException;
@@ -67,10 +69,7 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         Long roomId = null;
         Boolean isAvailable = false;
         
-        Query query = em.createQuery("SELECT r FROM Room r WHERE r.outlet.outletId = :inOutletId AND r.roomType.roomTypeId = :inRoomTypeId");
-        query.setParameter("inOutletId", outletId);
-        query.setParameter("inRoomTypeId", roomTypeId);
-        List<Room> availableRooms = query.getResultList();
+        List<Room> availableRooms = roomSessionBeanLocal.retrieveRoomByOutletAndRoomType(outletId, roomTypeId);
         
         for (Room r: availableRooms) {
             isAvailable = roomSessionBeanLocal.isRoomAvailable(r, startDateTime, endDateTime);
@@ -86,16 +85,25 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         
         return roomId;
     }
-        
-    //Create new reservation
+            
+    //Create new reservation for a member
     @Override
-    public Long createNewReservation(Reservation newReservation, Long memberNum, Long roomId, Long outletId, Long promotionId) throws CustomerNotFoundException {
+    public Long createNewReservation(Reservation newReservation, Long customerId, Long roomId, Long outletId, Long promotionId, String status) throws CustomerNotFoundException {
         
-        em.persist(newReservation);
+        newReservation.setDateReserved(new Date());
+
+        if (status.equalsIgnoreCase("PAID")) {
+            newReservation.setStatus(ReservationStatus.PAID);
+        } else if (status.equalsIgnoreCase("NOTPAID")) {
+            newReservation.setStatus(ReservationStatus.NOTPAID);
+        } else {
+            newReservation.setStatus(ReservationStatus.COMPLETED);
+        }
         
-        if (memberNum != null) {
-            Long customerId = customerSessionBeanLocal.retrieveCustomerByMemberNum(memberNum).getCustomerId();
+        if (customerId != null) {
             Customer customer = customerSessionBeanLocal.retrieveCustomerById(customerId);
+            customer.setPoints(customer.getPoints() - newReservation.getPointsRedeemed());
+            
             customer.getReservations().add(newReservation);
             newReservation.setCustomer(customer);
         }
@@ -112,11 +120,12 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
             newReservation.setOutlet(outlet);
         }
         
-        if (promotionId != null) {
+        if (promotionId != null || promotionId == 0) {
             Promotion promotion = promotionSessionBeanLocal.retrievePromotionById(promotionId);
             newReservation.setPromotion(promotion);
         }
         
+        em.persist(newReservation);
         em.flush();
         
         return newReservation.getReservationId();
@@ -134,9 +143,6 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         System.out.println("Date Reserved: " + newReservation.getDateReserved());
         System.out.println("Phone No: " + newReservation.getWalkInPhoneNo());
         System.out.println("PromoId: " + promotionId);
-        
-        
-        em.persist(newReservation);
         
         newReservation.setCustomer(null);
         
@@ -157,11 +163,13 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
             newReservation.setPromotion(promotion);
         }
         
+        em.persist(newReservation);
         em.flush();
         
         return newReservation.getReservationId();
     }
     
+    //Calculate total price for a reservation
     @Override
     public BigDecimal calculateTotalPrice(Date date, int duration, Long roomTypeId, Long promotionId) {
         
@@ -174,10 +182,61 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
             int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
             String roomRateType;
 
-            if (dayOfWeek < 6) {
-                roomRateType = "WKDAY";
-            } else {
+            if (dayOfWeek == 1 || dayOfWeek == 7) {
                 roomRateType = "WKEND";
+            } else {
+                roomRateType = "WKDAY";
+            }
+
+            //non-peak is before 6pm, peak is 6pm onwards
+            if (hourOfDay < 18) {
+                roomRateType += "NONPEAK";
+            } else {
+                roomRateType += "PEAK";
+            }
+
+            BigDecimal roomRate = BigDecimal.ZERO;
+            List<RoomRate> roomRates = roomTypeSessionBeanLocal.retrieveRoomTypeById(roomTypeId).getRoomRates();
+            for (RoomRate rr: roomRates) {
+                String type = rr.getRoomRateType();
+                if (roomRateType.equals(type)) {
+                    roomRate = rr.getRate();
+                    break;
+                }
+            }
+            
+            if (promotionId == null || promotionId == 0) {
+                totalPrice = roomRate.multiply(new BigDecimal(duration));
+            } else {
+                double promotionDiscount = promotionSessionBeanLocal.retrievePromotionById(promotionId).getDiscountRate();
+                totalPrice = roomRate.multiply(new BigDecimal(duration)).multiply(new BigDecimal(1 - promotionDiscount));
+                System.out.println("totalPrice: " + totalPrice);
+            }
+        }
+        
+        return totalPrice;
+    }
+    
+    //Calculate total price for an online reservation
+    @Override
+    public BigDecimal calculateTotalPrice(Long time, int duration, Long roomTypeId, Long promotionId) {
+        
+        Date date = new Date(time.longValue()); 
+        BigDecimal totalPrice = new BigDecimal("0.00");
+        
+        if (date != null && duration != 0 && roomTypeId != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+            int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+            String roomRateType;
+            //System.out.println("dayOfWeek: " + dayOfWeek);
+            //System.out.println("hourOfDay: " + hourOfDay);
+
+            if (dayOfWeek == 1 || dayOfWeek == 7) {
+                roomRateType = "WKEND";
+            } else {
+                roomRateType = "WKDAY";
             }
 
             //non-peak is before 6pm, peak is 6pm onwards
@@ -222,6 +281,16 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
             return query.getResultList();
         }
     }
+    
+    @Override
+    public List<Reservation> retrieveReservationsToBeCompleted(Date dateBefore, Date currentDate) {
+        
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.date BETWEEN :inDateFrom AND :inDateTo");
+        query.setParameter("inDateFrom", dateBefore);
+        query.setParameter("inDateTo", currentDate);
+        
+        return query.getResultList();
+    }
 
     //View reservation details
     @Override
@@ -231,7 +300,31 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         return reservation;
     }
     
-    //View reservation details
+    //Retrieve a member's upcoming reservations
+    @Override
+    public List<Reservation> retrieveUpcomingReservationByCustomer(Long customerId) {
+        Date currentDate = new Date();
+        
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE (r.customer.customerId = :inCustomerId) AND (r.date >= :inDate)");
+        query.setParameter("inCustomerId", customerId);
+        query.setParameter("inDate", currentDate);
+        
+        return query.getResultList();
+    }
+    
+    //Retrieve a member's past reservations
+    @Override
+    public List<Reservation> retrievePastReservationByCustomer(Long customerId) {
+        Date currentDate = new Date();
+        
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE (r.customer.customerId = :inCustomerId) AND (r.date < :inDate)");
+        query.setParameter("inCustomerId", customerId);
+        query.setParameter("inDate", currentDate);
+        
+        return query.getResultList();
+    }
+ 
+    //Retrieve reservations by status
     @Override
     public List<Reservation> retrieveReservationByStatus(ReservationStatus status) {
         Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.status = :inStatus");
@@ -307,6 +400,78 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
         return query.getResultList();
     }
     
+    @Override
+    public List<Song> retrieveSongQueue(Long reservationId) {
+        Reservation reservation = retrieveReservationById(reservationId);
+        
+        return reservation.getSongQueue();
+    }
+    
+    @Override
+    public void addSongToQueue(Song songToAdd, Reservation reservation) throws AddSongException {
+
+        List<Song> songQueue = reservation.getSongQueue();
+        songQueue.add(songToAdd);
+        
+        if (songQueue.contains(songToAdd)) {
+            
+            throw new AddSongException("Song is already in the song queue!");
+                    
+        } else {
+            songQueue.add(songToAdd);    
+        }
+        
+        reservation.setSongQueue(songQueue);
+        em.merge(reservation);
+        em.flush();
+        
+    }
+    
+    @Override
+    public void deleteSongFromQueue(Song songToDelete, Reservation reservation) {
+        
+        List<Song> songQueue = reservation.getSongQueue();
+        
+        songQueue.remove(songToDelete);
+        reservation.setSongQueue(songQueue);
+        em.merge(reservation);
+        em.flush();        
+    }
+    
+    @Override
+    public void addQueueToFavouritePlaylist(Long customerId, Long reservationId) {
+        
+        Reservation reservation = retrieveReservationById(reservationId);
+        Customer customer = em.find(Customer.class, customerId);
+        
+        List<Song> songQueue = reservation.getSongQueue();
+        List<Song> favouritePlaylist = customer.getFavouritePlaylist();
+        
+        for (Song song: songQueue) {
+            if (!favouritePlaylist.contains(song)) {
+                favouritePlaylist.add(song);
+            }
+        }
+        
+        customer.setFavouritePlaylist(favouritePlaylist);
+        em.merge(customer);
+        em.flush();
+    }
+    
+    @Override
+    public void saveQueueAsFavouritePlaylist(Long customerId, Long reservationId) {
+        
+        Reservation reservation = retrieveReservationById(reservationId);
+        Customer customer = em.find(Customer.class, customerId);
+        
+        List<Song> songQueue = reservation.getSongQueue();
+        List<Song> favouritePlaylist = customer.getFavouritePlaylist();
+        
+        customer.setFavouritePlaylist(songQueue);
+        em.merge(customer);
+        em.flush();
+    }
+    
     //Settle reservation payment
     @Override
     public void payReservation(Long reservationId) {
@@ -319,6 +484,18 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
     @Override
     public void updateReservation(Reservation reservationToUpdate, Long roomIdUpdate, Long outletIdUpdate, Long promotionIdUpdate) {
         
+        System.out.println("Date: " + reservationToUpdate.getDate());
+        System.out.println("Duration: " + reservationToUpdate.getDuration());
+        System.out.println("Number of People: " + reservationToUpdate.getNumOfPeople());
+        System.out.println("Note: " + reservationToUpdate.getNote());
+        System.out.println("Points: " + reservationToUpdate.getPointsRedeemed());
+        System.out.println("Total Price: " + reservationToUpdate.getTotalPrice());
+        System.out.println("Status: " + reservationToUpdate.getStatus());
+        System.out.println("Date Reserved: " + reservationToUpdate.getDateReserved());
+        System.out.println("Phone No: " + reservationToUpdate.getWalkInPhoneNo());
+        System.out.println("RoomId: " + roomIdUpdate);
+        System.out.println("OutletId: " + outletIdUpdate);
+        System.out.println("PromoId: " + promotionIdUpdate); 
         
         if (roomIdUpdate != null && (!reservationToUpdate.getRoom().getRoomId().equals(roomIdUpdate))) {
             Room roomToUpdate = roomSessionBeanLocal.retrieveRoomById(roomIdUpdate);
@@ -330,7 +507,7 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
             reservationToUpdate.setOutlet(outletToUpdate);
         }
         
-        if (promotionIdUpdate != null) {
+        if (promotionIdUpdate != null || promotionIdUpdate != 0) {
             System.out.println("promoId: " + promotionIdUpdate);
             Promotion promotion = promotionSessionBeanLocal.retrievePromotionById(promotionIdUpdate);
             System.out.println("rId: " + reservationToUpdate);
@@ -345,27 +522,36 @@ public class ReservationSessionBean implements ReservationSessionBeanLocal {
     @Override
     public void deleteReservation(Long reservationId) throws DeleteReservationException {
         Reservation reservationToDelete = retrieveReservationById(reservationId);
+        Date currentDate = new Date();
+        Date reservationDate = reservationToDelete.getDate();
         
-        if (reservationToDelete.getStatus() != ReservationStatus.COMPLETED) {
+        if (currentDate.before(reservationDate)) {
         
-            Room room = reservationToDelete.getRoom();
-            reservationToDelete.setRoom(null);
-            room.getReservations().remove(reservationToDelete);
-
             Customer customer = reservationToDelete.getCustomer();
             reservationToDelete.setCustomer(null);
             customer.getReservations().remove(reservationToDelete);
             
+            Room room = reservationToDelete.getRoom();
+            room.getReservations().remove(reservationToDelete);
+
             Outlet outlet = reservationToDelete.getOutlet();
-            reservationToDelete.setOutlet(null);
             outlet.getReservations().remove(reservationToDelete);
             
-            reservationToDelete.setPromotion(null);
-            reservationToDelete.setReview(null);
+            if (reservationToDelete.getReview() != null) {
+                reservationToDelete.setReview(null);
+            } 
+            
+            if (reservationToDelete.getPromotion() != null) {
+                reservationToDelete.setPromotion(null);
+            }
+            
+            if (!reservationToDelete.getSongQueue().isEmpty()) {
+                reservationToDelete.getSongQueue().clear();
+            }
 
             em.remove(reservationToDelete);
         } else {
-            throw new DeleteReservationException("Reservation cannot be deleted!");
+            throw new DeleteReservationException("Reservation cannot be deleted as it has started!");
         }
     }
     

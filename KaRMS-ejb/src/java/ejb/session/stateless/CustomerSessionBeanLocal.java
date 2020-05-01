@@ -6,8 +6,10 @@
 package ejb.session.stateless;
 
 import entity.Customer;
+import entity.Song;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.AddSongException;
 import util.exception.ChangePasswordException;
 import util.exception.CreateCustomerException;
 import util.exception.CustomerNotFoundException;
@@ -29,7 +31,13 @@ public interface CustomerSessionBeanLocal {
 
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException;
     
-    public Customer retrieveCustomerByMemberNum(Long memberNum) throws CustomerNotFoundException;
+    public List<Song> retrieveFavouritePlaylist(Long customerId);
+    
+    public void addSongToFavouritePlaylist(Song songToAdd, Long customerId) throws AddSongException;
+    
+    public void deleteSongFromFavouritePlaylist(Song songToDelete, Long customerId);
+    
+    public void addFavouritePlaylistToQueue(Long customerId, Long reservationId);
  
     public void updateCustomer(Customer customerToUpdate);
 

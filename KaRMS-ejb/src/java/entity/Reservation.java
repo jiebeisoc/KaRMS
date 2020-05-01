@@ -17,6 +17,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -49,6 +50,7 @@ public class Reservation implements Serializable {
     @Column(nullable = false)
     private int numOfPeople;
     private String note;
+    private int pointsRedeemed;
     @Column(nullable = false, precision = 11, scale = 2)
     @NotNull
     @DecimalMin("0.00")
@@ -65,9 +67,14 @@ public class Reservation implements Serializable {
     private String walkInPhoneNo;
     
     @ManyToOne
+    private Customer customer;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private Room room;
     
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private Outlet outlet;
     
     @OneToOne(mappedBy = "reservation")
@@ -78,11 +85,6 @@ public class Reservation implements Serializable {
     
     @ManyToOne
     private Promotion promotion;
-    
-    @ManyToOne
-    private Customer customer;
-    
-  
 
     public Reservation() {
         this.status = ReservationStatus.NOTPAID;
@@ -219,7 +221,13 @@ public class Reservation implements Serializable {
         this.customer = customer;
     }
 
+    public int getPointsRedeemed() {
+        return pointsRedeemed;
+    }
 
+    public void setPointsRedeemed(int pointsRedeemed) {
+        this.pointsRedeemed = pointsRedeemed;
+    }
 
     public BigDecimal getTotalPrice() {
         return totalPrice;

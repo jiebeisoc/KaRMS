@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.RoomRate;
 import entity.RoomType;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -15,8 +16,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.CreateNewRoomTypeException;
 import util.exception.DeleteRoomTypeException;
 import util.exception.RoomTypeNotFoundException;
+import util.exception.UpdateRoomTypeException;
 
 /**
  *
@@ -35,19 +38,25 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
     // "Insert Code > Add Business Method")
 
     @Override
-    public Long createNewRoomType(RoomType newRoomType, List<Long> roomRateIds) {
+    public Long createNewRoomType(RoomType newRoomType, List<Long> roomRateIds) throws CreateNewRoomTypeException {
         em.persist(newRoomType);
-        
+        em.flush();
         if (roomRateIds != null && (!roomRateIds.isEmpty())) {
             for (Long id : roomRateIds) {
                 RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
+                if (roomRate.getRoomType() != null) {
+                    throw new CreateNewRoomTypeException("This room rate is already used");
+                }
                 newRoomType.getRoomRates().add(roomRate);
                 roomRate.setRoomType(newRoomType);
             }
+            
+            return newRoomType.getRoomTypeId();
+        } else {
+            throw new CreateNewRoomTypeException("Room rates are required");
         }
-        em.flush();
+
         
-        return newRoomType.getRoomTypeId();
     }
 
     @Override
@@ -86,16 +95,40 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
     }
     
     @Override
-    public void updateRoomType(RoomType roomTypeToUpdate, List<Long> roomRateIds) {
+    public void updateRoomType(RoomType roomTypeToUpdate, List<Long> roomRateIds) throws UpdateRoomTypeException {
         em.merge(roomTypeToUpdate);
+        em.flush();
         
-        roomTypeToUpdate.getRoomRates().clear();
+        List<Long> roomRateIdsOld = retrieveRoomRateIds(roomTypeToUpdate.getRoomTypeId());
         
-        for (Long id : roomRateIds) {
+        List<Long> newIds = new ArrayList<>();
+        
+        for (Long id: roomRateIds) { // get new rate
+            if (!roomRateIdsOld.contains(id)) {
+                newIds.add(id);
+            }
+        }
+        
+        for (Long id : newIds) { // check for used room type
+            RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
+            if (roomRate.getRoomType() != null) { // Room rate is used by another room type
+                throw new UpdateRoomTypeException("This room rate is already used");
+            }
+        }
+        
+        for (Long id: roomRateIdsOld) {
+            if (!roomRateIds.contains(id)) { // if new ids does not contain old id
+                RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
+                roomTypeToUpdate.getRoomRates().remove(roomRate);
+                roomRate.setRoomType(null);
+            }
+        }           
+
+        for (Long id : newIds) {
             RoomRate roomRate = roomRateSessionBeanLocal.retrieveRoomRateById(id);
             roomTypeToUpdate.getRoomRates().add(roomRate);
-        }
-        em.flush();
+            roomRate.setRoomType(roomTypeToUpdate);
+        }   
     }
 
     @Override
@@ -104,7 +137,7 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanLocal {
         
         if (roomTypeToDelete.getRooms().isEmpty()) {
             for (RoomRate rr: roomTypeToDelete.getRoomRates()) {
-            rr.setRoomType(null);
+                rr.setRoomType(null);
             }
 
             em.remove(roomTypeToDelete);

@@ -11,6 +11,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.enumeration.RoomRateType;
 import util.exception.DeleteRoomRateException;
 
 /**
@@ -37,6 +38,14 @@ public class RoomRateSessionBean implements RoomRateSessionBeanLocal {
     @Override
     public List<RoomRate> retrieveAllRoomRates() {
         Query query = em.createQuery("SELECT rr FROM RoomRate rr");
+        
+        return query.getResultList();
+    }
+    
+    @Override
+    public List<RoomRate> retrieveRoomRatesByType(RoomRateType roomRateType) {
+        Query query = em.createQuery("SELECT rr FROM RoomRate rr WHERE rr.roomRateType = :inRoomRateType");
+        query.setParameter("inRoomRateType", roomRateType);
         
         return query.getResultList();
     }

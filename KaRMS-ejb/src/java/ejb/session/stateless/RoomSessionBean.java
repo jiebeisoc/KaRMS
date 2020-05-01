@@ -9,6 +9,7 @@ import entity.Outlet;
 import entity.Reservation;
 import entity.Room;
 import entity.RoomType;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,9 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.CreateNewRoomException;
+import util.exception.ExceedClosingHoursException;
+import util.exception.NoAvailableRoomException;
 
 /**
  *
@@ -39,19 +43,23 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
     // "Insert Code > Add Business Method")
     
     @Override
-    public Long createNewRoom(Room newRoom, Long roomTypeId, Long outletId) {
+    public Long createNewRoom(Room newRoom, Long roomTypeId, Long outletId) throws CreateNewRoomException {
         em.persist(newRoom);
         
         if (roomTypeId != null) {
             RoomType roomType = roomTypeSessionBeanLocal.retrieveRoomTypeById(roomTypeId);
             newRoom.setRoomType(roomType);
             roomType.getRooms().add(newRoom);
+        } else {
+            throw new CreateNewRoomException("Room Type is required");
         }
         
         if (outletId != null) {
             Outlet outlet = outletSessionBeanLocal.retrieveOutletById(outletId);
             newRoom.setOutlet(outlet);
             outlet.getRooms().add(newRoom);
+        } else {
+            throw new CreateNewRoomException("Outlet is required");
         }
         
         em.flush();
@@ -63,7 +71,7 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
     public List<Room> retrieveAllRoom(Long outletId) {
         if (outletId == null) {
             Query query = em.createQuery("SELECT r FROM Room r");
-        
+            
             return query.getResultList();
         } else {
             Query query = em.createQuery("Select r FROM Room r WHERE r.outlet.outletId = :inOutletId");
@@ -73,10 +81,12 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
         }
     }
     
+    @Override
     public List<Room> retrieveRoomByOutletAndRoomType(Long outletId, Long roomTypeId) {
-        Query query = em.createQuery("SELECT r FROM Room r WHERE r.outlet.outletId = :inOutletId AND r.roomType.roomTypeId = :inRoomTypeId");
+        Query query = em.createQuery("SELECT r FROM Room r WHERE r.outlet.outletId = :inOutletId AND r.roomType.roomTypeId = :inRoomTypeId AND r.isDisabled = :inIsDisabled");
         query.setParameter("inOutletId", outletId);
         query.setParameter("inRoomTypeId", roomTypeId);
+        query.setParameter("inIsDisabled", Boolean.FALSE);
         
         return query.getResultList();
     }
@@ -116,6 +126,38 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
             }
         }
         return isAvailable;
+    }    
+    
+    //Retrieve available rooms for new reservation (using duration and date)    
+    @Override
+    public List<Room> retrieveAvailableRooms(Long time, int duration, Long outletId, Long roomTypeId) throws NoAvailableRoomException, ExceedClosingHoursException {
+
+        Date startDateTime = new Date(time.longValue());
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(startDateTime);
+        
+        if ((cal.get(Calendar.HOUR_OF_DAY) + duration - 1) > 23) {
+            throw new ExceedClosingHoursException("Time exceeded closing hours!");
+        }
+
+        cal.add(Calendar.HOUR, +duration);
+        Date endDateTime = cal.getTime();
+        
+        List<Room> rooms = retrieveRoomByOutletAndRoomType(outletId, roomTypeId);
+        List<Room> availableRooms = new ArrayList<>();
+        
+        for (Room r: rooms) {
+            Boolean isAvailable = isRoomAvailable(r, startDateTime, endDateTime);
+            if (isAvailable == true) {
+                availableRooms.add(r);
+            }
+        }
+        
+        if (availableRooms.isEmpty()) {
+            throw new NoAvailableRoomException("No rooms are available at this timing!");
+        }
+        
+        return availableRooms;
     }
     
     @Override
@@ -129,8 +171,8 @@ public class RoomSessionBean implements RoomSessionBeanLocal {
         Room roomToDelete = retrieveRoomById(roomId);
         
         roomToDelete.setIsDisabled(Boolean.TRUE);
-        roomToDelete.setOutlet(null);
-        roomToDelete.setRoomType(null);
+        
+        roomToDelete.getRoomType().getRooms().remove(roomToDelete);
 
     }
      

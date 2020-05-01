@@ -12,13 +12,13 @@ import java.util.List;
  *
  * @author chai
  */
-public class RetrieveRoomByOutletAndRoomTypeRsp {
+public class RetrieveRoomListRsp {
     List<Room> rooms;
 
-    public RetrieveRoomByOutletAndRoomTypeRsp() {
+    public RetrieveRoomListRsp() {
     }
 
-    public RetrieveRoomByOutletAndRoomTypeRsp(List<Room> rooms) {
+    public RetrieveRoomListRsp(List<Room> rooms) {
         this.rooms = rooms;
     }
 

@@ -70,6 +70,7 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
                     customerEntity.getFoodOrderTransactionEntities().add(newFoodOrderTransactionEntity);
                
                 }  
+                System.err.println("********newFoodOrderTransactionEntity.getOutlet().getOutletId(): "+newFoodOrderTransactionEntity.getOutlet().getOutletId());
                 Long outletId = newFoodOrderTransactionEntity.getOutlet().getOutletId();
                 Outlet outlet = entityManager.find(Outlet.class, outletId);
                 newFoodOrderTransactionEntity.setOutlet(outlet);
@@ -156,7 +157,7 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
     public List<FoodOrderTransactionLineItem> retrieveFoodOrderTransactionLineItemsByFoodItemId(Long foodItemId)
     {
         Query query = entityManager.createNamedQuery("selectAllFoodOrderTransactionLineItemsByFoodItemId");
-        query.setParameter("inProductId", foodItemId);
+        query.setParameter("inFoodItemId", foodItemId);
         
         return query.getResultList();
     }
@@ -222,17 +223,17 @@ public class FoodOrderSessionBean implements FoodOrderSessionBeanLocal
     
     
     
-    public void deleteFoodOrderTransaction(FoodOrderTransaction foodOrderTransactionEntity)
-    {
-        throw new UnsupportedOperationException();
-    }
+   
     
+    @Override
     public void confirmFoodOrderTransaction(Long foodOrderTransactionId) throws FoodOrderTransactionNotFoundException{
         
          FoodOrderTransaction foodOrderTransactionEntity = retrieveFoodOrderTransactionByFoodOrderTransactionId(foodOrderTransactionId);
          foodOrderTransactionEntity.setFoodOrderStatus(FoodOrderStatus.CONFIRMED); 
+         System.err.println("foodOrderTransactionEntity status"+foodOrderTransactionEntity.getFoodOrderStatus());
     }
 
+    @Override
     public void servedFoodOrder(Long foodOrderTransactionId) throws FoodOrderTransactionNotFoundException{
         
          FoodOrderTransaction foodOrderTransactionEntity = retrieveFoodOrderTransactionByFoodOrderTransactionId(foodOrderTransactionId);
