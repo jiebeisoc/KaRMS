@@ -64,7 +64,7 @@
                         <p:commandButton actionListener="#{promotionManagedBean.doUpdatePromotion}" update="formUpdatePromotion" oncomplete="PF('dialogUpdatePromotion').show()" icon="ui-icon-pencil" title="Update">
                             <f:attribute name="promotionToUpdate" value="#{promotion}" />
                         </p:commandButton>
-                        <p:commandButton icon="ui-icon-trash" actionListener="#{promotionManagedBean.deletePromotion}" update="formAllPromotions:dataTableAllPromotions formAllPromotions:messages">
+                        <p:commandButton rendered="#{promotion.enabled == true}" icon="ui-icon-trash" actionListener="#{promotionManagedBean.deletePromotion}" update="formAllPromotions:dataTableAllPromotions formAllPromotions:messages">
                             <f:attribute name="promotionToDelete" value="#{promotion}" />
                             <p:confirm header="Confirmation" message="Are you sure you want to delete #{promotion.promotionName} (Description: #{promotion.description})?" icon="ui-icon-alert" />
                         </p:commandButton>
