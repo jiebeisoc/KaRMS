@@ -39,25 +39,25 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanLocal {
         
         Calendar cal = Calendar.getInstance();
         Date currentDate = cal.getTime();
-        int currentHour = cal.get(Calendar.HOUR_OF_DAY);
         
-        cal.add(Calendar.HOUR_OF_DAY, -12);
-        Date dateBefore = cal.getTime();
-        
-        List<Reservation> reservations = reservationSessionBeanLocal.retrieveReservationsToBeCompleted(dateBefore, currentDate);
+        List<Reservation> reservations = reservationSessionBeanLocal.retrieveReservationsToBeCompleted(currentDate);
         
         for(Reservation reservation: reservations)
         {
             cal.setTime(reservation.getDate());
-            int completedHour = cal.get(Calendar.HOUR_OF_DAY) + reservation.getDuration();
-            if (completedHour == currentHour) {
+            cal.add(Calendar.HOUR_OF_DAY, reservation.getDuration());
+            Date completionDate = cal.getTime();
+            
+            if (completionDate.before(currentDate) || completionDate.equals(currentDate)) {
                 reservation.setStatus(ReservationStatus.COMPLETED);
                 
-                int pointsAwarded = reservation.getTotalPrice().intValue();
-                Customer customer = reservation.getCustomer();
-                customer.setPoints(customer.getPoints() + pointsAwarded);
+                if (reservation.getCustomer() != null) {
+                    Customer customer = reservation.getCustomer();
+                    int pointsAwarded = reservation.getTotalPrice().intValue();
+                    customer.setPoints(customer.getPoints() + pointsAwarded); 
+                    em.merge(customer);
+                }
                 
-                em.merge(customer);
                 em.merge(reservation);
                 em.flush();
             }
