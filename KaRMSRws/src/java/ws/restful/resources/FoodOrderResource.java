@@ -198,12 +198,14 @@ public class FoodOrderResource {
         
         for(FoodOrderTransaction t:list ){
             t.getCustomerEntity().getFoodOrderTransactionEntities().clear();
+            t.getCustomerEntity().getFavouritePlaylist().clear();
             t.getOutlet().getReservations().clear();
             t.getOutlet().getRooms().clear();
             t.getOutlet().getReviews().clear();
             t.getOutlet().setEmployee(new Employee());
         
             List <FoodOrderTransactionLineItem> lineItems = t.getFoodOrderTransactionLineItemEntities();
+            
             for(FoodOrderTransactionLineItem singleLineItem: lineItems){
                 FoodItem foodItem = singleLineItem.getFoodItem();
             if(foodItem.getCategoryEntity().getParentCategoryEntity() != null)

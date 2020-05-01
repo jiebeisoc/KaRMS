@@ -57,6 +57,8 @@ public class FoodOrderTransaction implements Serializable
 //    private Date transactionDateTime;   
     private String transactionDateTime;
     @OneToMany
+    
+    
     private List<FoodOrderTransactionLineItem> foodOrderTransactionLineItemEntities;    
     @Column(nullable = false)
     @NotNull
