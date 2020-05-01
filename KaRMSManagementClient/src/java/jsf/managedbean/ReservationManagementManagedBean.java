@@ -66,14 +66,10 @@ public class ReservationManagementManagedBean implements Serializable {
     private List<Room> rooms;
     private List<Outlet> outlets;
     private List<Promotion> promotions;
-    
-    private Boolean viewAll;
 
     private List<Reservation> filteredReservations;
     private Reservation selectedReservation;
     private List<ReservationStatus> statusList;
-    private Date filterDateFrom;
-    private Date filterDateTo;
         
     private Reservation newReservation;
     private String phoneNo;
@@ -105,12 +101,9 @@ public class ReservationManagementManagedBean implements Serializable {
     public void postConstruct() {
         employee = (Employee)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("currentEmployee");
         Long outletId = null;
-        viewAll = true;
         // if not manager
         if (employee.getOutlet() != null) {
             outletId = employee.getOutlet().getOutletId();
-            outletIdUpdate = outletId;
-            viewAll = false;
         }
         
         reservations = reservationSessionBeanLocal.retrieveAllReservations(outletId);
@@ -126,20 +119,10 @@ public class ReservationManagementManagedBean implements Serializable {
         payNow = false;
     }
     
-    public void onViewAll(AjaxBehaviorEvent event) {
-        Long outletId = employee.getOutlet().getOutletId();
-
-        if (viewAll == true) {
-            reservations = reservationSessionBeanLocal.retrieveAllReservations(null);
-        } else {
-            reservations = reservationSessionBeanLocal.retrieveAllReservations(outletId);
-        }
-    }
-    
     public void onCreateNewReservation(ActionEvent event) {
         this.selectedReservation = null;
         this.roomTypeIdUpdate = null;
-        this.outletIdUpdate = null;
+        this.outletIdUpdate = employee.getOutlet().getOutletId();
         this.promotionIdUpdate = null;
         promotions = new ArrayList<>();
         dateUpdate = null;
@@ -173,11 +156,7 @@ public class ReservationManagementManagedBean implements Serializable {
         
     }
         
-    public void outletChange(AjaxBehaviorEvent event) {
-        isAvailable = false;
-    }
-        
-    public void roomTypeChange(AjaxBehaviorEvent event) {
+    public void onChange(AjaxBehaviorEvent event) {
         isAvailable = false;
     }
     
@@ -191,10 +170,6 @@ public class ReservationManagementManagedBean implements Serializable {
 
     public void onDurationChange(ValueChangeEvent event) {
         durationUpdate = (int)event.getNewValue();
-    }
-    
-    public void durationChange(AjaxBehaviorEvent event) {
-        isAvailable = false;
     }
     
     public void checkAvailableRoom(ActionEvent event) {
@@ -265,7 +240,7 @@ public class ReservationManagementManagedBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New reservation is created successfully (Room Number: " + roomNum + ")", null));
     }
     
-    public void onRoomTypeUpdate(AjaxBehaviorEvent event) {
+    public void onUpdate(AjaxBehaviorEvent event) {
         isAvailable = false;
         calculateTotalPrice();
     }
@@ -274,11 +249,6 @@ public class ReservationManagementManagedBean implements Serializable {
         isAvailable = false;
         calculateTotalPrice();
         promotions = promotionSessionBeanLocal.retrievePromotionByDate(dateUpdate);  
-    }
-    
-    public void onDurationUpdate() {
-        isAvailable = false;
-        calculateTotalPrice();
     }
     
     public void checkUpdate() {
@@ -467,22 +437,6 @@ public class ReservationManagementManagedBean implements Serializable {
         this.filteredReservations = filteredReservations;
     }
 
-    public Date getFilterDateFrom() {
-        return filterDateFrom;
-    }
-
-    public void setFilterDateFrom(Date filterDateFrom) {
-        this.filterDateFrom = filterDateFrom;
-    }
-
-    public Date getFilterDateTo() {
-        return filterDateTo;
-    }
-
-    public void setFilterDateTo(Date filterDateTo) {
-        this.filterDateTo = filterDateTo;
-    }
-
     public List<ReservationStatus> getStatusList() {
         return statusList;
     }
@@ -601,14 +555,6 @@ public class ReservationManagementManagedBean implements Serializable {
 
     public void setRoomNum(String roomNum) {
         this.roomNum = roomNum;
-    }
-
-    public Boolean getViewAll() {
-        return viewAll;
-    }
-
-    public void setViewAll(Boolean viewAll) {
-        this.viewAll = viewAll;
     }
 
     public Employee getEmployee() {
