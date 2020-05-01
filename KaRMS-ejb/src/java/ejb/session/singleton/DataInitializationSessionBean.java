@@ -16,13 +16,11 @@ import ejb.session.stateless.RoomRateSessionBeanLocal;
 import ejb.session.stateless.RoomSessionBeanLocal;
 import ejb.session.stateless.RoomTypeSessionBeanLocal;
 import ejb.session.stateless.SongSessionBeanLocal;
-import entity.Customer;
 import entity.Employee;
 import entity.FoodItem;
 import entity.FoodItemCategory;
 import entity.Outlet;
 import entity.Promotion;
-import entity.Reservation;
 import entity.Room;
 import entity.RoomRate;
 import entity.RoomType;
@@ -48,15 +46,11 @@ import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import util.enumeration.AccessRightEnum;
-import util.enumeration.ReservationStatus;
 import util.enumeration.RoomRateType;
 import util.exception.CategoryNotFoundException;
-import util.exception.CreateCustomerException;
 import util.exception.CreateNewFoodItemException;
 import util.exception.CreateNewRoomException;
 import util.exception.CreateNewRoomTypeException;
-import util.exception.CustomerNotFoundException;
-import util.exception.CustomerUsernameExistException;
 import util.exception.EmployeeNotFoundException;
 import util.exception.InputDataValidationException;
 
@@ -123,13 +117,6 @@ public class DataInitializationSessionBean {
 
     private void initializeData() {
         System.err.println("********Reach Initialization Data*******************");
-        
-        // Add temporary dummy customer
-        try {
-            customerSessionBeanLocal.createNewCustomer(new Customer("Customer", "90001234", "1234567812345678", "customer1", "password", new Date(), "customer1@gmail.com"));
-        } catch (CustomerUsernameExistException | CreateCustomerException ex) {
-            System.out.println(ex.getMessage());
-        }
 
         // Add manager
         employeeSessionBeanLocal.createNewEmployee(new Employee("manager", "password", AccessRightEnum.MANAGER));
@@ -451,6 +438,7 @@ public class DataInitializationSessionBean {
         promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 2", 0.2, new GregorianCalendar(2020, Calendar.APRIL, 15, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.MAY, 15, 23, 59).getTime(), "Promotion 2"));
         promotionSessionBeanLocal.createNewPromotion(new Promotion("Promotion 3", 0.3, new GregorianCalendar(2020, Calendar.MAY, 20, 0, 0).getTime(), new GregorianCalendar(2020, Calendar.JUNE, 20, 23, 59).getTime(), "Promotion 3"));
         
+        /*
         //Add temporary dummy reservations
         try {
             Reservation newReservation = new Reservation(new GregorianCalendar(2020, Calendar.APRIL, 2, 15, 0).getTime(), 1, 3, ReservationStatus.COMPLETED);
@@ -485,10 +473,10 @@ public class DataInitializationSessionBean {
             newReservation.setTotalPrice(BigDecimal.valueOf(22.4));
             newReservation.setDateReserved(new GregorianCalendar(2020, Calendar.MAY, 15, 21, 51).getTime());
             reservationSessionBeanLocal.createNewReservation(newReservation, 1l, 27l, 3l, 3l, "NOTPAID");
-            
+    
         } catch (CustomerNotFoundException ex) {
             System.out.println(ex.getMessage());
-        }
+        }*/
         
     }
 }

@@ -18,10 +18,6 @@
             <br/>
             <br/>
             <p:commandButton value="Create New Reservation" actionListener="#{reservationManagementManagedBean.onCreateNewReservation}" update="@form createNewReservationLevel1" oncomplete="PF('dialogCreateNewReservationLevel1').show()" icon="fa fa-plus" style="font-size: 12px"/>
-            
-            <p:inputSwitch value="#{reservationManagementManagedBean.viewAll}" onLabel="All" offLabel="Outlet Only" style="float: right" rendered="#{reservationManagementManagedBean.employee.outlet != null}">
-                <p:ajax listener="#{reservationManagementManagedBean.onViewAll}" update="@form formAllReservations" />
-            </p:inputSwitch>
     
         </h:form>
         
@@ -82,14 +78,23 @@
                         <f:convertDateTime type="date" pattern="dd/MM/yyyy hh:mm a"/>
                     </h:outputText>
                 </p:column>
-                <!--
+                
                 <p:column sortBy="#{reservation.duration}" filterBy="#{reservation.duration}" headerText="Duration" filterMatchMode="contains" style="width: 9%">
                     <f:facet name="filter">
-                        <p:spinner onchange="PF('dataTableAllReservations').filter()" min="1" max="10"/>
+                        <p:spinner onchange="PF('dataTableAllReservations').filter()" min="1" max="12"/>
                     </f:facet>
                     <h:outputText value="#{reservation.duration}"/>
                 </p:column>
-                -->
+                
+                <p:column sortBy="#{reservation.room.roomType.name}" filterBy="#{reservation.room.roomType.name}" headerText="Room Type" filterMatchMode="in" style="width: 12%">
+                    <f:facet name="filter">
+                        <p:selectCheckboxMenu label="[Room Type]" onchange="PF('dataTableAllReservations').filter()" multiple="true">
+                            <f:selectItems value="#{reservationManagementManagedBean.roomTypes}" var="roomType" itemValue="#{roomType.name}" itemLabel="#{roomType.name}"/>
+                        </p:selectCheckboxMenu>
+                    </f:facet>
+                    <h:outputText value="#{reservation.room.roomType.name}"/>
+                </p:column>
+                
                 <p:column sortBy="#{reservation.status.name}" filterBy="#{reservation.status.name}" headerText="Status" filterMatchMode="in" style="width: 12%">
                     <f:facet name="filter">
                         <p:selectCheckboxMenu label="[Status]" onchange="PF('dataTableAllReservations').filter()" multiple="true">
@@ -98,8 +103,8 @@
                     </f:facet>
                     <h:outputText value="#{reservation.status}"/>
                 </p:column>
-                
-                <p:column sortBy="#{reservation.outlet.outletName}" filterBy="#{reservation.outlet.outletName}" headerText="Outlet" filterMatchMode="in" style="width: 20%" rendered="#{reservationManagementManagedBean.viewAll}">
+                <!--
+                <p:column sortBy="#{reservation.outlet.outletName}" filterBy="#{reservation.outlet.outletName}" headerText="Outlet" filterMatchMode="in" style="width: 20%" rendered="#{reservationManagementManagedBean.employee.outlet == null}">
                     <f:facet name="filter">
                         <p:selectCheckboxMenu label="[Outlet]" onchange="PF('dataTableAllReservations').filter()" multiple="true">
                             <f:selectItems value="#{reservationManagementManagedBean.outlets}" var="outletEntity" itemValue="#{outletEntity.outletName}" itemLabel="#{outletEntity.outletName}"/>
@@ -107,7 +112,7 @@
                     </f:facet>
                     <h:outputText value="#{reservation.outlet.outletName}"/>
                 </p:column>
-                
+                -->
                 <p:column sortBy="#{reservation.dateReserved}" filterBy="#{reservation.dateReserved}" headerText="Date Reserved" filterFunction="#{dateRangeFilter.filterByDate}" style="width: 17%">
                     <f:facet name="filter">
                         <h:inputHidden id="dateReservedFilter" />
@@ -148,7 +153,7 @@
                                              required="true" requiredMessage="Outlet is required">
                                 <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
                                 <f:selectItems value="#{reservationManagementManagedBean.outlets}" var="outletEntity" itemValue="#{outletEntity.outletId}" itemLabel="#{outletEntity.outletName}" />
-                                <p:ajax event="change" listener="#{reservationManagementManagedBean.outletChange}" update="buttons"/>
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.onChange}" update="buttons"/>
                             </p:selectOneMenu>            
                         </p:column>
                     </p:row>
@@ -162,7 +167,7 @@
                                              required="true" requiredMessage="Room type is required">
                                 <f:selectItem itemValue="0" itemLabel="[Select One]" noSelectionOption="true" />
                                 <f:selectItems value="#{reservationManagementManagedBean.roomTypes}" var="roomTypeEntity" itemValue="#{roomTypeEntity.roomTypeId}" itemLabel="#{roomTypeEntity.name}" />
-                                <p:ajax event="change" listener="#{reservationManagementManagedBean.roomTypeChange}" update="buttons" />
+                                <p:ajax event="change" listener="#{reservationManagementManagedBean.onChange}" update="buttons" />
                             </p:selectOneMenu>            
                         </p:column>
                     </p:row>
@@ -188,7 +193,7 @@
                         <p:column>
                             <p:spinner id="duration" value="#{reservationManagementManagedBean.newReservation.duration}" min="1" max="12"
                                        valueChangeListener="#{reservationManagementManagedBean.onDurationChange}" required="true" requiredMessage="Duration is required">
-                                <p:ajax listener="#{reservationManagementManagedBean.durationChange}" update="buttons"/>
+                                <p:ajax listener="#{reservationManagementManagedBean.onChange}" update="buttons"/>
                             </p:spinner>
                         </p:column>
                     </p:row>
