@@ -164,9 +164,7 @@ public class ReservationResource {
             
             for (Reservation r : reservations) {
                 
-                r.getCustomer().getFoodOrderTransactionEntities().clear();
-                r.getCustomer().getReservations().clear(); 
-                r.getCustomer().getFavouritePlaylist().clear();
+                r.setCustomer(null);
                 
                 r.getRoom().getReservations().clear();
                 r.getRoom().setOutlet(null);
