@@ -9,6 +9,7 @@ import entity.Promotion;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.DeletePromotionException;
 import util.exception.PromotionNotFoundException;
 
 /**
@@ -28,7 +29,7 @@ public interface PromotionSessionBeanLocal {
 
     public void updatePromotion(Promotion promotionToUpdate);
 
-    public void deletePromotion(Long promotionId);
+    public void deletePromotion(Long promotionId)throws DeletePromotionException;
 
     public List<Promotion> retrievePromotionByDate(Date date);
 

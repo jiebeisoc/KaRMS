@@ -14,6 +14,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.DeletePromotionException;
 import util.exception.PromotionNotFoundException;
 
 /**
@@ -86,10 +87,17 @@ public class PromotionSessionBean implements PromotionSessionBeanLocal {
     }
     
     @Override
-    public void deletePromotion(Long promotionId) {
+    public void deletePromotion(Long promotionId)throws DeletePromotionException{
         Promotion promotionToDelete = retrievePromotionById(promotionId);
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.promotion.promotionId = :id ");
+        query.setParameter("id", promotionToDelete.getPromotionId());
+        if(query.getResultList().isEmpty()){
+            em.remove(promotionToDelete);
+        }else{
+            promotionToDelete.setEnabled(Boolean.FALSE);
+            throw new DeletePromotionException("This promotion has been associated with reservations, can not be deleted!");
+        }
         
-        em.remove(promotionToDelete);
     }
     
     
