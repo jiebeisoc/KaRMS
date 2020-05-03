@@ -124,7 +124,7 @@
                             <p:outputLabel value="Room number: " style="font-weight: bold" />
                         </p:column>
                         <p:column>
-                            <h:outputText id="roomNum" value="#{roomManagementManagedBean.selectedRoom.roomNum}" />
+                            <h:inputText id="roomNum" value="#{roomManagementManagedBean.selectedRoom.roomNum}" />
                         </p:column>
                     </p:row>
 
@@ -142,17 +142,16 @@
                             <p:outputLabel value="Is disabled: " style="font-weight: bold" />
                         </p:column>
                         <p:column>
-                            <h:outputText id ="isDisabled" value="#{roomManagementManagedBean.selectedRoom.isDisabled}" />
+                            <p:selectBooleanButton id="isDisabled" value="#{roomManagementManagedBean.selectedRoom.isDisabled}" onLabel="True" offLabel="False" style="width:60px">
+                            </p:selectBooleanButton>
                         </p:column>
                     </p:row>
 
                     <p:row>
                         <p:column colspan="2">
+                            
+                            <p:commandButton actionListener="#{roomManagementManagedBean.updateRoom}" update='@form formAllRoom:dataTableAllRoom formUpdateRoom' oncomplete="PF('dialogUpdateRoom').show()" icon='ui-icon-pencil' title='Update' value='Update'/> &nbsp;
 
-                            <p:commandButton icon='ui-icon-trash' actionListener='#{roomManagementManagedBean.deleteRoom}' update="@form formAllRoom:dataTableAllRoom" immediate="true" value="Delete">
-                                <f:attribute name='roomToDelete' value='#{roomManagementManagedBean.selectedRoom}'/>
-                                <p:confirm header='Confirmation' message="Are you sure you want to delete #{roomManagementManagedBean.selectedRoom}?" icon='ui-icon-alert' />
-                            </p:commandButton>
 
                         </p:column>
                     </p:row>
@@ -160,11 +159,6 @@
                 </p:panelGrid>
                 
             </p:dialog>
-            
-            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
-            </p:confirmDialog>
             
         </h:form>
         

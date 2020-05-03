@@ -82,6 +82,11 @@ public class RoomManagementManagedBean implements Serializable {
         }
     }
     
+    public void updateRoom() {
+        roomSessionBeanLocal.updateRoom(selectedRoom);
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Room updated successfully", null));
+    }
+    
     public void deleteRoom(ActionEvent event) {
         Room roomToDelete = (Room)event.getComponent().getAttributes().get("roomToDelete");
         
